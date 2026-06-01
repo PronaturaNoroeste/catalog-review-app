@@ -1,0 +1,101 @@
+﻿area,zona,region,es_aprobado,uso_faenas,flag_tipo,similar_a,similitud_pct
+PNAES-Noroeste,PNAES,Golfo de California,False,9811,DUPLICADO_PROBABLE,PNAES-Noreste,96
+Bahía de La Paz,Bahía de La Paz,Golfo de California,False,9417,,,
+PNAES-Suroeste,PNAES,Golfo de California,False,6950,DUPLICADO_PROBABLE,PNAES-Sureste,96
+Pendiente,Cerralvo,Golfo de California,False,3910,,,
+CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,3373,,,
+Bahía Magdalena,Pacífico,Pacífico,False,2772,,,
+CS-Isla San Diego,Corredor sur,Golfo de California,False,2665,POSIBLE_DUPLICADO,CS-Cabeza Isla San Diego,83
+CS-Las Animas,Corredor sur,Golfo de California,False,2451,,,
+CN-Bajo San Marcial,Corredor norte,Golfo de California,False,2106,,,
+CN-Isla Santa Cruz,Corredor norte,Golfo de California,False,2038,POSIBLE_DUPLICADO,CN-Norte Isla Santa Cruz,86
+CN-Bajo Norte Isla Catalana,Corredor norte,Golfo de California,False,1863,POSIBLE_DUPLICADO,CN-Norte Isla Catalana,90
+CN-Bajo Seco,Corredor norte,Golfo de California,False,1829,,,
+PNAES-Noreste,PNAES,Golfo de California,False,1436,DUPLICADO_PROBABLE,PNAES-Noroeste,96
+CS-Isla San José,Corredor sur,Golfo de California,False,1416,POSIBLE_DUPLICADO,CS-Isla San Diego,79
+CS-El Atravesado,Corredor sur,Golfo de California,False,1333,POSIBLE_DUPLICADO,CS-La Travesia,80
+CN-Punta Berrendo,Corredor norte,Golfo de California,False,1261,POSIBLE_DUPLICADO,CN-Bajo Berrendo,79
+CS-Potrero-Cerritos Verdes,Corredor sur,Golfo de California,False,912,,,
+CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,881,,,
+CS-Costa de El Cobre a Cerritos Amarillos,Corredor sur,Golfo de California,False,843,,,
+CS-San José: Punta Sur de la Isla,Corredor sur,Golfo de California,False,838,,,
+CS-Rodadero a El Morrito,Corredor sur,Golfo de California,False,832,,,
+CS-Isla San José: Calabozo al Mangle,Corredor sur,Golfo de California,False,827,,,
+Golfo de Ulloa,No Corredor,,False,815,,,
+CN-Bajo Berrendo,Corredor norte,Golfo de California,False,742,POSIBLE_DUPLICADO,CN-Punta Berrendo,79
+PNAES-Sureste,PNAES,Golfo de California,False,650,DUPLICADO_PROBABLE,PNAES-Suroeste,96
+CS-La Habana,Corredor sur,Golfo de California,False,625,,,
+El Bajo (9 millas),PNAES,Golfo de California,False,609,,,
+El Charro,PNAES,Golfo de California,False,586,POSIBLE_DUPLICADO,El Chicharrón,82
+CS-Costa de San Francisquito,Corredor sur,Golfo de California,False,584,DUPLICADO_PROBABLE,CS-La Costa de San Francisquito,95
+CS-El Portugués a Bota Fuego,Corredor sur,Golfo de California,False,545,,,
+CS-Bajos del sur,Corredor sur,Golfo de California,False,509,,,
+CS-Cabeza Isla San Diego,Corredor sur,Golfo de California,False,508,POSIBLE_DUPLICADO,CS-Isla San Diego,83
+CN-Catalana,Corredor norte,Golfo de California,False,500,,,
+CS-Costa de Los Dolores,Corredor sur,Golfo de California,False,485,,,
+CN-Norte Isla Santa Cruz,Corredor norte,Golfo de California,False,459,POSIBLE_DUPLICADO,CN-Isla Santa Cruz,86
+CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,438,,,
+CS-Afuera de Palma Sola y Angelitos,Corredor sur,Golfo de California,False,423,,,
+CN-Sur Isla Catalana,Corredor norte,Golfo de California,False,418,POSIBLE_DUPLICADO,CN-Norte Isla Catalana,86
+CN-Islitas San Cosme,Corredor norte,Golfo de California,False,408,,,
+CN-Norte Isla Catalana,Corredor norte,Golfo de California,False,403,POSIBLE_DUPLICADO,CN-Bajo Norte Isla Catalana,90
+CS-Montealbán,Corredor sur,Golfo de California,False,393,,,
+CS-San José: Punta Colorada a Los Angelitos,Corredor sur,Golfo de California,False,362,,,
+CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,330,,,
+CS-La Travesia,Corredor sur,Golfo de California,False,328,POSIBLE_DUPLICADO,CS-El Atravesado,80
+CS-Bajo sur de Las Animas,Corredor sur,Golfo de California,False,324,,,
+CN-La Morena,Corredor norte,Golfo de California,False,319,,,
+Costa Punta Abreojos,Pacífico norte,Pacífico,False,298,POSIBLE_DUPLICADO,Punta Abreojos Oeste,90
+CS-Puertecito a Cerro Colorado,Corredor sur,Golfo de California,False,257,,,
+Bajos de El Sachi,Pacífico norte,Pacífico,False,231,POSIBLE_DUPLICADO,Oeste de El Sachi,82
+CS-El Coyote,Corredor sur,Golfo de California,False,230,POSIBLE_DUPLICADO,El Coyote,86
+CN-El Islote a La Brecha,Corredor norte,Golfo de California,False,212,,,
+El Coyote,Pacífico norte,Pacífico,False,201,POSIBLE_DUPLICADO,CS-El Coyote,86
+CN-Bajo Sur Isla Montserrat,Corredor norte,Golfo de California,False,192,POSIBLE_DUPLICADO,CN-Isla Montserrat,80
+CN-San Mateo,Corredor norte,Golfo de California,False,184,,,
+CN-Afuera de San Felipe,Corredor norte,Golfo de California,False,166,,,
+CN-Isla Montserrat,Corredor norte,Golfo de California,False,161,POSIBLE_DUPLICADO,CN-Bajo Sur Isla Montserrat,80
+No Corredor,No Corredor,,False,142,,,
+CS-Afuera de San Francisquito,Corredor sur,Golfo de California,False,126,POSIBLE_DUPLICADO,CS-Costa de San Francisquito,84
+CS-El Pardito,Corredor sur,Golfo de California,False,99,,,
+CN-Costa de La Ballena a San Mateo,Corredor norte,Golfo de California,False,84,,,
+CN-Norte de Las Galeras,Corredor norte,Golfo de California,False,83,,,
+CS-Barra La Lobera,Corredor sur,Golfo de California,False,83,,,
+Francis,Las Barrancas- San Juanico,Pacífico,False,83,,,
+Punta Abreojos Oeste,Pacífico norte,Pacífico,False,77,POSIBLE_DUPLICADO,Costa Punta Abreojos,90
+CS-Isla San José: Calabozo a Punta Colorada,Corredor sur,Golfo de California,False,74,,,
+La Barra,Pacífico norte,Pacífico,False,64,,,
+Afuera de El Coyote,Pacífico norte,Pacífico,False,58,POSIBLE_DUPLICADO,Afuera de La Costa,81
+CS-Afuera de Isla San José,Corredor sur,Golfo de California,False,47,,,
+Sebastián Vizcaíno,Guerrero Negro,Pacífico,False,39,,,
+Afuera de Puerto Nuevo,Pacífico norte,Pacífico,False,38,,,
+Estero El Cardón,San Ignacio,Pacífico,False,31,,,
+CS-La Barrita,Corredor sur,Golfo de California,False,30,,,
+Puerto Nuevo,Pacífico norte,Pacífico,False,29,,,
+CN-Tembabiche,Corredor norte,Golfo de California,False,28,,,
+CS-Afuera de La Cocina,Corredor sur,Golfo de California,False,26,POSIBLE_DUPLICADO,Afuera de La Costa,80
+El Bajo 13,Las Barrancas- San Juanico,Pacífico,False,26,,,
+Laguna inferior,San Ignacio,Pacífico,False,24,,,
+CS-Canal San José,Corredor sur,Golfo de California,False,23,POSIBLE_DUPLICADO,CS-Isla San José,79
+Costa de Ojo de Liebre,Guerrero Negro,Pacífico,False,20,POSIBLE_DUPLICADO,Canal Ojo de Liebre,78
+El Chicharrón,Las Barrancas- San Juanico,Pacífico,False,18,POSIBLE_DUPLICADO,El Charro,82
+Afuera de La Costa,Pacífico norte,Pacífico,False,16,POSIBLE_DUPLICADO,Afuera de El Coyote,81
+Canal Ojo de Liebre,Guerrero Negro,Pacífico,False,16,POSIBLE_DUPLICADO,Costa de Ojo de Liebre,78
+San Hipólito,Pacífico norte,Pacífico,False,16,,,
+San Pablo a San Cristobal,Pacífico norte,Pacífico,False,16,,,
+Las Perlas,Las Barrancas- San Juanico,Pacífico,False,9,,,
+Oeste de El Sachi,Pacífico norte,Pacífico,False,8,POSIBLE_DUPLICADO,Bajos de El Sachi,82
+DEFINIR,Corredor norte,Golfo de California,False,7,,,
+El Datil,Pacífico norte,Pacífico,False,7,,,
+CN-Bajo Hondo,Corredor norte,Golfo de California,False,6,,,
+El Cochi,Las Barrancas- San Juanico,Pacífico,False,6,,,
+Laguna media,San Ignacio,Pacífico,False,6,,,
+El Mariscal,Guerrero Negro,Pacífico,False,5,,,
+El Mezquital,Las Barrancas- San Juanico,Pacífico,False,5,,,
+Afuera de San Roque,Pacífico norte,Pacífico,False,4,,,
+Base,Las Barrancas- San Juanico,Pacífico,False,4,,,
+CS-La Costa de San Francisquito,Corredor sur,Golfo de California,False,4,DUPLICADO_PROBABLE,CS-Costa de San Francisquito,95
+Laguna Manuela,Guerrero Negro,Pacífico,False,3,,,
+San Roque,Pacífico norte,Pacífico,False,1,,,
+Area de Pesca,Zona de pesca,,False,0,,,
+ND,ND,Golfo de California,False,0,,,

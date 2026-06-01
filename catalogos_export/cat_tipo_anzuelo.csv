@@ -1,0 +1,18 @@
+﻿tipo_anzuelo,es_aprobado,uso_faena_arte,uso_mediciones,flag_tipo,similar_a,similitud_pct
+Piola,False,0,4780,,,
+Kahle,False,1548,0,POSIBLE_DUPLICADO,Khale,80
+Japonés,False,1396,0,DUPLICADO_EXACTO,Japones,100
+Noruego,False,1067,0,,,
+Japones,False,37,0,DUPLICADO_EXACTO,Japonés,100
+Aguila,False,29,0,,,
+Circular,False,28,0,,,
+Chinchorro,False,0,26,,,
+Noruego y circular,False,6,0,,,
+3,False,1,0,,,
+Circular y japonés,False,1,0,,,
+Japones y Kahle,False,1,0,DUPLICADO_EXACTO,Kahle y japones,100
+Kahle y japones,False,1,0,DUPLICADO_EXACTO,Japones y Kahle,100
+Kahle y noruego,False,1,0,,,
+Khale,False,1,0,POSIBLE_DUPLICADO,Kahle,80
+"Noruego, japones y kahle",False,1,0,,,
+Tipo de anzuelo,False,0,0,,,

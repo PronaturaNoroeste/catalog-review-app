@@ -1,0 +1,17 @@
+﻿tabla,total_filas,duplicado_exacto,duplicado_probable,posible_duplicado,total_flagged
+cat_zona_pesca,22,0,0,3,3
+cat_area_pesca,100,0,6,29,35
+cat_sitio_pesca,1318,229,91,487,807
+cat_comunidad,51,0,0,6,6
+cat_especie,461,163,17,102,282
+cat_tecnico,110,8,0,30,38
+cat_pescador,1695,153,272,699,1124
+cat_embarcacion,162,19,16,45,80
+cat_cooperativa,68,2,2,19,23
+cat_tipo_arte,22,4,0,3,7
+cat_tipo_anzuelo,17,4,0,2,6
+cat_tipo_operacion,14,9,2,1,12
+cat_tipo_fondo,12,0,2,1,3
+cat_tipo_viento,42,2,9,12,23
+cat_tipo_luna,27,6,0,2,8
+cat_tipo_marea,16,0,0,2,2

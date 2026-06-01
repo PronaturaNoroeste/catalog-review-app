@@ -1,0 +1,15 @@
+﻿tipo_operacion,es_aprobado,uso_faenas,flag_tipo,similar_a,similitud_pct
+Fondo,False,78829,DUPLICADO_EXACTO,fondo,100
+Aboyado,False,983,DUPLICADO_EXACTO,aboyado,100
+Media agua,False,737,DUPLICADO_PROBABLE,MediaAgua,95
+Fondo y media agua,False,230,DUPLICADO_EXACTO,Media agua y fondo,100
+Aboyado y fondo,False,221,,,
+MediaAgua,False,133,DUPLICADO_PROBABLE,Media agua,95
+Aboyado y media agua,False,77,POSIBLE_DUPLICADO,"Aboyado, fondo y media agua",85
+"Aboyado, fondo y media agua",False,59,DUPLICADO_EXACTO,"Aboyado, media agua y fondo",100
+Media agua y fondo,False,17,DUPLICADO_EXACTO,Fondo y media agua,100
+"Aboyado, media agua y fondo",False,2,DUPLICADO_EXACTO,"Aboyado, fondo y media agua",100
+aboyado,False,1,DUPLICADO_EXACTO,Aboyado,100
+fondo,False,1,DUPLICADO_EXACTO,Fondo,100
+Fondo y  media agua,False,1,DUPLICADO_EXACTO,Fondo y media agua,100
+Operacion,False,0,,,

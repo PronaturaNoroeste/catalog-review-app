@@ -1,0 +1,23 @@
+﻿tipo_arte,es_aprobado,uso_faenas,flag_tipo,similar_a,similitud_pct
+Trampa,False,60278,,,
+Piola,False,24926,DUPLICADO_EXACTO,piola,100
+Chinchorro,False,7053,DUPLICADO_EXACTO,chinchorro,100
+Piola y anzuelo,False,459,,,
+Red,False,195,,,
+chinchorro,False,166,DUPLICADO_EXACTO,Chinchorro,100
+Cimbra,False,124,,,
+Atarraya,False,57,,,
+Pistola,False,20,POSIBLE_DUPLICADO,Piola,83
+Piola y chinchorro,False,19,POSIBLE_DUPLICADO,Piola y anzuelo / chinchorro,78
+Caña,False,10,,,
+Fisga,False,9,,,
+Piola y anzuelo / chinchorro,False,7,POSIBLE_DUPLICADO,Piola y chinchorro,78
+Piola y trampa,False,6,,,
+Arpon,False,4,,,
+Caña y Carrete,False,2,,,
+Anzuelo,False,1,,,
+piola,False,1,DUPLICADO_EXACTO,Piola,100
+Arte de pesca,False,0,,,
+Atarraya y Arpon,False,0,,,
+Cuchara,False,0,,,
+Pulso,False,0,,,

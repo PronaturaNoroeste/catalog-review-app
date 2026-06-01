@@ -1,0 +1,23 @@
+﻿zona,region,es_aprobado,uso_faenas,flag_tipo,similar_a,similitud_pct
+Pacífico norte,Pacífico,False,58954,,,
+Corredor norte,Golfo de California,False,22908,POSIBLE_DUPLICADO,No Corredor,88
+Corredor sur,Golfo de California,False,22811,POSIBLE_DUPLICADO,No Corredor,78
+PNAES,Golfo de California,False,20401,,,
+Bahía de La Paz,Golfo de California,False,10638,,,
+Marismas Nacionales,Nayarit,False,4699,,,
+Pacífico,Pacífico,False,3866,,,
+Cerralvo,Golfo de California,False,2180,,,
+Bahía Magdalena,Pacífico,False,1112,,,
+No Corredor,,False,972,POSIBLE_DUPLICADO,Corredor norte,88
+Las Barrancas- San Juanico,Pacífico,False,843,,,
+Pendiente,,False,477,,,
+San Ignacio,Pacífico,False,367,,,
+Santa Rosalía,,False,273,,,
+Mulegé,,False,127,,,
+Guerrero Negro,Pacífico,False,124,,,
+DEFINIR,,False,59,,,
+Boca del Álamo,Golfo de California,False,30,,,
+Loreto,,False,13,,,
+Compostela,Nayarit,False,1,,,
+ND,Golfo de California,False,0,,,
+Zona de pesca,,False,0,,,

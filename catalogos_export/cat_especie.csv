@@ -1,0 +1,462 @@
+﻿nombre_comun,nombre_cientifico,es_aprobado,uso_capturas,uso_mediciones,uso_carnadas,uso_especie_objetivo,uso_total,flag_tipo,similar_a,similitud_pct,flag_cientifico,similar_cientifico,similitud_cientifico_pct
+Huachinango,Lutjanus peru,False,35230,68477,0,480,103707,DUPLICADO_EXACTO,Huachinango,100,POSIBLE_DUPLICADO,Lutjanus aratus,79
+Verdillo,Paralabrax nebulifer,False,58424,37697,4,0,96125,,,,,,
+Cochito,Balistes polylepis,False,16477,46493,0,4,62970,DUPLICADO_EXACTO,cochito,100,,,
+Cadernal,Pendiente,False,9884,42628,0,4,52512,DUPLICADO_EXACTO,cadernal,100,DUPLICADO_EXACTO,Pendiente,100
+Pargo amarillo,Lutjanus argentiventris,False,11150,26196,0,4,37346,DUPLICADO_EXACTO,pargo amarillo,100,DUPLICADO_EXACTO,Lutjanus argentiventris,100
+Cabrilla sardinera,Mycteroperca rosacea,False,11849,24058,0,38,35907,DUPLICADO_EXACTO,Cabrilla Sardinera,100,POSIBLE_DUPLICADO,Micteroperka rosacea,90
+Pierna,Pendiente,False,7369,28304,0,38,35673,DUPLICADO_EXACTO,pierna,100,DUPLICADO_EXACTO,Pendiente,100
+Estacuda,Hyporthodus niphobles,False,5300,18093,0,20,23393,POSIBLE_DUPLICADO,Tacuda,86,,,
+Jurel,Pendiente,False,9127,10698,0,365,19825,DUPLICADO_EXACTO,jurel,100,DUPLICADO_EXACTO,Pendiente,100
+Pargo mulato,Hoplopagrus guentherii,False,7242,8668,0,0,15910,DUPLICADO_EXACTO,pargo mulato,100,DUPLICADO_EXACTO,Hoplopagrus guentherii,100
+Robalo garabato,Centropomus viridis,False,4924,8302,0,0,13226,,,,POSIBLE_DUPLICADO,Centropomus medius,81
+Guarepa,Caulolatilus affinis,False,3867,4819,13,0,8699,DUPLICADO_EXACTO,Guarepa,100,POSIBLE_DUPLICADO,Caulolatilus princeps,78
+Baqueta,Pendiente,False,4405,2539,0,364,6944,DUPLICADO_EXACTO,baqueta,100,DUPLICADO_EXACTO,Pendiente,100
+Sardina,Sardinops caeruleus,False,0,0,6353,0,6353,DUPLICADO_EXACTO,sardina,100,DUPLICADO_EXACTO,Sardinops caeruleus,100
+Pargo colorado,Lutjanus colorado,False,2658,3509,0,0,6167,DUPLICADO_EXACTO,Pargo Colorado,100,DUPLICADO_EXACTO,Lutjanus colorado,100
+Zorrillo,Pendiente,False,1755,2959,0,2,4714,,,,DUPLICADO_EXACTO,Pendiente,100
+Constantino,Centropomus robalito,False,519,4171,0,0,4690,,,,,,
+Sierra,Scomberomorus sierra,False,1244,2898,0,0,4142,DUPLICADO_EXACTO,Sierra,100,DUPLICADO_EXACTO,Scomberomorus  sierra,100
+Perico,Scarus sp.,False,2942,618,0,0,3560,DUPLICADO_EXACTO,Perico,100,DUPLICADO_PROBABLE,Scarus sp,95
+Lenguado,Paralichthys californicus,False,1051,2377,0,0,3428,DUPLICADO_EXACTO,Lenguado,100,DUPLICADO_EXACTO,Paralichthys californicus,100
+3ra,Pendiente,False,3327,0,0,0,3327,,,,DUPLICADO_EXACTO,Pendiente,100
+Pargo lunarejo,Lutjanus guttatus,False,2488,771,0,0,3259,DUPLICADO_EXACTO,pargo lunarejo,100,POSIBLE_DUPLICADO,Lutjanus aratus,81
+Cazón,Pendiente,False,3142,85,0,0,3227,DUPLICADO_EXACTO,Cazon,100,DUPLICADO_EXACTO,Pendiente,100
+Curvina,Cynoscion sp.,False,369,2826,0,0,3195,DUPLICADO_EXACTO,Curvina,100,POSIBLE_DUPLICADO,Cynoscion albus,79
+Perico verde,Scarus compressus,False,49,2926,0,0,2975,DUPLICADO_EXACTO,Perico verde,100,,,
+Mojarra mueluda,Calamus brachysomus,False,920,1974,0,0,2894,DUPLICADO_EXACTO,Mojarra mueluda,100,,,
+Cabrilla,Pendiente,False,1875,778,0,0,2653,DUPLICADO_EXACTO,cabrilla,100,DUPLICADO_EXACTO,Pendiente,100
+Calamar,Loligo opalescens,False,0,0,2573,0,2573,DUPLICADO_EXACTO,Calamar,100,,,
+Curvina amarilla,Cynoscion xanthulus,False,709,1816,0,0,2525,POSIBLE_DUPLICADO,Guinea amarilla,84,POSIBLE_DUPLICADO,Cynoscion albus,82
+Lisa,Mugil cephalus,False,515,1630,31,0,2176,DUPLICADO_EXACTO,Lisa,100,DUPLICADO_EXACTO,Mugil cephalus,100
+Chihuil negro,Bagre panamensis,False,1747,358,0,0,2105,POSIBLE_DUPLICADO,Chihuil bandera,79,,,
+Burro prieto,Pomadasys macracanthus,False,1542,468,0,0,2010,,,,,,
+Vieja,Pendiente,False,1774,230,0,0,2004,DUPLICADO_EXACTO,Vieja,100,DUPLICADO_EXACTO,Pendiente,100
+Bacoco,Haemulon sexfasciatum,False,762,1151,0,0,1913,DUPLICADO_EXACTO,Bacoco,100,,,
+2da,Pendiente,False,1874,0,0,0,1874,,,,DUPLICADO_EXACTO,Pendiente,100
+Perico azul,Scarus ghobban,False,80,1598,0,0,1678,POSIBLE_DUPLICADO,Perico dátil,78,,,
+Macarela,Scomber japonicus,False,20,4,1645,0,1669,DUPLICADO_EXACTO,Macarela,100,,,
+Robalo paleta,Centropomus medius,False,396,1211,0,0,1607,,,,POSIBLE_DUPLICADO,Centropomus sp,81
+Curricata,Paralabrax maculatofasciatus,False,586,910,0,0,1496,DUPLICADO_EXACTO,Curricata,100,,,
+Vieja colorada,Semicossyphus pulcher,False,902,412,0,0,1314,,,,DUPLICADO_EXACTO,Semicossyphus pulcher,100
+Lengua,Brotula clarkae,False,920,234,0,0,1154,DUPLICADO_EXACTO,Lengua,100,,,
+Tiburón,Pendiente,False,1073,33,0,0,1106,,,,DUPLICADO_EXACTO,Pendiente,100
+Palometa,Trachinotus rhodopus,False,696,391,0,0,1087,DUPLICADO_EXACTO,Palometa,100,DUPLICADO_EXACTO,Trachinotus rhodopus,100
+Mojarra,Pendiente,False,744,267,1,0,1012,,,,DUPLICADO_EXACTO,Pendiente,100
+Langostilla,Pleuroncodes planipes,False,0,0,972,0,972,,,,,,
+Cabrilla piedrera,Pendiente,False,623,327,0,0,950,DUPLICADO_EXACTO,cabrilla piedrera,100,DUPLICADO_EXACTO,Pendiente,100
+Cabicucho,Cynoscion reticulatus,False,138,786,0,0,924,DUPLICADO_EXACTO,Cabicucho,100,DUPLICADO_EXACTO,Cynoscion reticulatus,100
+Angelito,Squatina californica,False,889,6,0,0,895,,,,,,
+Mojarra blanca,Gerres simillimus,False,424,437,0,0,861,,,,,,
+Chano,Chanos chanos,False,52,767,0,0,819,DUPLICADO_EXACTO,Chano,100,DUPLICADO_EXACTO,Chanos chanos,100
+Vieja piedrera,Bodianus diplotaenia,False,638,80,0,0,718,DUPLICADO_EXACTO,Vieja piedrera,100,,,
+Sabalo,Pendiente,False,197,490,0,0,687,DUPLICADO_EXACTO,sabalo,100,DUPLICADO_EXACTO,Pendiente,100
+Robalo piedra,Centropomus nigrescens,False,4,682,0,0,686,,,,,,
+Manta,Pendiente,False,667,0,0,0,667,,,,DUPLICADO_EXACTO,Pendiente,100
+Tilapia,Oreochromis aureus,False,547,112,0,0,659,,,,,,
+Pargo,Pendiente,False,519,77,0,0,596,POSIBLE_DUPLICADO,Pargo s,83,DUPLICADO_EXACTO,Pendiente,100
+Pargo prieto,Lutjanus novemfasciatus,False,15,533,0,0,548,POSIBLE_DUPLICADO,Pargo raicero,80,DUPLICADO_EXACTO,Lutjanus novemfasciatus,100
+Pez fuerte,Seriola rivoliana,False,469,48,0,0,517,,,,,,
+Berrugata,Micropogonias altipinnis,False,53,427,0,0,480,,,,,,
+Lenguado plano,Paralichthys californicus,False,24,454,0,0,478,POSIBLE_DUPLICADO,Lenguado isleño,83,DUPLICADO_EXACTO,Paralichthys californicus,100
+Pargo alazán,Lutjanus argentiventris,False,33,426,0,0,459,,,,DUPLICADO_EXACTO,Lutjanus argentiventris,100
+Mero,Epinephelus itaraja,False,290,166,0,0,456,DUPLICADO_EXACTO,Mero,100,POSIBLE_DUPLICADO,Epinephelus itajara,89
+Guitarra,Rhinobatos productus,False,251,200,0,0,451,DUPLICADO_EXACTO,Guitarra,100,,,
+Cabrilla pinta,Epinephelus analogus,False,81,332,0,0,413,,,,,,
+Botete,Sphoeroides lobatus,False,396,6,0,0,402,DUPLICADO_EXACTO,Botete,100,POSIBLE_DUPLICADO,Sphoeroides annulatus,85
+Bonita,Pendiente,False,4,18,379,0,401,DUPLICADO_EXACTO,bonita,100,DUPLICADO_EXACTO,Pendiente,100
+Guero,Caulolatilus princeps,False,394,0,0,0,394,DUPLICADO_EXACTO,Güero,100,DUPLICADO_EXACTO,Caulolatilus princeps,100
+Pámpano,Pendiente,False,5,387,0,0,392,DUPLICADO_EXACTO,Pampano,100,DUPLICADO_EXACTO,Pendiente,100
+Jaiba,Callinectus arcuatus,False,2,364,1,0,367,,,,,,
+Perico boludo,Scarus perrico,False,18,331,0,0,349,,,,,,
+Curvina chana,Cynoscion reticulatus,False,0,340,0,0,340,,,,DUPLICADO_EXACTO,Cynoscion reticulatus,100
+Antenita,Hemanthias peruanus,False,30,281,0,0,311,POSIBLE_DUPLICADO,Antena,86,,,
+Garropa,Mycteroperca jordani,False,201,107,0,0,308,,,,POSIBLE_DUPLICADO,Mycteroperca prionura,78
+Sardina de aceite,Sardinops caeruleus,False,0,0,304,0,304,,,,DUPLICADO_EXACTO,Sardinops caeruleus,100
+Burro,Haemulon scudderii,False,64,219,0,0,283,POSIBLE_DUPLICADO,Burrito,83,,,
+Bonito,Sarda chiliensis,False,66,113,92,0,271,DUPLICADO_EXACTO,bonito,100,,,
+Curvina plateada,Cynoscion albus,False,4,261,0,0,265,,,,POSIBLE_DUPLICADO,Cynoscion xanthulus,82
+Ratón,Menticirrhus sp,False,31,225,0,0,256,DUPLICADO_EXACTO,Raton,100,,,
+Desconocida,Pendiente,False,249,0,0,0,249,,,,DUPLICADO_EXACTO,Pendiente,100
+Arenero,Pendiente,False,33,212,0,0,245,,,,DUPLICADO_EXACTO,Pendiente,100
+Boca dulce,Menticirrhus panamensis,False,44,200,0,0,244,,,,,,
+Liseta,Pendiente,False,3,235,0,0,238,POSIBLE_DUPLICADO,Lisa,80,DUPLICADO_EXACTO,Pendiente,100
+Mantarraya,Dasyatis longus,False,226,11,0,0,237,,,,,,
+Chihuil condor,Bagre pinnimaculatus,False,159,73,0,0,232,,,,,,
+Pámpano rayado,Gnathanodon speciosus,False,99,130,0,0,229,,,,,,
+Burrito,Anisotremus interruptus,False,64,154,0,0,218,POSIBLE_DUPLICADO,Burro,83,,,
+Babosa,Diplectrum pacificum,False,108,94,0,0,202,,,,,,
+Atún,Thunnus sp.,False,194,1,0,0,195,,,,DUPLICADO_PROBABLE,Thunnus sp,95
+Chopa,Kyphosus elegans,False,68,122,0,0,190,DUPLICADO_EXACTO,Chopa,100,,,
+sardina,Pendiente,False,0,0,180,0,180,DUPLICADO_EXACTO,Sardina,100,DUPLICADO_EXACTO,Pendiente,100
+1ra,Pendiente,False,171,0,0,0,171,,,,DUPLICADO_EXACTO,Pendiente,100
+Burro blanco,Haemulopsis elongatus,False,131,40,0,0,171,,,,,,
+Taxi,Sufflamen verres,False,49,122,0,0,171,,,,,,
+Cocinero,Carangoides caballus,False,52,113,1,0,166,DUPLICADO_EXACTO,Cocinero,100,POSIBLE_DUPLICADO,Caranx caballus,80
+Mojarra plateada,Diapterus peruvianus,False,33,133,0,0,166,DUPLICADO_EXACTO,Mojarra plateada,100,DUPLICADO_EXACTO,Diapterus peruvianus,100
+Rocot,Sebastes mystinus,False,158,7,0,0,165,POSIBLE_DUPLICADO,Rocol,80,,,
+Pargo liso,Lutjanus aratus,False,105,59,0,0,164,DUPLICADO_EXACTO,pargo liso,100,DUPLICADO_EXACTO,Lutjanus aratus,100
+Roncacho,Orthopristis reddingi,False,42,122,0,0,164,DUPLICADO_EXACTO,Roncacho,100,,,
+Lupón,Scorpaena plumeri,False,46,113,0,0,159,DUPLICADO_EXACTO,Lupon,100,,,
+Lenguado redondo,Paralichthys woolmani,False,26,124,0,0,150,,,,DUPLICADO_EXACTO,Paralichthys woolmani,100
+Toro,Caranx caninus,False,0,147,0,0,147,POSIBLE_DUPLICADO,Torito,80,DUPLICADO_EXACTO,Caranx caninus,100
+Rocol,Pontinus vaughani,False,135,9,0,0,144,POSIBLE_DUPLICADO,Rocot,80,,,
+Pargo colmilludo,Lutjanus jordani,False,53,89,0,0,142,POSIBLE_DUPLICADO,Pargo colmillón,90,DUPLICADO_EXACTO,Lutjanus jordani,100
+Tiburón mamón,Mustelus sp.,False,138,1,0,0,139,DUPLICADO_EXACTO,Tiburón mamón,100,DUPLICADO_PROBABLE,Mustelus sp,96
+Lisa macho,Mugil cephalus,False,138,0,0,0,138,,,,DUPLICADO_EXACTO,Mugil cephalus,100
+Cirujano aleta amarilla,Acanthurus xanthopterus,False,118,11,0,0,129,POSIBLE_DUPLICADO,Atún aleta amarilla,81,,,
+Pez gallo,Nematistius pectoralis,False,112,16,0,0,128,DUPLICADO_EXACTO,pez gallo,100,DUPLICADO_EXACTO,Nematistius pectoralis,100
+Churri,Pendiente,False,3,123,0,0,126,,,,DUPLICADO_EXACTO,Pendiente,100
+Maranguana,Pendiente,False,115,11,0,0,126,,,,DUPLICADO_EXACTO,Pendiente,100
+Pargo cenizo,Lutjanus novemfasciatus,False,46,76,0,0,122,,,,DUPLICADO_EXACTO,Lutjanus novemfasciatus,100
+Cabrilla sargacera,Paralabrax clathratus,False,8,104,0,0,112,POSIBLE_DUPLICADO,Cabrilla sardinera,83,,,
+Chihuil bandera,Pendiente,False,40,72,0,0,112,POSIBLE_DUPLICADO,Chihuil negro,79,DUPLICADO_EXACTO,Pendiente,100
+Atún aleta amarilla,Thunnus albacares,False,32,78,0,0,110,POSIBLE_DUPLICADO,Cirujano aleta amarilla,81,,,
+Cabrilla aserrada,Mycteroperca prionura,False,40,67,0,0,107,DUPLICADO_EXACTO,Cabrilla aserrada,100,POSIBLE_DUPLICADO,Mycteroperca rosacea,78
+Dorado,Coryphaena hippurus,False,80,27,0,0,107,POSIBLE_DUPLICADO,Doradito,86,,,
+Tecolote,Myliobatis californica,False,86,16,0,0,102,,,,,,
+Barrilete,Euthynnus lineatus,False,14,9,77,0,100,,,,,,
+Antena,Hemanthias signifer,False,20,79,0,0,99,POSIBLE_DUPLICADO,Antenita,86,,,
+Sardina monterrey,Sardinops sagax,False,0,0,99,0,99,DUPLICADO_EXACTO,Sardina monterrey,100,,,
+Chiro,Elops affinis,False,72,23,0,0,95,,,,,,
+Cocinero 1,Caranx sexfasciatus,False,1,89,0,0,90,POSIBLE_DUPLICADO,Cocinero,89,,,
+"Curvina, boca dulce",Cynoscion parvipinnis,False,8,82,0,0,90,,,,DUPLICADO_EXACTO,Cynoscion parvipinnis,100
+Calamar y sardina,Loligo opalescens y Sardinops caeruleus,False,0,0,87,0,87,DUPLICADO_EXACTO,Sardina y calamar,100,DUPLICADO_EXACTO,Sardinops caeruleus y Loligo opalescens,100
+Bacoca,Lobotes pacificus,False,54,27,0,0,81,POSIBLE_DUPLICADO,Bacoco,83,,,
+Ratón amarillo,Polydactylus opercularis,False,0,79,0,0,79,DUPLICADO_EXACTO,Raton amarillo,100,DUPLICADO_PROBABLE,Polydactilus opercularis,96
+Chabela,Peprilus snyderi,False,3,74,0,0,77,POSIBLE_DUPLICADO,Chabelita,88,,,
+Barrilete listado azul,Katsuwonus pelamis,False,27,49,0,0,76,,,,,,
+Sardina anchoveta,Opisthonema bulleri,False,0,0,75,0,75,,,,,,
+Macarela y sardina,Scomber japonicus y Sardinops caeruleus,False,0,0,74,0,74,DUPLICADO_EXACTO,Sardina y macarela,100,DUPLICADO_EXACTO,Sardinops caeruleus y Scomber japonicus,100
+Sardina y macarela,Pendiente,False,0,0,74,0,74,DUPLICADO_EXACTO,Macarela y sardina,100,DUPLICADO_EXACTO,Pendiente,100
+cabrilla,Pendiente,False,68,0,0,0,68,DUPLICADO_EXACTO,Cabrilla,100,DUPLICADO_EXACTO,Pendiente,100
+Lupon,Pendiente,False,68,0,0,0,68,DUPLICADO_EXACTO,Lupón,100,DUPLICADO_EXACTO,Pendiente,100
+Mona,Chaetodipterus zonatus,False,0,65,0,0,65,POSIBLE_DUPLICADO,Monda,89,DUPLICADO_EXACTO,Chaetodipterus zonatus,100
+Pimienta,Paralabrax auroguttatus,False,11,48,0,0,59,,,,,,
+jurel,Pendiente,False,58,0,0,0,58,DUPLICADO_EXACTO,Jurel,100,DUPLICADO_EXACTO,Pendiente,100
+Lenguado huarache,Paralichthys woolmani,False,0,57,0,0,57,,,,DUPLICADO_EXACTO,Paralichthys woolmani,100
+Gallo,Nematistius pectoralis,False,0,56,0,0,56,,,,DUPLICADO_EXACTO,Nematistius pectoralis,100
+Rayadillo,Microlepidotus inornatus,False,10,42,4,0,56,DUPLICADO_EXACTO,Rayadillo,100,,,
+Bonita y sardina,Pendiente,False,0,0,54,0,54,DUPLICADO_EXACTO,Sardina y bonita,100,DUPLICADO_EXACTO,Pendiente,100
+Perico dátil,Scarus rubroviolaceus,False,2,52,0,0,54,POSIBLE_DUPLICADO,Perico azul,78,,,
+Jurel toro,Caranx caninus,False,22,31,0,0,53,,,,DUPLICADO_EXACTO,Caranx caninus,100
+Mako,Isurus oxyrinchus,False,51,0,0,0,51,,,,,,
+Chihuil cuatete,Ariopsis seemanni,False,47,2,0,0,49,POSIBLE_DUPLICADO,Chihuil camote,83,DUPLICADO_EXACTO,Ariopsis seemanni,100
+Chopa rayada,Hermosilla azurea,False,0,49,0,0,49,,,,,,
+Guinea prieta,Haemulon maculicauda,False,11,37,0,0,48,POSIBLE_DUPLICADO,Vieja prieta,80,,,
+Macarela cola amarilla,Elegatis bipinnula,False,16,29,0,0,45,,,,,,
+Robalo,Centropomus sp,False,44,1,0,0,45,,,,POSIBLE_DUPLICADO,Centropomus medius,81
+Pargo colmillón,Lutjanus jordani,False,34,10,0,0,44,POSIBLE_DUPLICADO,Pargo colmilludo,90,DUPLICADO_EXACTO,Lutjanus jordani,100
+Sardina y bonita,Pendiente,False,0,0,40,0,40,DUPLICADO_EXACTO,Bonita y sardina,100,DUPLICADO_EXACTO,Pendiente,100
+Burro rayado,Anisotremus davidsonii,False,0,39,0,0,39,POSIBLE_DUPLICADO,Toro rayado,78,,,
+SARDINA,Pendiente,False,0,0,39,0,39,DUPLICADO_EXACTO,Sardina,100,DUPLICADO_EXACTO,Pendiente,100
+Mero chino,Cirrhitus rivulatus,False,16,22,0,0,38,,,,,,
+Mojarra amarilla,Diapterus peruvianus,False,21,17,0,0,38,,,,DUPLICADO_EXACTO,Diapterus peruvianus,100
+Aventurero,Lutjanus inermis,False,10,26,0,0,36,,,,,,
+bonita,Pendiente,False,0,0,36,0,36,DUPLICADO_EXACTO,Bonita,100,DUPLICADO_EXACTO,Pendiente,100
+Pargo raicero,Lutjanus aratus,False,0,35,0,0,35,POSIBLE_DUPLICADO,Pargo prieto,80,DUPLICADO_EXACTO,Lutjanus aratus,100
+Tiburon martillo,Sphyrna lewini,False,1,34,0,0,35,DUPLICADO_EXACTO,Tiburón martillo,100,,,
+Chihuil karateca,Ariopsis seemanni,False,0,32,0,0,32,,,,DUPLICADO_EXACTO,Ariopsis seemanni,100
+Doradito,Pendiente,False,7,25,0,0,32,POSIBLE_DUPLICADO,Dorado,86,DUPLICADO_EXACTO,Pendiente,100
+Guinea,Microlepidotus brevipinnis,False,13,19,0,0,32,,,,,,
+Ojo de vidrio,Pristigenys serrula,False,13,18,1,0,32,,,,DUPLICADO_EXACTO,Pristigenys serrula,100
+Revuelto,Pendiente,False,31,0,0,0,31,,,,DUPLICADO_EXACTO,Pendiente,100
+Medregal,Seriola peruana,False,13,17,0,0,30,,,,,,
+Mojarra China,Eugerres axillaris,False,0,30,0,0,30,DUPLICADO_EXACTO,Mojarra china,100,DUPLICADO_PROBABLE,Eugerres axiliaris,94
+Sabana,Pendiente,False,0,0,28,0,28,,,,DUPLICADO_EXACTO,Pendiente,100
+Chivato,Mulloidichthys dentatus,False,13,13,0,0,26,POSIBLE_DUPLICADO,Chivatito,88,DUPLICADO_EXACTO,Mulloidichthys dentatus,100
+Diablo,Pendiente,False,2,24,0,0,26,,,,DUPLICADO_EXACTO,Pendiente,100
+Marlin,Tetrapturus sp.,False,25,0,0,0,25,,,,,,
+Ojo gordo,Pristigenys serrula,False,0,0,25,0,25,,,,DUPLICADO_EXACTO,Pristigenys serrula,100
+Cubana,Mobula sp,False,17,6,1,0,24,POSIBLE_DUPLICADO,Cana,80,,,
+Malayo,Pendiente,False,24,0,0,0,24,,,,DUPLICADO_EXACTO,Pendiente,100
+Caballa,Pendiente,False,0,0,23,0,23,POSIBLE_DUPLICADO,Cabrilla,80,DUPLICADO_EXACTO,Pendiente,100
+Mero guasa,Epinephelus quinquefasciatus,False,0,23,0,0,23,,,,,,
+Sardina y calamar,Pendiente,False,0,0,23,0,23,DUPLICADO_EXACTO,Calamar y sardina,100,DUPLICADO_EXACTO,Pendiente,100
+Tijereta,Pendiente,False,23,0,0,0,23,,,,DUPLICADO_EXACTO,Pendiente,100
+Guabina,Dormitator latifrons,False,0,22,0,0,22,,,,,,
+Piña,Oligonlites altus,False,0,22,0,0,22,DUPLICADO_EXACTO,Pina,100,DUPLICADO_PROBABLE,Oligoplites altus,94
+sardina y bonita,Pendiente,False,0,0,22,0,22,DUPLICADO_EXACTO,Bonita y sardina,100,DUPLICADO_EXACTO,Pendiente,100
+Barracuda,Sphyraena sp,False,4,17,0,0,21,,,,POSIBLE_DUPLICADO,Sphyrna sp,91
+Monda,Pendiente,False,0,21,0,0,21,POSIBLE_DUPLICADO,Mona,89,DUPLICADO_EXACTO,Pendiente,100
+Popocha,Pendiente,False,2,19,0,0,21,,,,DUPLICADO_EXACTO,Pendiente,100
+Sardina de escama,Pendiente,False,0,0,21,0,21,POSIBLE_DUPLICADO,OtraSardina de escama,89,DUPLICADO_EXACTO,Pendiente,100
+Lisa y sardina,Pendiente,False,0,0,20,0,20,POSIBLE_DUPLICADO,Bonita y sardina,80,DUPLICADO_EXACTO,Pendiente,100
+pargo amarillo,Pendiente,False,18,0,0,0,18,DUPLICADO_EXACTO,Pargo amarillo,100,DUPLICADO_EXACTO,Pendiente,100
+Pargo Colorado,Lutjanus colorado,False,0,18,0,0,18,DUPLICADO_EXACTO,Pargo colorado,100,DUPLICADO_EXACTO,Lutjanus colorado,100
+pierna,Pendiente,False,18,0,0,0,18,DUPLICADO_EXACTO,Pierna,100,DUPLICADO_EXACTO,Pendiente,100
+Vieja ribereña,Pendiente,False,16,2,0,0,18,POSIBLE_DUPLICADO,Vieja piedrera,79,DUPLICADO_EXACTO,Pendiente,100
+Botete diana,Sphoeroides annulatus,False,10,7,0,0,17,,,,POSIBLE_DUPLICADO,Sphoeroides lobatus,85
+Calamar y macarela,Loligo opalescens y Scomber japonicus,False,0,0,17,0,17,,,,,,
+Gavilán,Rhinoptera steindachneri,False,16,0,0,0,16,,,,,,
+Bota,Pseudobalistes naufragium,False,9,6,0,0,15,POSIBLE_DUPLICADO,Bonita,80,,,
+Pampano,Pendiente,False,1,14,0,0,15,DUPLICADO_EXACTO,Pámpano,100,DUPLICADO_EXACTO,Pendiente,100
+Picudo,Pendiente,False,1,14,0,0,15,,,,DUPLICADO_EXACTO,Pendiente,100
+Agujeta,Hemiramphus saltator,False,0,0,14,0,14,,,,,,
+Cabeza de camarón,Litopenaeus vannamei,False,0,0,14,0,14,,,,DUPLICADO_EXACTO,Litopenaeus vannamei,100
+pargo mulato,Pendiente,False,14,0,0,0,14,DUPLICADO_EXACTO,Pargo mulato,100,DUPLICADO_EXACTO,Pendiente,100
+Tiburón martillo,Sphyrna sp.,False,13,1,0,0,14,DUPLICADO_EXACTO,Tiburon martillo,100,DUPLICADO_PROBABLE,Sphyrna sp,95
+Bonita y macarela,Pendiente,False,0,0,12,0,12,DUPLICADO_EXACTO,Macarela y bonita,100,DUPLICADO_EXACTO,Pendiente,100
+bonito,Pendiente,False,0,0,12,0,12,DUPLICADO_EXACTO,Bonito,100,DUPLICADO_EXACTO,Pendiente,100
+Cabrilla ribereña,Alphestes immaculatus,False,2,10,0,0,12,DUPLICADO_EXACTO,Cabrilla ribereña,100,,,
+Mero piedrero,Cephalopholis panamensis,False,6,6,0,0,12,,,,DUPLICADO_EXACTO,Cephalopholis panamensis,100
+Tiburón piloto,Carcharhinus falciformis,False,10,2,0,0,12,,,,,,
+Caballito,Pendiente,False,2,0,9,0,11,,,,DUPLICADO_EXACTO,Pendiente,100
+Pargo Med.,Pendiente,False,11,0,0,0,11,,,,DUPLICADO_EXACTO,Pendiente,100
+Gallina,Hyporthodus cifuentesi,False,2,8,0,0,10,,,,,,
+Negrito,Pendiente,False,2,8,0,0,10,,,,DUPLICADO_EXACTO,Pendiente,100
+Tacuda,Hyporthodus nigritus,False,3,7,0,0,10,POSIBLE_DUPLICADO,Estacuda,86,,,
+Chiwili,Occidentarius sp,False,5,4,0,0,9,,,,,,
+cochito,Pendiente,False,9,0,0,0,9,DUPLICADO_EXACTO,Cochito,100,DUPLICADO_EXACTO,Pendiente,100
+Lenguado isleño,Bothus mancus,False,0,9,0,0,9,POSIBLE_DUPLICADO,Lenguado plano,83,,,
+Cana,Pendiente,False,8,0,0,0,8,POSIBLE_DUPLICADO,Cubana,80,DUPLICADO_EXACTO,Pendiente,100
+Sardina calamar,Pendiente,False,0,0,8,0,8,DUPLICADO_EXACTO,Calamar sardina,100,DUPLICADO_EXACTO,Pendiente,100
+Cabrilla cola de escoba,Mycteroperca xenarcha,False,0,7,0,0,7,,,,,,
+cabrilla piedrera,Pendiente,False,7,0,0,0,7,DUPLICADO_EXACTO,Cabrilla piedrera,100,DUPLICADO_EXACTO,Pendiente,100
+Cabrilla_sardinera,Pendiente,False,0,7,0,1,7,DUPLICADO_PROBABLE,Cabrilla sardinera,94,DUPLICADO_EXACTO,Pendiente,100
+Cazon,Pendiente,False,7,0,0,0,7,DUPLICADO_EXACTO,Cazón,100,DUPLICADO_EXACTO,Pendiente,100
+Sardina de aceite y macarela,Sardinops caeruleus y Scomber japonicus,False,0,0,7,0,7,POSIBLE_DUPLICADO,Sardina de aceite y calamar,84,DUPLICADO_EXACTO,Scomber japonicus y Sardinops caeruleus,100
+Chile verde,Caranx caballus,False,0,6,0,0,6,,,,DUPLICADO_EXACTO,caranx caballus,100
+Gorreta,Pendiente,False,6,0,0,0,6,,,,DUPLICADO_EXACTO,Pendiente,100
+Palmilla,Trachinotus rhodopus,False,0,6,0,0,6,,,,DUPLICADO_EXACTO,Trachinotus rhodopus,100
+pargo lunarejo,Pendiente,False,6,0,0,0,6,DUPLICADO_EXACTO,Pargo lunarejo,100,DUPLICADO_EXACTO,Pendiente,100
+Pargo R.,Pendiente,False,6,0,0,0,6,POSIBLE_DUPLICADO,Pargo s,80,DUPLICADO_EXACTO,Pendiente,100
+Pirri,Pendiente,False,6,0,0,0,6,POSIBLE_DUPLICADO,Pirrin,91,DUPLICADO_EXACTO,Pendiente,100
+Ronco,Haemulopsis axillaris,False,0,6,0,0,6,POSIBLE_DUPLICADO,Troncho,83,,,
+Sardina / Macarel,Pendiente,False,0,0,6,0,6,POSIBLE_DUPLICADO,Sardina y macarela,91,DUPLICADO_EXACTO,Pendiente,100
+Trucha,Pendiente,False,3,3,0,0,6,,,,DUPLICADO_EXACTO,Pendiente,100
+Agujón,Tylosurus pacificus,False,1,4,0,0,5,,,,,,
+baqueta,Pendiente,False,5,0,0,0,5,DUPLICADO_EXACTO,Baqueta,100,DUPLICADO_EXACTO,Pendiente,100
+Calamar gigante,Pendiente,False,0,0,5,0,5,,,,DUPLICADO_EXACTO,Pendiente,100
+Charchina,Pendiente,False,5,0,0,0,5,,,,DUPLICADO_EXACTO,Pendiente,100
+Chihuil tianico,Pendiente,False,0,0,5,0,5,,,,DUPLICADO_EXACTO,Pendiente,100
+Cojinuda,Pendiente,False,5,0,0,0,5,POSIBLE_DUPLICADO,Cornuda,80,DUPLICADO_EXACTO,Pendiente,100
+Guitarra puntos azules,Rhinobatos glaucostigma,False,2,3,0,0,5,,,,,,
+Pez ángel,Pomacanthus zonipectus,False,4,1,0,0,5,,,,,,
+Puntitas,Pendiente,False,5,0,0,0,5,,,,DUPLICADO_EXACTO,Pendiente,100
+Sardina monterrey y macarela,Pendiente,False,0,0,5,0,5,DUPLICADO_EXACTO,Macarela y Sardina monterrey,100,DUPLICADO_EXACTO,Pendiente,100
+Tiburón tigre,Galeocerdo cuvier,False,5,0,0,0,5,,,,,,
+Binita,Pendiente,False,0,0,4,0,4,POSIBLE_DUPLICADO,Bonita,83,DUPLICADO_EXACTO,Pendiente,100
+Cabrilla chocolata,Pendiente,False,2,2,0,0,4,,,,DUPLICADO_EXACTO,Pendiente,100
+cazón,Pendiente,False,4,0,0,0,4,DUPLICADO_EXACTO,Cazón,100,DUPLICADO_EXACTO,Pendiente,100
+Chihuil,Pendiente,False,0,0,4,0,4,,,,DUPLICADO_EXACTO,Pendiente,100
+Langostilla y macarela,Pleuroncodes planipes y Scomber japonicus,False,0,0,4,0,4,,,,,,
+Micrófono,Labrisomus sp.,False,4,0,0,0,4,,,,,,
+Sardina-calamar,Pendiente,False,0,0,4,0,4,DUPLICADO_PROBABLE,Sardina - calamar,94,DUPLICADO_EXACTO,Pendiente,100
+Sardinas,Pendiente,False,0,0,4,0,4,DUPLICADO_PROBABLE,Sardina,93,DUPLICADO_EXACTO,Pendiente,100
+Señorita,Halichoeres nicholsi,False,1,3,0,0,4,,,,,,
+Suri,Pendiente,False,4,0,0,0,4,,,,DUPLICADO_EXACTO,Pendiente,100
+Tiburón cristalino,Pendiente,False,4,0,0,0,4,,,,DUPLICADO_EXACTO,Pendiente,100
+Zapatero,Pendiente,False,1,3,0,0,4,,,,DUPLICADO_EXACTO,Pendiente,100
+Anchoveta,Cetengraulis mysticetus,False,0,0,3,0,3,,,,,,
+bonita y sardina,Pendiente,False,0,0,3,0,3,DUPLICADO_EXACTO,Bonita y sardina,100,DUPLICADO_EXACTO,Pendiente,100
+Burro roncacho,Pomadasys leuciscus,False,3,0,0,0,3,,,,,,
+Cabrilla Piedrera,Epinephelus labriformis,False,3,0,0,0,3,DUPLICADO_EXACTO,Cabrilla piedrera,100,,,
+Camarón,Litopenaeus vannamei,False,0,0,3,0,3,DUPLICADO_EXACTO,Camaron,100,DUPLICADO_EXACTO,Litopenaeus vannamei,100
+Canario rojo,Pendiente,False,0,3,0,0,3,,,,DUPLICADO_EXACTO,Pendiente,100
+Carpa,Cyprinus carpio,False,0,3,0,0,3,,,,,,
+Chile,Synodus scituliceps,False,0,3,0,0,3,,,,,,
+Cornuda,Sphyrna sp,False,1,2,0,0,3,POSIBLE_DUPLICADO,Cojinuda,80,DUPLICADO_PROBABLE,Sphyrna sp.,95
+Guitarra punteada,Pendiente,False,1,2,0,0,3,POSIBLE_DUPLICADO,Guitarra huesuda,79,DUPLICADO_EXACTO,Pendiente,100
+Macarela y Sardina monterrey,Scomber japonicus Sardinops sagax,False,0,0,3,0,3,DUPLICADO_EXACTO,Sardina monterrey y macarela,100,DUPLICADO_EXACTO,Scomber japonicus Sardinops sagax,100
+pez gallo,Pendiente,False,3,0,0,0,3,DUPLICADO_EXACTO,Pez gallo,100,DUPLICADO_EXACTO,Pendiente,100
+Puyeque,Pendiente,False,0,1,2,0,3,,,,DUPLICADO_EXACTO,Pendiente,100
+Quirri,Pendiente,False,0,3,0,0,3,,,,DUPLICADO_EXACTO,Pendiente,100
+"Sardina ,calamar",Pendiente,False,0,0,3,0,3,DUPLICADO_PROBABLE,Sardina calamar,97,DUPLICADO_EXACTO,Pendiente,100
+Sardina y calamar va sumando ambos,Pendiente,False,0,0,3,0,3,,,,DUPLICADO_EXACTO,Pendiente,100
+Ssrdina,Pendiente,False,0,0,3,0,3,DUPLICADO_EXACTO,ssrdina,100,DUPLICADO_EXACTO,Pendiente,100
+Troncho,Pendiente,False,3,0,0,0,3,POSIBLE_DUPLICADO,Ronco,83,DUPLICADO_EXACTO,Pendiente,100
+Vieja prieta,Pendiente,False,1,2,0,0,3,POSIBLE_DUPLICADO,Guinea prieta,80,DUPLICADO_EXACTO,Pendiente,100
+14 Trampas No trabajaron por presencia de lobo,Pendiente,False,0,0,2,0,2,,,,DUPLICADO_EXACTO,Pendiente,100
+Bonita y dardina,Pendiente,False,0,0,2,0,2,DUPLICADO_PROBABLE,Bonita y sardina,94,DUPLICADO_EXACTO,Pendiente,100
+Bonita- sardina,Pendiente,False,0,0,2,0,2,DUPLICADO_PROBABLE,Sardina bonita,97,DUPLICADO_EXACTO,Pendiente,100
+"Bonita, sardin",Pendiente,False,0,0,2,0,2,DUPLICADO_PROBABLE,Sardina bonita,93,DUPLICADO_EXACTO,Pendiente,100
+"Bonito,caballa,sardina",Pendiente,False,0,0,2,0,2,,,,DUPLICADO_EXACTO,Pendiente,100
+cadernal,Pendiente,False,2,0,0,0,2,DUPLICADO_EXACTO,Cadernal,100,DUPLICADO_EXACTO,Pendiente,100
+Camellón,Pendiente,False,2,0,0,0,2,,,,DUPLICADO_EXACTO,Pendiente,100
+Candil,Pendiente,False,2,0,0,0,2,,,,DUPLICADO_EXACTO,Pendiente,100
+Carnada,Pendiente,False,0,0,2,0,2,,,,DUPLICADO_EXACTO,Pendiente,100
+Carterita,Pendiente,False,1,1,0,0,2,,,,DUPLICADO_EXACTO,Pendiente,100
+Chihuil camote,Pendiente,False,0,2,0,0,2,POSIBLE_DUPLICADO,Chihuil cuatete,83,DUPLICADO_EXACTO,Pendiente,100
+Chivito,Pendiente,False,1,1,0,0,2,POSIBLE_DUPLICADO,Chivatito,88,DUPLICADO_EXACTO,Pendiente,100
+Dril,Pendiente,False,1,1,0,0,2,,,,DUPLICADO_EXACTO,Pendiente,100
+Guinea amarilla,Pendiente,False,0,2,0,0,2,POSIBLE_DUPLICADO,Curvina amarilla,84,DUPLICADO_EXACTO,Pendiente,100
+Langostino,Macrobrachium tenellum,False,0,0,2,0,2,,,,,,
+Lisa y macarela,Pendiente,False,0,0,2,0,2,POSIBLE_DUPLICADO,Bonita y macarela,81,DUPLICADO_EXACTO,Pendiente,100
+Macarela y bonita,Pendiente,False,0,0,2,0,2,DUPLICADO_EXACTO,Bonita y macarela,100,DUPLICADO_EXACTO,Pendiente,100
+Mantarraya mariposa,Gymnura marmorata,False,2,0,0,0,2,,,,,,
+OtraSardina de escama,0,False,0,0,2,0,2,POSIBLE_DUPLICADO,Sardina de escama,89,,,
+Paleta,Pendiente,False,2,0,0,0,2,POSIBLE_DUPLICADO,Palometa,86,DUPLICADO_EXACTO,Pendiente,100
+Pámpano preso,Chaetodipterus zonatus,False,0,2,0,0,2,,,,DUPLICADO_EXACTO,Chaetodipterus zonatus,100
+Papelillo,Selene peruviana,False,1,1,0,0,2,,,,,,
+Pargo sandia,Pendiente,False,2,0,0,0,2,,,,DUPLICADO_EXACTO,Pendiente,100
+Plateada,Pendiente,False,2,0,0,0,2,,,,DUPLICADO_EXACTO,Pendiente,100
+Raton amarillo,Polydactilus opercularis,False,0,2,0,0,2,DUPLICADO_EXACTO,Ratón amarillo,100,DUPLICADO_PROBABLE,Polydactylus opercularis,96
+Roncador,Pomadasys sp.,False,2,0,0,0,2,,,,,,
+sabalo,Pendiente,False,2,0,0,0,2,DUPLICADO_EXACTO,Sabalo,100,DUPLICADO_EXACTO,Pendiente,100
+Saedina,Pendiente,False,0,0,2,0,2,POSIBLE_DUPLICADO,Sardina,86,DUPLICADO_EXACTO,Pendiente,100
+Sardina bonita,Pendiente,False,0,0,2,0,2,DUPLICADO_EXACTO,sardina bonita,100,DUPLICADO_EXACTO,Pendiente,100
+Sardina y bocona,Sardinops caeruleus y Anchoa nasus,False,0,0,2,0,2,POSIBLE_DUPLICADO,Bonita y sardina,88,,,
+"Sardina, bonita y macarela",Pendiente,False,0,0,2,0,2,DUPLICADO_EXACTO,"Sardina, macarela y bonita",100,DUPLICADO_EXACTO,Pendiente,100
+"Sardina, calamar",Pendiente,False,0,0,2,0,2,DUPLICADO_PROBABLE,Sardina calamar,97,DUPLICADO_EXACTO,Pendiente,100
+"Sardina, Macarel",Pendiente,False,0,0,2,0,2,DUPLICADO_EXACTO,"Sardina, macarel",100,DUPLICADO_EXACTO,Pendiente,100
+"Sardina, macarela y bonita",Pendiente,False,0,0,2,0,2,DUPLICADO_EXACTO,"Sardina, bonita y macarela",100,DUPLICADO_EXACTO,Pendiente,100
+Sardinq,Pendiente,False,0,0,2,0,2,POSIBLE_DUPLICADO,Sardina,86,DUPLICADO_EXACTO,Pendiente,100
+Sradina,Pendiente,False,0,0,2,0,2,POSIBLE_DUPLICADO,SARARDINA,88,DUPLICADO_EXACTO,Pendiente,100
+Tacuni,Pendiente,False,0,2,0,0,2,,,,DUPLICADO_EXACTO,Pendiente,100
+Tiburón azul,Prionace glauca,False,2,0,0,0,2,,,,,,
+Tiburón cornuda prieta,Sphyrna zygaena,False,0,2,0,0,2,,,,,,
+Tiburón perro,Pendiente,False,2,0,0,0,2,POSIBLE_DUPLICADO,Tiburón zorro,85,DUPLICADO_EXACTO,Pendiente,100
+Tilapia negra,Pendiente,False,2,0,0,0,2,,,,DUPLICADO_EXACTO,Pendiente,100
+Torito,Pendiente,False,1,1,0,0,2,POSIBLE_DUPLICADO,Toro,80,DUPLICADO_EXACTO,Pendiente,100
+Toro rayado,Caranx vinctus,False,0,2,0,0,2,POSIBLE_DUPLICADO,Burro rayado,78,POSIBLE_DUPLICADO,Caranx caninus,79
+Vieja ceniza,Pendiente,False,2,0,0,0,2,,,,DUPLICADO_EXACTO,Pendiente,100
+Vieja negra,Pendiente,False,1,1,0,0,2,,,,DUPLICADO_EXACTO,Pendiente,100
+40,Pendiente,False,0,0,1,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+Amalaya,Pendiente,False,1,0,0,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+Anguila,Pendiente,False,1,0,0,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+Binito,Pendiente,False,0,0,1,0,1,POSIBLE_DUPLICADO,Bonito,83,DUPLICADO_EXACTO,Pendiente,100
+Boloche,Pendiente,False,1,0,0,0,1,POSIBLE_DUPLICADO,Bolochi,86,DUPLICADO_EXACTO,Pendiente,100
+Bolochi,Pendiente,False,0,1,0,0,1,POSIBLE_DUPLICADO,Boloche,86,DUPLICADO_EXACTO,Pendiente,100
+"Bonita, sardina y macarela",Pendiente,False,0,0,1,0,1,DUPLICADO_PROBABLE,"Sardina, bonita y macarela",96,DUPLICADO_EXACTO,Pendiente,100
+Bonits,Pendiente,False,0,0,1,0,1,POSIBLE_DUPLICADO,Bonita,83,DUPLICADO_EXACTO,Pendiente,100
+Cabrilla Sardinera,Micteroperka rosacea,False,1,0,0,0,1,DUPLICADO_EXACTO,Cabrilla sardinera,100,POSIBLE_DUPLICADO,Mycteroperca rosacea,90
+"Calamar ,sardina",Pendiente,False,0,0,1,0,1,DUPLICADO_PROBABLE,Calamar sardina,97,DUPLICADO_EXACTO,Pendiente,100
+Calamar sardina,Pendiente,False,0,0,1,0,1,DUPLICADO_EXACTO,Sardina calamar,100,DUPLICADO_EXACTO,Pendiente,100
+Calamar y agujeta,Loligo opalescens y Hemiramphus saltator,False,0,0,1,0,1,,,,,,
+Camaron,Pendiente,False,0,0,1,0,1,DUPLICADO_EXACTO,Camarón,100,DUPLICADO_EXACTO,Pendiente,100
+Camaron vivo,Pendiente,False,0,0,1,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+Canun,Pendiente,False,0,1,0,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+Chabelita,Pendiente,False,1,0,0,0,1,POSIBLE_DUPLICADO,Chabela,88,DUPLICADO_EXACTO,Pendiente,100
+Chirillo,Pendiente,False,1,0,0,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+Choá,Pendiente,False,1,0,0,0,1,POSIBLE_DUPLICADO,Chopa,89,DUPLICADO_EXACTO,Pendiente,100
+Cochi lija,Aluterus scriptus,False,0,1,0,0,1,,,,,,
+Garropa cerduda,Pendiente,False,0,1,0,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+Güero,Pendiente,False,0,1,0,0,1,DUPLICADO_EXACTO,Guero,100,DUPLICADO_EXACTO,Pendiente,100
+Guitarra huesuda,Pendiente,False,1,0,0,0,1,POSIBLE_DUPLICADO,Guitarra punteada,79,DUPLICADO_EXACTO,Pendiente,100
+Lunarejo,Pendiente,False,1,0,0,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+Macarela y antena,Scomber japonicus y Hemanthias signifer,False,0,0,1,0,1,POSIBLE_DUPLICADO,Bonita y macarela,82,,,
+Macarela y guinea,Scomber japonicus y Haemulon flaviguttatum,False,0,0,1,0,1,POSIBLE_DUPLICADO,Macarela y antena,82,,,
+Macarela y pierna,Scomber japonicus y Caulolatilus princeps,False,0,0,1,0,1,POSIBLE_DUPLICADO,Macarela y antena,82,POSIBLE_DUPLICADO,Scomber japonicus y Sardinops caeruleus,80
+Macarela y zorrillo,Scomber japonicus y Paralabrax auroguttatus,False,0,0,1,0,1,,,,,,
+"Macarela, sardina y anchoveta",Pendiente,False,0,0,1,0,1,POSIBLE_DUPLICADO,Sardina de aceite y macarela,81,DUPLICADO_EXACTO,Pendiente,100
+Macarena,Pendiente,False,0,0,1,0,1,POSIBLE_DUPLICADO,Macarela,88,DUPLICADO_EXACTO,Pendiente,100
+Macarena / Sardina,Pendiente,False,0,0,1,0,1,POSIBLE_DUPLICADO,Sardina / Macarel,91,DUPLICADO_EXACTO,Pendiente,100
+Marcial,Pendiente,False,1,0,0,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+Mojarra china,Eugerres axiliaris,False,1,0,0,0,1,DUPLICADO_EXACTO,Mojarra China,100,DUPLICADO_PROBABLE,Eugerres axillaris,94
+Ojo gordo y macarela,Pristigenys serrula y Scomber japonicus,False,0,0,1,0,1,,,,,,
+Parabolica,Pendiente,False,1,0,0,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+Pargo calandrio,Pendiente,False,0,1,0,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+Pargo Coconaco,Hoplopagrus guentherii,False,0,1,0,0,1,POSIBLE_DUPLICADO,Pargo colorado,79,DUPLICADO_EXACTO,Hoplopagrus guentherii,100
+pargo liso,Pendiente,False,1,0,0,0,1,DUPLICADO_EXACTO,Pargo liso,100,DUPLICADO_EXACTO,Pendiente,100
+Pargo s,Pendiente,False,1,0,0,0,1,POSIBLE_DUPLICADO,Pargo,83,DUPLICADO_EXACTO,Pendiente,100
+Pargo_amarillo,Pendiente,False,0,1,0,0,1,DUPLICADO_PROBABLE,Pargo amarillo,93,DUPLICADO_EXACTO,Pendiente,100
+Pez piedra,Scorpaena guttata,False,0,1,0,0,1,,,,,,
+Pina,Oligoplites altus,False,1,0,0,0,1,DUPLICADO_EXACTO,Piña,100,DUPLICADO_PROBABLE,Oligonlites altus,94
+Pinta,Pendiente,False,1,0,0,0,1,POSIBLE_DUPLICADO,Piña,89,DUPLICADO_EXACTO,Pendiente,100
+Pinta c,Pendiente,False,1,0,0,0,1,POSIBLE_DUPLICADO,Pinta,83,DUPLICADO_EXACTO,Pendiente,100
+Pirrin,Pendiente,False,1,0,0,0,1,POSIBLE_DUPLICADO,Pirri,91,DUPLICADO_EXACTO,Pendiente,100
+Platanillo,Decapterus muroadsi,False,0,0,1,0,1,,,,,,
+Raton,Polydactylus approximans,False,0,1,0,0,1,DUPLICADO_EXACTO,Ratón,100,,,
+Raya,Pendiente,False,1,0,0,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+Rayadillo y torito,Microlepidotus brevipinnis y Caranx caninus,False,0,0,1,0,1,,,,,,
+Sa4dina,Pendiente,False,0,0,1,0,1,POSIBLE_DUPLICADO,Sardina,86,DUPLICADO_EXACTO,Pendiente,100
+Safdina,Pendiente,False,0,0,1,0,1,POSIBLE_DUPLICADO,Sardina,86,DUPLICADO_EXACTO,Pendiente,100
+SARARDINA,Pendiente,False,0,0,1,0,1,POSIBLE_DUPLICADO,Sardina,88,DUPLICADO_EXACTO,Pendiente,100
+Sardia,Pendiente,False,0,0,1,0,1,DUPLICADO_PROBABLE,Sardina,92,DUPLICADO_EXACTO,Pendiente,100
+Sardina - calamar,Pendiente,False,0,0,1,0,1,DUPLICADO_PROBABLE,Sardina y calamar,94,DUPLICADO_EXACTO,Pendiente,100
+sardina bonita,Pendiente,False,0,0,1,0,1,DUPLICADO_EXACTO,Sardina bonita,100,DUPLICADO_EXACTO,Pendiente,100
+Sardina crinuda,Pendiente,False,0,0,1,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+Sardina de aceite y agujeta,Sardinops caeruleus y Hemiramphus saltator,False,0,0,1,0,1,POSIBLE_DUPLICADO,Sardina de aceite y calamar,81,,,
+Sardina de aceite y calamar,Sardinops caeruleus y Loligo opalescens,False,0,0,1,0,1,POSIBLE_DUPLICADO,Sardina de aceite y macarela,84,DUPLICADO_EXACTO,Loligo opalescens y Sardinops caeruleus,100
+Sardina u calamar,Pendiente,False,0,0,1,0,1,DUPLICADO_PROBABLE,Calamar y sardina,94,DUPLICADO_EXACTO,Pendiente,100
+Sardina y guarepa,Sardinops caeruleus y Caulolatilus affinis,False,0,0,1,0,1,POSIBLE_DUPLICADO,Macarela y sardina,80,,,
+"Sardina, macarel",Pendiente,False,0,0,1,0,1,DUPLICADO_EXACTO,"Sardina, Macarel",100,DUPLICADO_EXACTO,Pendiente,100
+"sardina,jurel",Pendiente,False,0,0,1,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+sardona,Pendiente,False,0,0,1,0,1,POSIBLE_DUPLICADO,Sardina,86,DUPLICADO_EXACTO,Pendiente,100
+Sarsina,Pendiente,False,0,0,1,0,1,POSIBLE_DUPLICADO,Sardina,86,DUPLICADO_EXACTO,Pendiente,100
+ssrdina,Pendiente,False,0,0,1,0,1,DUPLICADO_EXACTO,Ssrdina,100,DUPLICADO_EXACTO,Pendiente,100
+Tambor,Pendiente,False,0,1,0,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+Tiburón zorro,Alopias sp.,False,1,0,0,0,1,POSIBLE_DUPLICADO,Tiburón perro,85,,,
+Tripa,Pendiente,False,1,0,0,0,1,,,,DUPLICADO_EXACTO,Pendiente,100
+Agua Verde,Sardina,False,0,0,0,0,0,,,,DUPLICADO_EXACTO,Sardina,100
+Bacoco,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Bacoco,100,DUPLICADO_EXACTO,Pendiente,100
+Baqueta,Hyporthodus acanthistius,False,0,0,0,0,0,DUPLICADO_EXACTO,baqueta,100,,,
+Bonita,Thunnus sp,False,0,0,0,0,0,DUPLICADO_EXACTO,bonita,100,DUPLICADO_PROBABLE,Thunnus sp.,95
+Bonita -sardina,Pendiente,False,0,0,0,0,0,DUPLICADO_PROBABLE,Bonita-sardina,97,DUPLICADO_EXACTO,Pendiente,100
+Bonita 30 sardina 20,Pendiente,False,0,0,0,0,0,POSIBLE_DUPLICADO,Bonita y sardina,83,DUPLICADO_EXACTO,Pendiente,100
+Bonita-sardina,Pendiente,False,0,0,0,0,0,DUPLICADO_PROBABLE,Bonita- sardina,97,DUPLICADO_EXACTO,Pendiente,100
+Bonita-sardina-macarela,Pendiente,False,0,0,0,0,0,POSIBLE_DUPLICADO,"Bonita, sardina y macarela",86,DUPLICADO_EXACTO,Pendiente,100
+Bonito,caranx caballus,False,0,0,0,0,0,DUPLICADO_EXACTO,bonito,100,DUPLICADO_EXACTO,Caranx caballus,100
+Botete,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Botete,100,DUPLICADO_EXACTO,Pendiente,100
+Cabicucho,Atractoscion nobilis,False,0,0,0,0,0,DUPLICADO_EXACTO,Cabicucho,100,,,
+Cabrilla aserrada,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Cabrilla aserrada,100,DUPLICADO_EXACTO,Pendiente,100
+Cabrilla ribereña,Cephalopholis panamensis,False,0,0,0,0,0,DUPLICADO_EXACTO,Cabrilla ribereña,100,DUPLICADO_EXACTO,Cephalopholis panamensis,100
+Cadernal,Paranthias colonus,False,0,0,0,0,0,DUPLICADO_EXACTO,cadernal,100,,,
+Calamar,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Calamar,100,DUPLICADO_EXACTO,Pendiente,100
+Calamar y sardina,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Sardina y calamar,100,DUPLICADO_EXACTO,Pendiente,100
+Camaron vivo y jaiba,Pendiente,False,0,0,0,0,0,POSIBLE_DUPLICADO,Camaron y jaiba,86,DUPLICADO_EXACTO,Pendiente,100
+Camaron vivo y liseta,Pendiente,False,0,0,0,0,0,POSIBLE_DUPLICADO,Camaron vivo y jaiba,83,DUPLICADO_EXACTO,Pendiente,100
+Camarón y calamar,Litopenaeus vannamei y Loligo opalescens,False,0,0,0,0,0,,,,,,
+Camaron y jaiba,Pendiente,False,0,0,0,0,0,POSIBLE_DUPLICADO,Camaron vivo y jaiba,86,DUPLICADO_EXACTO,Pendiente,100
+Chano,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Chano,100,DUPLICADO_EXACTO,Pendiente,100
+Chivatito,Mulloidichthys dentatus,False,0,0,0,0,0,POSIBLE_DUPLICADO,Chivato,88,DUPLICADO_EXACTO,Mulloidichthys dentatus,100
+Chopa,Kyphosus sp,False,0,0,0,0,0,DUPLICADO_EXACTO,Chopa,100,,,
+Cocinero,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Cocinero,100,DUPLICADO_EXACTO,Pendiente,100
+Comprada,Calamar,False,0,0,0,0,0,,,,DUPLICADO_EXACTO,Calamar,100
+Curricata,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Curricata,100,DUPLICADO_EXACTO,Pendiente,100
+Curvina,Cynoscion parvipinnis,False,0,0,0,0,0,DUPLICADO_EXACTO,Curvina,100,DUPLICADO_EXACTO,Cynoscion parvipinnis,100
+Curvina,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Curvina,100,DUPLICADO_EXACTO,Pendiente,100
+Ensenada de Cortés,Calamar,False,0,0,0,0,0,,,,DUPLICADO_EXACTO,Calamar,100
+Guarepa,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Guarepa,100,DUPLICADO_EXACTO,Pendiente,100
+Guitarra,Rhinobatos sp,False,0,0,0,0,0,DUPLICADO_EXACTO,Guitarra,100,,,
+Huachinango,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Huachinango,100,DUPLICADO_EXACTO,Pendiente,100
+Isla San José,Sardina,False,0,0,0,0,0,,,,DUPLICADO_EXACTO,Sardina,100
+Isla San José y Dos arroyos,Sardina,False,0,0,0,0,0,,,,DUPLICADO_EXACTO,Sardina,100
+Isla San José y El Saucito,Sardina,False,0,0,0,0,0,POSIBLE_DUPLICADO,Isla San José y Placerito,78,DUPLICADO_EXACTO,Sardina,100
+Isla San José y Palma Sola,Sardina,False,0,0,0,0,0,,,,DUPLICADO_EXACTO,Sardina,100
+Isla San José y Placerito,Sardina,False,0,0,0,0,0,POSIBLE_DUPLICADO,Isla San José y El Saucito,78,DUPLICADO_EXACTO,Sardina,100
+Jaiba y liseta,Pendiente,False,0,0,0,0,0,,,,DUPLICADO_EXACTO,Pendiente,100
+Jurel,Seriola lalandi,False,0,0,0,0,0,DUPLICADO_EXACTO,jurel,100,,,
+La Morena,Calamar,False,0,0,0,0,0,,,,DUPLICADO_EXACTO,Calamar,100
+Lengua,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Lengua,100,DUPLICADO_EXACTO,Pendiente,100
+Lenguado,Paralichthys sp,False,0,0,0,0,0,DUPLICADO_EXACTO,Lenguado,100,,,
+Lisa,Mugil curema,False,0,0,0,0,0,DUPLICADO_EXACTO,Lisa,100,,,
+Los Dolores,Macarela,False,0,0,0,0,0,,,,DUPLICADO_EXACTO,Macarela,100
+Lupón,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Lupon,100,DUPLICADO_EXACTO,Pendiente,100
+Macarela,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Macarela,100,DUPLICADO_EXACTO,Pendiente,100
+Macarela,Scomber scombrus,False,0,0,0,0,0,DUPLICADO_EXACTO,Macarela,100,,,
+Macarela y sardina,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Sardina y macarela,100,DUPLICADO_EXACTO,Pendiente,100
+Macarela y sardina monterrey,Scomber japonicus Sardinops sagax,False,0,0,0,0,0,DUPLICADO_EXACTO,Sardina monterrey y macarela,100,DUPLICADO_EXACTO,Scomber japonicus Sardinops sagax,100
+Mero,Epinephelus itajara,False,0,0,0,0,0,DUPLICADO_EXACTO,Mero,100,POSIBLE_DUPLICADO,Epinephelus itaraja,89
+Mojarra mueluda,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Mojarra mueluda,100,DUPLICADO_EXACTO,Pendiente,100
+Mojarra plateada,Gerres cinereus,False,0,0,0,0,0,DUPLICADO_EXACTO,Mojarra plateada,100,,,
+Nombre comun,Nombre cientifico,False,0,0,0,0,0,,,,POSIBLE_DUPLICADO,Nombre cientifico carnada,81
+Nombre común carnada,Nombre cientifico carnada,False,0,0,0,0,0,,,,POSIBLE_DUPLICADO,Nombre cientifico,81
+Palma sola,Sardina,False,0,0,0,0,0,DUPLICADO_EXACTO,Palma Sola,100,DUPLICADO_EXACTO,Sardina,100
+Palma Sola,Sardina,False,0,0,0,0,0,DUPLICADO_EXACTO,Palma sola,100,DUPLICADO_EXACTO,Sardina,100
+Palometa,Trachinotus kennedyi,False,0,0,0,0,0,DUPLICADO_EXACTO,Palometa,100,,,
+Pampano,Trachinotus paitensis,False,0,0,0,0,0,DUPLICADO_EXACTO,Pámpano,100,,,
+Pargo amarillo,Lutjanus argentriventris,False,0,0,0,0,0,DUPLICADO_EXACTO,pargo amarillo,100,DUPLICADO_PROBABLE,Lutjanus argentiventris,98
+Pargo lunarejo,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,pargo lunarejo,100,DUPLICADO_EXACTO,Pendiente,100
+Perico,Scarus sp,False,0,0,0,0,0,DUPLICADO_EXACTO,Perico,100,DUPLICADO_PROBABLE,Scarus sp.,95
+Perico verde,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Perico verde,100,DUPLICADO_EXACTO,Pendiente,100
+pierna,Caulolatilus princeps,False,0,0,0,0,0,DUPLICADO_EXACTO,Pierna,100,DUPLICADO_EXACTO,Caulolatilus princeps,100
+Pierna,Caulolatilus princeps,False,0,0,0,0,0,DUPLICADO_EXACTO,pierna,100,DUPLICADO_EXACTO,Caulolatilus princeps,100
+Punta Colorada,Macarela,False,0,0,0,0,0,,,,DUPLICADO_EXACTO,Macarela,100
+Rayadillo,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Rayadillo,100,DUPLICADO_EXACTO,Pendiente,100
+Roncacho,Haemulopsis leuciscus,False,0,0,0,0,0,DUPLICADO_EXACTO,Roncacho,100,,,
+Sabalo,Chanos chanos,False,0,0,0,0,0,DUPLICADO_EXACTO,sabalo,100,DUPLICADO_EXACTO,Chanos chanos,100
+Sadinete,Pendiente,False,0,0,0,0,0,,,,DUPLICADO_EXACTO,Pendiente,100
+San Carlos,Langostilla y sardina,False,0,0,0,0,0,,,,,,
+San Evaristo,Sardina,False,0,0,0,0,0,,,,DUPLICADO_EXACTO,Sardina,100
+San Mateo,Calamar,False,0,0,0,0,0,,,,DUPLICADO_EXACTO,Calamar,100
+Santa Martha,Calamar,False,0,0,0,0,0,,,,DUPLICADO_EXACTO,Calamar,100
+Sardina,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,sardina,100,DUPLICADO_EXACTO,Pendiente,100
+Sardina monterrey,Pendiente,False,0,0,0,0,0,DUPLICADO_EXACTO,Sardina monterrey,100,DUPLICADO_EXACTO,Pendiente,100
+"Sardina,calamar",Pendiente,False,0,0,0,0,0,DUPLICADO_PROBABLE,"Sardina ,calamar",97,DUPLICADO_EXACTO,Pendiente,100
+Sierra,Scomberomorus  sierra,False,0,0,0,0,0,DUPLICADO_EXACTO,Sierra,100,DUPLICADO_EXACTO,Scomberomorus sierra,100
+Tembabiche,Calamar,False,0,0,0,0,0,,,,DUPLICADO_EXACTO,Calamar,100
+Tiburón mamón,Mustelus sp,False,0,0,0,0,0,DUPLICADO_EXACTO,Tiburón mamón,100,DUPLICADO_PROBABLE,Mustelus sp.,96
+Vieja,Semicossyphus pulcher,False,0,0,0,0,0,DUPLICADO_EXACTO,Vieja,100,DUPLICADO_EXACTO,Semicossyphus pulcher,100
+Vieja piedrera,Semicossyphus pulcher,False,0,0,0,0,0,DUPLICADO_EXACTO,Vieja piedrera,100,DUPLICADO_EXACTO,Semicossyphus pulcher,100

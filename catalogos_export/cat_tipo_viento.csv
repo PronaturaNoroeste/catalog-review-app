@@ -1,0 +1,43 @@
+﻿tipo_viento,uso_faenas,flag_tipo,similar_a,similitud_pct
+Calmo,1436,DUPLICADO_EXACTO,calmo,100
+Sur,1316,,,
+Norte,882,POSIBLE_DUPLICADO,Noreste,83
+Oeste,523,POSIBLE_DUPLICADO,Este,89
+Noroeste,194,DUPLICADO_PROBABLE,Noreste,93
+Sureste,190,DUPLICADO_PROBABLE,Suroeste,93
+Brisa,114,,,
+Este,95,POSIBLE_DUPLICADO,Oeste,89
+Coromuel,82,,,
+Noreste,66,DUPLICADO_PROBABLE,Noroeste,93
+Suroeste,52,DUPLICADO_PROBABLE,Sureste,93
+Brisa del Sur,32,POSIBLE_DUPLICADO,Brisa del Norte,79
+Atarraya,31,,,
+Palangar,21,POSIBLE_DUPLICADO,Palangre,88
+Brisa del Norte,11,POSIBLE_DUPLICADO,Brisa del Sur,79
+Variable,10,,,
+Comprada,9,,,
+Potera,5,DUPLICADO_PROBABLE,Poteras,92
+Del sur,4,,,
+Weste,4,POSIBLE_DUPLICADO,Este,89
+Nortesito,3,,,
+Palangre,3,POSIBLE_DUPLICADO,Palangar,88
+Poteras,3,DUPLICADO_PROBABLE,Potera,92
+calmo,2,DUPLICADO_EXACTO,Calmo,100
+Oeste y sur,2,POSIBLE_DUPLICADO,Sur este,84
+Potera y palangal,2,,,
+Calma,1,POSIBLE_DUPLICADO,Calmo,80
+Calmo y Brisa,1,,,
+Calmo y Brisa del Sur,1,,,
+"Calmo y Brisa del Sur, mucha marejada y corriente",1,,,
+Calmo y sur,1,,,
+Coromuel y Norte,1,,,
+"Coromuel, este, Noreste y sureste",1,,,
+De afuera,1,,,
+Muerto,1,,,
+Norte y este,1,DUPLICADO_PROBABLE,Norte y oeste,96
+Norte y oeste,1,DUPLICADO_PROBABLE,Norte y este,96
+Norte y sur,1,POSIBLE_DUPLICADO,Oeste y sur,82
+Oeste y este,1,POSIBLE_DUPLICADO,Norte y este,83
+Sur este,1,DUPLICADO_PROBABLE,Sureste,93
+Sur fuerte,1,,,
+Viento,0,,,

@@ -1,0 +1,28 @@
+﻿tipo_luna,uso_faenas,flag_tipo,similar_a,similitud_pct
+Creciente,738,DUPLICADO_EXACTO,creciente,100
+Nueva,570,,,
+Llena,567,,,
+Menguante,540,,,
+Cuarto menguante,532,DUPLICADO_EXACTO,Cuarto Menguante,100
+Cuarto creciente,491,DUPLICADO_EXACTO,Cuarto Creciente,100
+Media,74,,,
+Cuarto,30,,,
+Calmo,23,,,
+Alta,21,,,
+Sur,15,,,
+Cuarto Menguante,12,DUPLICADO_EXACTO,Cuarto menguante,100
+Norte,7,,,
+Sureste,6,,,
+creciente,5,DUPLICADO_EXACTO,Creciente,100
+Noroeste,5,,,
+Oeste,5,POSIBLE_DUPLICADO,Este,89
+Seca,5,,,
+Tres cuartos,5,,,
+Segunda fase,3,,,
+Brisa del sur,2,,,
+Este,2,POSIBLE_DUPLICADO,Oeste,89
+Calmo y sur,1,,,
+Cuarto Creciente,1,DUPLICADO_EXACTO,Cuarto creciente,100
+Primer cuarto,1,,,
+Sur fuerte,1,,,
+Luna,0,,,

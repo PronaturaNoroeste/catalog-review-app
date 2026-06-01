@@ -1,0 +1,163 @@
+﻿embarcacion,es_aprobado,uso_faenas,flag_tipo,similar_a,similitud_pct
+Beatriz,False,1225,,,
+Amayrani,False,778,POSIBLE_DUPLICADO,Amayrani II,84
+El Bronco,False,693,POSIBLE_DUPLICADO,Bronco,80
+Marely,False,639,POSIBLE_DUPLICADO,Mary,80
+Denisse,False,607,,,
+Chelito,False,525,,,
+Keyco,False,517,,,
+Chocolate,False,476,,,
+Adelita V,False,380,DUPLICADO_EXACTO,adelita V,100
+Jimena,False,363,,,
+7 Leguas,False,325,,,
+Adelita IV,False,319,DUPLICADO_EXACTO,adelita IV,100
+Santa Lidia,False,311,,,
+Joana,False,306,POSIBLE_DUPLICADO,Juana,80
+Pícaro,False,300,,,
+Adelita II,False,289,DUPLICADO_EXACTO,adelita II,100
+Diana,False,281,POSIBLE_DUPLICADO,Ivana,80
+Miriam I,False,280,POSIBLE_DUPLICADO,Miriam,86
+Caminante,False,273,,,
+Berenice,False,250,,,
+Adelita VII,False,245,DUPLICADO_PROBABLE,Adelita VIII,96
+Mary,False,243,DUPLICADO_EXACTO,mary,100
+Adelita VIII,False,209,DUPLICADO_EXACTO,adelita VIII,100
+Azucena,False,199,,,
+Chupacabras,False,174,,,
+Jarocho,False,166,,,
+Laura,False,158,POSIBLE_DUPLICADO,Laura I,83
+Karla I,False,154,POSIBLE_DUPLICADO,Karla,83
+Graciela,False,128,,,
+Yuliana,False,115,POSIBLE_DUPLICADO,Yuliana I,88
+Ashley,False,109,,,
+Cinthia,False,108,,,
+Adelita I,False,101,DUPLICADO_PROBABLE,Adelita IV,95
+Fernanda,False,100,POSIBLE_DUPLICADO,Fernanda I,89
+Adelita III,False,91,DUPLICADO_PROBABLE,Adelita VIII,96
+Galilea,False,91,,,
+Morrito,False,73,POSIBLE_DUPLICADO,Morrito I,88
+Amagedon,False,70,DUPLICADO_PROBABLE,Armagedon,94
+Karla,False,69,POSIBLE_DUPLICADO,Karla I,83
+Damaris Guadalupe,False,65,,,
+Nayo,False,61,,,
+Sinahí,False,54,,,
+Ivana,False,51,POSIBLE_DUPLICADO,Diana,80
+La Tempestad,False,51,,,
+Adelita l,False,50,POSIBLE_DUPLICADO,Adelita V,89
+Amayrani II,False,50,POSIBLE_DUPLICADO,Amayrani,84
+Marely II,False,50,POSIBLE_DUPLICADO,Marely,80
+Narciso Romero Navarro,False,50,,,
+Les Mar III,False,48,DUPLICADO_EXACTO,les mar III,100
+Idis,False,47,,,
+Anilu,False,44,POSIBLE_DUPLICADO,Anilu I,83
+San Eusebio III,False,43,POSIBLE_DUPLICADO,San Eusebio,85
+Rodriguez,False,42,DUPLICADO_EXACTO,Rodríguez,100
+Ricardo,False,41,,,
+Adelita VI,False,40,DUPLICADO_PROBABLE,Adelita VII,95
+Elizabeth,False,39,POSIBLE_DUPLICADO,Elizabeth I,90
+Elizabeth I,False,37,POSIBLE_DUPLICADO,Elizabeth,90
+Lesmar III,False,37,DUPLICADO_PROBABLE,Les Mar III,95
+Isabel,False,36,,,
+Santos II,False,34,POSIBLE_DUPLICADO,Santos,80
+Mayonesa,False,33,,,
+Cruz,False,29,,,
+Alondra I,False,28,,,
+Lorenita,False,27,POSIBLE_DUPLICADO,Lorena,86
+Adelita,False,26,POSIBLE_DUPLICADO,Adelita V,88
+San Eusebio,False,25,POSIBLE_DUPLICADO,San Eusebio III,85
+Gloria,False,22,,,
+Armagedon,False,20,DUPLICADO_PROBABLE,Amagedon,94
+Less mar III,False,18,DUPLICADO_PROBABLE,Les Mar III,96
+Mako,False,18,,,
+Laura I,False,17,POSIBLE_DUPLICADO,Laura,83
+San Francisco,False,16,,,
+Tezal 2,False,16,POSIBLE_DUPLICADO,Tezal 3,86
+adelita II,False,15,DUPLICADO_EXACTO,Adelita II,100
+Axel,False,15,,,
+Fernanda I,False,15,DUPLICADO_PROBABLE,Fernanda II,95
+La Joya,False,15,,,
+Noly,False,15,,,
+Albatros,False,14,POSIBLE_DUPLICADO,Albatros II,84
+Gabi,False,13,,,
+Guameru,False,13,,,
+mary,False,12,DUPLICADO_EXACTO,Mary,100
+adelita IV,False,11,DUPLICADO_EXACTO,Adelita IV,100
+adelita VIII,False,11,DUPLICADO_EXACTO,Adelita VIII,100
+Nini,False,11,,,
+Bronco,False,10,POSIBLE_DUPLICADO,El Bronco,80
+La Pandilla,False,10,,,
+Les Mar,False,10,DUPLICADO_EXACTO,les mar,100
+les mar III,False,10,DUPLICADO_EXACTO,Les Mar III,100
+Albatros II,False,9,POSIBLE_DUPLICADO,Albatros,84
+El Viejo Joven,False,9,,,
+Karina 2,False,9,POSIBLE_DUPLICADO,Karina,86
+Miriam,False,9,POSIBLE_DUPLICADO,Miriam I,86
+Adelita Vlll,False,8,POSIBLE_DUPLICADO,Adelita V,86
+Junior,False,8,,,
+Memín,False,8,,,
+Raymundo,False,8,,,
+adelita V,False,7,DUPLICADO_EXACTO,Adelita V,100
+Alma,False,7,,,
+les mar II,False,7,DUPLICADO_EXACTO,Les Mar II,100
+Morena II,False,7,,,
+Guadalupana,False,6,,,
+Maribel,False,6,,,
+Rodríguez,False,6,DUPLICADO_EXACTO,Rodriguez,100
+Yuliana I,False,6,POSIBLE_DUPLICADO,Yuliana,88
+Corupto,False,5,,,
+Lesmar I,False,5,DUPLICADO_PROBABLE,Les Mar I,94
+Nano,False,5,,,
+Pilar,False,5,,,
+Kiko,False,4,,,
+Les mar III,False,4,DUPLICADO_EXACTO,Les Mar III,100
+Navo,False,4,,,
+Reyes,False,4,,,
+Alex III,False,3,,,
+Alma Delia,False,3,,,
+Kiki,False,3,,,
+La Pirata,False,3,,,
+les mar,False,3,DUPLICADO_EXACTO,Les Mar,100
+lesmar,False,3,DUPLICADO_PROBABLE,Les Mar,92
+Mercado,False,3,,,
+Pilo,False,3,,,
+Tezal 3,False,3,POSIBLE_DUPLICADO,Tezal 2,86
+Yoselin,False,3,,,
+Alejandrina,False,2,,,
+El Canelo,False,2,POSIBLE_DUPLICADO,Canelo,80
+Isla La Partida,False,2,POSIBLE_DUPLICADO,La Partida,80
+Karina,False,2,POSIBLE_DUPLICADO,Karina 2,86
+La Partida,False,2,POSIBLE_DUPLICADO,Isla La Partida,80
+Les Mar I,False,2,DUPLICADO_PROBABLE,les mar II,95
+Martina,False,2,,,
+Masca,False,2,,,
+Matemai,False,2,,,
+Mely,False,2,POSIBLE_DUPLICADO,Marely,80
+Rey,False,2,,,
+Abigail,False,1,,,
+AdelitaVIII,False,1,DUPLICADO_PROBABLE,Adelita VIII,96
+Alicia,False,1,,,
+Anilu I,False,1,POSIBLE_DUPLICADO,Anilu,83
+AYB,False,1,,,
+Canelo,False,1,POSIBLE_DUPLICADO,El Canelo,80
+Cochito,False,1,,,
+EEMA,False,1,,,
+El Gallo,False,1,,,
+Fernanda II,False,1,DUPLICADO_PROBABLE,Fernanda I,95
+Gabo,False,1,,,
+Gary,False,1,,,
+Juana,False,1,POSIBLE_DUPLICADO,Joana,80
+Kingo,False,1,,,
+La Adelita VII,False,1,DUPLICADO_PROBABLE,LA Adelita VIII,97
+LA Adelita VIII,False,1,DUPLICADO_PROBABLE,La Adelita VII,97
+La Ballena,False,1,,,
+Les Mar II,False,1,DUPLICADO_EXACTO,les mar II,100
+Lorena,False,1,POSIBLE_DUPLICADO,Lorenita,86
+Marino,False,1,,,
+Morrito I,False,1,POSIBLE_DUPLICADO,Morrito,88
+Naranjo,False,1,,,
+Negro,False,1,,,
+Noe,False,1,,,
+Preci,False,1,,,
+Santos,False,1,POSIBLE_DUPLICADO,Santos II,80
+Sara,False,1,,,
+Embarcacion,False,0,,,

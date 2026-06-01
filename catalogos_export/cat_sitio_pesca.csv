@@ -1,0 +1,1319 @@
+﻿sitio,area,zona,region,es_aprobado,uso_faenas,uso_carnadas,flag_tipo,similar_a,similitud_pct
+Sin especificar,ND,ND,Golfo de California,False,65781,0,,,
+Isla Espíritu Santo,PNAES-Noroeste,PNAES,Golfo de California,False,5823,0,POSIBLE_DUPLICADO,Sur de Isla Espíritu Santo,84
+Bahía de La Paz,Bahía de La Paz,Bahía de La Paz,Golfo de California,False,5014,0,,,
+Isla La Partida,PNAES-Noroeste,PNAES,Golfo de California,False,2929,0,POSIBLE_DUPLICADO,Piedra La Partida,81
+El Morrito PNAES,PNAES-Suroeste,PNAES,Golfo de California,False,2661,0,,,
+Las Animas,CS-Las Animas,Corredor sur,Golfo de California,False,2345,0,POSIBLE_DUPLICADO,Las Ramas,84
+San Evaristo,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,2288,0,DUPLICADO_PROBABLE,San Evaristito,92
+San Diego,CS-Isla San Diego,Corredor sur,Golfo de California,False,2266,0,,,
+Bajo Seco norte,ND,ND,Golfo de California,False,1927,0,POSIBLE_DUPLICADO,Bajo norte,80
+Bajo Norte Catalana,CN-Bajo Norte Isla Catalana,Corredor norte,Golfo de California,False,1848,0,DUPLICADO_EXACTO,bajo norte Catalana,100
+San Juan de La Costa,Bahía de La Paz,Bahía de La Paz,Golfo de California,False,1845,0,,,
+Conquista Agraria,Bahía Magdalena,Pacífico,Pacífico,False,1741,0,,,
+Embarcadero,ND,ND,Golfo de California,False,1711,0,,,
+Santa Cruz,CN-Isla Santa Cruz,Corredor norte,Golfo de California,False,1591,0,POSIBLE_DUPLICADO,Punta Cruz,80
+Estero Barra,ND,ND,Golfo de California,False,1519,0,,,
+Isla San José,CS-Isla San José,Corredor sur,Golfo de California,False,1416,0,POSIBLE_DUPLICADO,Este Isla San José,84
+Agua Verde,CN-Punta Berrendo,Corredor norte,Golfo de California,False,1238,0,,,
+San Carlos Pacífico,Bahía Magdalena,Pacífico,Pacífico,False,1217,0,,,
+San Marcial,CN-Bajo San Marcial,Corredor norte,Golfo de California,False,1109,0,POSIBLE_DUPLICADO,Bajo San Marcial,81
+La Baliza,Bahía de La Paz,Bahía de La Paz,Golfo de California,False,1092,0,POSIBLE_DUPLICADO,La Bala,88
+La Ballena,PNAES-Suroeste,PNAES,Golfo de California,False,1091,0,POSIBLE_DUPLICADO,La Ballenita,91
+Punta del Diablo,Bahía de La Paz,Bahía de La Paz,Golfo de California,False,1036,0,POSIBLE_DUPLICADO,Punta del Bajo,80
+La Dispensa,PNAES-Suroeste,PNAES,Golfo de California,False,878,0,,,
+Bajo San Marcial,ND,ND,Golfo de California,False,857,0,POSIBLE_DUPLICADO,San Marcial,81
+San Juanico,Golfo de Ulloa,No Corredor,,False,817,0,DUPLICADO_EXACTO,San Juanico,100
+Sur de Isla San José,CS-San José: Punta Sur de la Isla,Corredor sur,Golfo de California,False,776,0,POSIBLE_DUPLICADO,Norte de Isla San José,86
+Berrendo,ND,ND,Golfo de California,False,755,0,,,
+El Calabozo,CS-Isla San José: Calabozo al Mangle,Corredor sur,Golfo de California,False,749,0,,,
+Potrero,CS-Potrero-Cerritos Verdes,Corredor sur,Golfo de California,False,695,0,,,
+Todos Santos,ND,ND,Golfo de California,False,678,0,,,
+El Atravesado,CS-El Atravesado,Corredor sur,Golfo de California,False,674,0,POSIBLE_DUPLICADO,Bajo Atravesado,79
+El Sargento,Pendiente,Cerralvo,Golfo de California,False,653,0,,,
+La Gallina,PNAES-Suroeste,PNAES,Golfo de California,False,612,0,POSIBLE_DUPLICADO,La Ballena,80
+El Bajo (9 millas),El Bajo (9 millas),PNAES,Golfo de California,False,609,0,,,
+El Mechudo,CS-Rodadero a El Morrito,Corredor sur,Golfo de California,False,601,0,,,
+La Travesia,CS-La Travesia,Corredor sur,Golfo de California,False,595,0,DUPLICADO_EXACTO,La Travesía,100
+La Partida/Noreste,PNAES-Noreste,PNAES,Golfo de California,False,587,0,DUPLICADO_PROBABLE,La Partida/Noroeste,97
+San Francisquito,CS-Costa de San Francisquito,Corredor sur,Golfo de California,False,584,0,POSIBLE_DUPLICADO,Sur de San Francisquito,82
+El Charro,El Charro,PNAES,Golfo de California,False,582,0,POSIBLE_DUPLICADO,El Carrizo,84
+Bajo Atravesado,CS-El Atravesado,Corredor sur,Golfo de California,False,558,0,POSIBLE_DUPLICADO,El Atravesado,79
+Punta Abreojos,ND,ND,Golfo de California,False,550,0,DUPLICADO_EXACTO,Punta abreojos,100
+Este de Isla Espíritu Santo,PNAES-Noreste,PNAES,Golfo de California,False,535,0,DUPLICADO_PROBABLE,Oeste de Isla Espíritu Santo,98
+El Cobre,CS-Costa de El Cobre a Cerritos Amarillos,Corredor sur,Golfo de California,False,527,0,,,
+Catalana,CN-Catalana,Corredor norte,Golfo de California,False,504,0,,,
+Cabeza de San Diego,CS-Cabeza Isla San Diego,Corredor sur,Golfo de California,False,474,0,,,
+Bota Fuego,CS-El Portugués a Bota Fuego,Corredor sur,Golfo de California,False,465,0,,,
+La Brecha,CN-El Islote a La Brecha,Corredor norte,Golfo de California,False,449,0,DUPLICADO_EXACTO,La brecha,100
+La Bonanza,PNAES-Suroeste,PNAES,Golfo de California,False,443,0,POSIBLE_DUPLICADO,La Bocana,84
+Islitas San Cosme,ND,ND,Golfo de California,False,420,0,POSIBLE_DUPLICADO,Isla San José,80
+La Lobera Santa Cruz,ND,ND,Golfo de California,False,420,0,,,
+Bajo Seco sur,CS-Bajos del sur,Corredor sur,Golfo de California,False,414,0,POSIBLE_DUPLICADO,Bajo Seco norte,79
+La Habana,CS-La Habana,Corredor sur,Golfo de California,False,414,0,,,
+Teacapan,ND,ND,Golfo de California,False,407,0,,,
+El Coyote,CS-El Coyote,Corredor sur,Golfo de California,False,385,0,DUPLICADO_EXACTO,El coyote,100
+El Gallo,PNAES-Suroeste,PNAES,Golfo de California,False,379,0,POSIBLE_DUPLICADO,El Callo,88
+Punta Norte,Pendiente,Cerralvo,Golfo de California,False,366,0,DUPLICADO_EXACTO,Punta norte,100
+El Manglón,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,328,0,,,
+Sur de Las Animas,CS-Bajo sur de Las Animas,Corredor sur,Golfo de California,False,324,0,POSIBLE_DUPLICADO,Afuera de Las Animas,86
+Montealbán,CS-Montealbán,Corredor sur,Golfo de California,False,312,0,,,
+El Bajito,PNAES-Noroeste,PNAES,Golfo de California,False,311,0,DUPLICADO_EXACTO,El bajito,100
+La Bocana,Pendiente,Cerralvo,Golfo de California,False,307,0,DUPLICADO_EXACTO,La bocana,100
+Los Angelitos,CS-San José: Punta Colorada a Los Angelitos,Corredor sur,Golfo de California,False,302,0,POSIBLE_DUPLICADO,Los Saltos,78
+Sur de Catalana,ND,ND,Golfo de California,False,300,0,POSIBLE_DUPLICADO,Este de Catalana,84
+San Carlos,Pendiente,Cerralvo,Golfo de California,False,299,0,,,
+Palma Sola,CS-Afuera de Palma Sola y Angelitos,Corredor sur,Golfo de California,False,293,0,,,
+Pailebote,PNAES-Sureste,PNAES,Golfo de California,False,288,0,,,
+El Medano,ND,ND,Golfo de California,False,284,0,DUPLICADO_EXACTO,El medano,100
+Santa Rosalía,Pendiente,Cerralvo,Golfo de California,False,273,0,,,
+La Morena,CN-La Morena,Corredor norte,Golfo de California,False,261,0,POSIBLE_DUPLICADO,Las Morenas,90
+El Empachado,PNAES-Suroeste,PNAES,Golfo de California,False,257,0,,,
+La Lobera Catalana,ND,ND,Golfo de California,False,249,0,,,
+El Cardonal,PNAES-Noroeste,PNAES,Golfo de California,False,240,0,POSIBLE_DUPLICADO,El Cardón,90
+El Cementerio,ND,ND,Golfo de California,False,231,0,,,
+Cabito,ND,ND,Golfo de California,False,228,0,,,
+La Salinita,PNAES-Noreste,PNAES,Golfo de California,False,228,0,POSIBLE_DUPLICADO,La Salinera,82
+El Morrito San Evaristo,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,226,0,POSIBLE_DUPLICADO,Norte de San Evaristo,82
+Los Arbolitos,ND,ND,Golfo de California,False,225,0,DUPLICADO_EXACTO,Los arbolitos,100
+Candelero,PNAES-Suroeste,PNAES,Golfo de California,False,222,0,,,
+Cerro Colorado,CS-Puertecito a Cerro Colorado,Corredor sur,Golfo de California,False,222,0,,,
+Cerro Verde,CS-Potrero-Cerritos Verdes,Corredor sur,Golfo de California,False,215,0,,,
+El Embudo,PNAES-Noroeste,PNAES,Golfo de California,False,198,0,,,
+El Mono,PNAES-Sureste,PNAES,Golfo de California,False,196,0,POSIBLE_DUPLICADO,El Morro,80
+Piedra Aboyada Berrendo,CN-El Islote a La Brecha,Corredor norte,Golfo de California,False,187,0,,,
+Las Cruces,Pendiente,Cerralvo,Golfo de California,False,185,0,POSIBLE_DUPLICADO,Las catorces,82
+Punta Prieta,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,185,0,POSIBLE_DUPLICADO,Punta Piedra,83
+Punta Blanca,CS-Costa de Los Dolores,Corredor sur,Golfo de California,False,182,0,POSIBLE_DUPLICADO,Punta Baja,82
+Bajo Manriquez,CS-Isla San Diego,Corredor sur,Golfo de California,False,181,0,,,
+La Rechinadora,ND,ND,Golfo de California,False,181,0,DUPLICADO_EXACTO,La rechinadora,100
+Bajo Isla Montserrat,ND,ND,Golfo de California,False,180,0,POSIBLE_DUPLICADO,Isla Montserrat,86
+Punta Arenas San Evaristo,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,180,0,POSIBLE_DUPLICADO,Punta San Evaristo,84
+El Faro,ND,ND,Golfo de California,False,179,0,POSIBLE_DUPLICADO,El Arco,86
+La Estrella,Pendiente,Cerralvo,Golfo de California,False,176,0,,,
+El Guano,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,174,0,,,
+La Reyna Cerralvo,Pendiente,Cerralvo,Golfo de California,False,174,0,DUPLICADO_PROBABLE,La Reynita Cerralvo,94
+Sur de La Habana,CS-La Habana,Corredor sur,Golfo de California,False,174,0,POSIBLE_DUPLICADO,Este de La Habana,85
+La Víbora,CS-Costa de El Cobre a Cerritos Amarillos,Corredor sur,Golfo de California,False,173,0,,,
+Punta Alta,CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,173,0,POSIBLE_DUPLICADO,La punta,89
+Isla Montserrat,ND,ND,Golfo de California,False,167,0,POSIBLE_DUPLICADO,Bajo Isla Montserrat,86
+Norte de Catalana,CN-Norte Isla Catalana,Corredor norte,Golfo de California,False,167,0,DUPLICADO_EXACTO,Norte de catalana,100
+El Faro Catalana,ND,ND,Golfo de California,False,165,0,,,
+La Gringa,CN-Isla Santa Cruz,Corredor norte,Golfo de California,False,161,0,DUPLICADO_EXACTO,la gringa,100
+Agua Brava,ND,ND,Golfo de California,False,159,0,,,
+El Sauzoso,Bahía de La Paz,Bahía de La Paz,Golfo de California,False,152,0,,,
+El Faro Santa Cruz,CN-Isla Santa Cruz,Corredor norte,Golfo de California,False,151,0,POSIBLE_DUPLICADO,El Rodadero Santa Cruz,85
+Tres Marcas,ND,ND,Golfo de California,False,150,0,DUPLICADO_EXACTO,Tres marcas,100
+El Morrito (Norte del Mechudo),CS-Rodadero a El Morrito,Corredor sur,Golfo de California,False,145,0,,,
+El Pedregoso,CN-Bajo San Marcial,Corredor norte,Golfo de California,False,143,0,,,
+Barco Hundido,CS-Barra La Lobera,Corredor sur,Golfo de California,False,139,0,,,
+Punta Sur,Pendiente,Cerralvo,Golfo de California,False,137,0,,,
+Tembabiche,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,137,0,,,
+El Sachi,ND,ND,Golfo de California,False,131,0,POSIBLE_DUPLICADO,El Sachita,89
+El Mogote,Bahía de La Paz,Bahía de La Paz,Golfo de California,False,130,0,,,
+Mulegé,ND,ND,Golfo de California,False,127,0,,,
+Punta Botella,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,126,0,POSIBLE_DUPLICADO,Sur de Punta Botella,79
+San Felipe,CN-Afuera de San Felipe,Corredor norte,Golfo de California,False,126,0,,,
+San Nicolás,No Corredor,No Corredor,,False,124,0,,,
+La Laguna,CS-Costa de Los Dolores,Corredor sur,Golfo de California,False,123,0,POSIBLE_DUPLICADO,La luna,88
+El Valle,ND,ND,Golfo de California,False,122,0,,,
+Los Morros,CN-San Mateo,Corredor norte,Golfo de California,False,119,0,POSIBLE_DUPLICADO,Los Morenos,86
+Mar Abierto,ND,ND,Golfo de California,False,111,0,,,
+Oeste de Isla Espíritu Santo,PNAES-Suroeste,PNAES,Golfo de California,False,110,0,DUPLICADO_PROBABLE,Este de Isla Espíritu Santo,98
+El Callo,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,109,0,POSIBLE_DUPLICADO,El Gallo,88
+Sur de Agua Verde,DEFINIR,Corredor norte,Golfo de California,False,109,0,POSIBLE_DUPLICADO,Este de Agua Verde,86
+Punta Arenas Santa Cruz,CN-Isla Santa Cruz,Corredor norte,Golfo de California,False,99,0,,,
+El Pardito,CS-El Pardito,Corredor sur,Golfo de California,False,98,0,POSIBLE_DUPLICADO,El Parguito,86
+Afuera de Palma Sola,CS-Afuera de Palma Sola y Angelitos,Corredor sur,Golfo de California,False,97,0,,,
+Bajo Islotes,Pendiente,Cerralvo,Golfo de California,False,95,0,POSIBLE_DUPLICADO,Bajo Islotes Chuy,83
+Loreto,ND,ND,Golfo de California,False,95,0,,,
+Puerto Chale,ND,ND,Golfo de California,False,95,0,,,
+Los Islotes Afuera,PNAES-Noroeste,PNAES,Golfo de California,False,89,0,POSIBLE_DUPLICADO,Los Islotes Cerralvo,79
+Punta Colorada,CS-Costa de Los Dolores,Corredor sur,Golfo de California,False,89,0,POSIBLE_DUPLICADO,Punta Gorda,80
+Bajo del Medio,CS-El Atravesado,Corredor sur,Golfo de California,False,88,0,POSIBLE_DUPLICADO,Bajo del Humo,81
+El Mangle San José,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,88,0,POSIBLE_DUPLICADO,El Cañón San José,80
+Aboyadero,ND,ND,Golfo de California,False,87,0,,,
+Bajo Aguilar,ND,ND,Golfo de California,False,87,0,DUPLICADO_EXACTO,Bajo aguilar,100
+Las Pacas,Bahía de La Paz,Bahía de La Paz,Golfo de California,False,87,0,POSIBLE_DUPLICADO,Las Palmas,84
+El Rodadero Santa Cruz,CN-Isla Santa Cruz,Corredor norte,Golfo de California,False,85,0,POSIBLE_DUPLICADO,El Faro Santa Cruz,85
+El Tigrillo,CS-Montealbán,Corredor sur,Golfo de California,False,84,0,,,
+Punta de la Isla (Guinea),PNAES-Suroeste,PNAES,Golfo de California,False,83,0,,,
+Estero del Pato,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,82,0,,,
+Piedra de Zúñiga,ND,ND,Golfo de California,False,81,0,DUPLICADO_EXACTO,Piedra de Zuñiga,100
+El Portugués,CS-El Portugués a Bota Fuego,Corredor sur,Golfo de California,False,80,0,,,
+Hechadero del Medio,Pendiente,Cerralvo,Golfo de California,False,80,0,,,
+Puerto Villa,CS-Costa de El Cobre a Cerritos Amarillos,Corredor sur,Golfo de California,False,80,0,,,
+Faro con Faro,ND,ND,Golfo de California,False,76,0,DUPLICADO_EXACTO,Faro con faro,100
+El Payo,ND,ND,Golfo de California,False,73,0,DUPLICADO_EXACTO,El payo,100
+Las Galeras,CN-Norte de Las Galeras,Corredor norte,Golfo de California,False,71,0,POSIBLE_DUPLICADO,Las Loberas,82
+Las Tijeritas,PNAES-Noroeste,PNAES,Golfo de California,False,71,0,DUPLICADO_PROBABLE,Las Tijeretas,92
+Abreojos,ND,ND,Golfo de California,False,69,0,,,
+Las Cuevitas,PNAES-Sureste,PNAES,Golfo de California,False,67,0,POSIBLE_DUPLICADO,La Cueva,80
+Las Doce,ND,ND,Golfo de California,False,67,0,DUPLICADO_EXACTO,Las doce,100
+El Burro,ND,ND,Golfo de California,False,65,0,POSIBLE_DUPLICADO,El Muro,80
+El Rodadero PNAES,PNAES-Sureste,PNAES,Golfo de California,False,65,0,POSIBLE_DUPLICADO,El Caladero PNAES,82
+Guinea,Pendiente,Cerralvo,Golfo de California,False,65,0,,,
+La Partida/Noroeste,PNAES-Noroeste,PNAES,Golfo de California,False,62,0,DUPLICADO_PROBABLE,La Partida/Noreste,97
+Punta abreojos,ND,ND,Golfo de California,False,62,0,DUPLICADO_EXACTO,Punta Abreojos,100
+Arroyo San José,CS-Costa de El Cobre a Cerritos Amarillos,Corredor sur,Golfo de California,False,61,0,,,
+Cantil Colorado,CN-Bajo Seco,Corredor norte,Golfo de California,False,61,0,,,
+El Sachita,ND,ND,Golfo de California,False,61,0,POSIBLE_DUPLICADO,El Sachi,89
+Los Dolores,CS-Costa de Los Dolores,Corredor sur,Golfo de California,False,61,0,,,
+El Ramoso,ND,ND,Golfo de California,False,58,0,,,
+El Mangle Tembabiche,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,55,0,POSIBLE_DUPLICADO,Este de El Mangle Tembabiche,83
+Propela,PNAES-Noreste,PNAES,Golfo de California,False,55,0,,,
+Tejabán,CN-Costa de La Ballena a San Mateo,Corredor norte,Golfo de California,False,54,0,,,
+Cerro Amarillo,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,53,0,,,
+La Pitahaya,CN-Isla Santa Cruz,Corredor norte,Golfo de California,False,53,0,DUPLICADO_EXACTO,La Pitahaya,100
+Las 12,ND,ND,Golfo de California,False,53,0,DUPLICADO_EXACTO,las 12,100
+Marca de Preciado,CS-La Travesia,Corredor sur,Golfo de California,False,53,0,,,
+La 35,ND,ND,Golfo de California,False,52,0,POSIBLE_DUPLICADO,Las 35,91
+Morro de Ciquio,CS-Isla San José: Calabozo a Punta Colorada,Corredor sur,Golfo de California,False,52,0,,,
+PNAES,Pendiente,Cerralvo,Golfo de California,False,52,0,,,
+Cáncamo San Diego,CS-Isla San Diego,Corredor sur,Golfo de California,False,51,0,POSIBLE_DUPLICADO,Cáncamo San José,79
+La Tetita,Pendiente,Cerralvo,Golfo de California,False,51,0,,,
+Mancha blanca,ND,ND,Golfo de California,False,51,0,DUPLICADO_EXACTO,Mancha Blanca,100
+Cerralvo,Pendiente,Cerralvo,Golfo de California,False,50,0,,,
+El Morrito Tembabiche,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,49,0,,,
+La Lora,ND,ND,Golfo de California,False,49,0,DUPLICADO_EXACTO,La lora,100
+Ostiones,CS-Isla San José: Calabozo al Mangle,Corredor sur,Golfo de California,False,49,0,,,
+Mancha Blanca,ND,ND,Golfo de California,False,48,0,DUPLICADO_EXACTO,Mancha blanca,100
+Boca De Camichin,ND,ND,Golfo de California,False,47,0,,,
+Los Muertos,CS-Isla San José: Calabozo al Mangle,Corredor sur,Golfo de California,False,47,0,DUPLICADO_EXACTO,Los Muertos,100
+Sur de San Francisquito,CS-Afuera de San Francisquito,Corredor sur,Golfo de California,False,47,0,POSIBLE_DUPLICADO,Este de San Francisquito,89
+La Línea,ND,ND,Golfo de California,False,46,0,DUPLICADO_EXACTO,La linea,100
+Afuera de San Gabriel,PNAES-Suroeste,PNAES,Golfo de California,False,45,0,POSIBLE_DUPLICADO,Afuera de San Evaristo,79
+Las Garcitas,CS-Isla San Diego,Corredor sur,Golfo de California,False,45,0,DUPLICADO_EXACTO,Las Garcitas,100
+Canechica,Pendiente,Cerralvo,Golfo de California,False,44,0,,,
+El Soruyo,ND,ND,Golfo de California,False,44,0,POSIBLE_DUPLICADO,El zoruyo,89
+Este de San Diego,CS-Isla San Diego,Corredor sur,Golfo de California,False,44,0,DUPLICADO_PROBABLE,Oeste de San Diego,97
+La Gaviota Bahía de La Paz,ND,ND,Golfo de California,False,44,0,,,
+Los Burros,CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,44,0,POSIBLE_DUPLICADO,Los Morros,80
+Los Frailes,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,44,0,POSIBLE_DUPLICADO,Los Barriles,78
+El Rincón,CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,43,0,POSIBLE_DUPLICADO,El Troncón,84
+Ensenada de Cortés,CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,43,0,POSIBLE_DUPLICADO,Afuera Ensenada de Cortés,84
+Faro con faro,ND,ND,Golfo de California,False,42,0,DUPLICADO_EXACTO,Faro con Faro,100
+La Travesia Cerralvo,Pendiente,Cerralvo,Golfo de California,False,42,0,POSIBLE_DUPLICADO,La Reyna Cerralvo,81
+Las Loberas,CS-Afuera de San Francisquito,Corredor sur,Golfo de California,False,42,0,POSIBLE_DUPLICADO,La Lobera,90
+Medano Amarillo,Bajos de El Sachi,Pacífico norte,Pacífico,False,42,0,DUPLICADO_EXACTO,Medano amarillo,100
+Bajo Seco San Francisquito,CS-Bajos del sur,Corredor sur,Golfo de California,False,40,0,,,
+El Pulguero,PNAES-Suroeste,PNAES,Golfo de California,False,40,0,,,
+Este de Santa Cruz,CN-Isla Santa Cruz,Corredor norte,Golfo de California,False,39,0,POSIBLE_DUPLICADO,Norte de Santa Cruz,86
+Punta Mechudo,CS-Rodadero a El Morrito,Corredor sur,Golfo de California,False,38,0,,,
+Punta Pescadero,Pendiente,Cerralvo,Golfo de California,False,38,0,DUPLICADO_EXACTO,Punta Pescadero,100
+El Campamento,ND,ND,Golfo de California,False,37,0,DUPLICADO_PROBABLE,El campaamento,96
+La Costa de Ensenada de Cortés,CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,37,0,,,
+Punta San Telmo,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,37,0,,,
+El Banquito,CS-Las Animas,Corredor sur,Golfo de California,False,36,0,POSIBLE_DUPLICADO,Banquito,84
+El Cadernal,Pendiente,Cerralvo,Golfo de California,False,36,0,POSIBLE_DUPLICADO,El Canal,84
+El Carrizalito,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,36,0,POSIBLE_DUPLICADO,El Carrizo,83
+Norte de Santa Cruz,CN-Norte Isla Santa Cruz,Corredor norte,Golfo de California,False,36,0,POSIBLE_DUPLICADO,Este de Santa Cruz,86
+Puertecito Punta Coyote,CS-Puertecito a Cerro Colorado,Corredor sur,Golfo de California,False,36,0,,,
+San Mateo,CN-San Mateo,Corredor norte,Golfo de California,False,36,0,,,
+Sur de Santa Cruz,CN-Isla Santa Cruz,Corredor norte,Golfo de California,False,36,0,POSIBLE_DUPLICADO,Este de Santa Cruz,86
+Banquito,ND,ND,Golfo de California,False,35,0,POSIBLE_DUPLICADO,El Banquito,84
+El Sorullo,ND,ND,Golfo de California,False,35,0,POSIBLE_DUPLICADO,El Soruyo,84
+Puerto Gatos,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,35,0,POSIBLE_DUPLICADO,Puerto Gata,87
+Cabo Tosco,ND,ND,Golfo de California,False,34,0,,,
+La Ventana,Pendiente,Cerralvo,Golfo de California,False,34,0,DUPLICADO_EXACTO,La Ventana,100
+Las 22,Sebastián Vizcaíno,Guerrero Negro,Pacífico,False,34,0,POSIBLE_DUPLICADO,Las 12,83
+Los Arboles,ND,ND,Golfo de California,False,34,0,DUPLICADO_EXACTO,Los Árboles,100
+El Saltito,ND,ND,Golfo de California,False,33,0,POSIBLE_DUPLICADO,El Saladito,86
+El Mezquital,ND,ND,Golfo de California,False,32,0,,,
+Las doce,ND,ND,Golfo de California,False,32,0,DUPLICADO_EXACTO,Las Doce,100
+Norte de San Diego,CS-Cabeza Isla San Diego,Corredor sur,Golfo de California,False,32,0,DUPLICADO_PROBABLE,Noroeste de San Diego,92
+El Bajo (El Sachi),Bajos de El Sachi,Pacífico norte,Pacífico,False,31,0,DUPLICADO_PROBABLE,El Bajo 2 (El Sachi),95
+El Tepetate,Pendiente,Cerralvo,Golfo de California,False,31,0,,,
+Paredones Blancos,Pendiente,Cerralvo,Golfo de California,False,31,0,POSIBLE_DUPLICADO,Los Paredones,87
+Piedra Ahogada,PNAES-Noroeste,PNAES,Golfo de California,False,31,0,,,
+Puertecito Tembabiche,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,31,0,,,
+La Barrita San Francisquito,CS-La Barrita,Corredor sur,Golfo de California,False,30,0,,,
+La Tambulaca,ND,ND,Golfo de California,False,30,0,,,
+Los Nidos,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,30,0,,,
+Bajo de Afuera,CS-Afuera de San Francisquito,Corredor sur,Golfo de California,False,29,0,,,
+Bajo Las Animas,CS-Las Animas,Corredor sur,Golfo de California,False,29,0,POSIBLE_DUPLICADO,Las Animas,80
+Cuesta Alta,CN-San Mateo,Corredor norte,Golfo de California,False,29,0,,,
+El Jalito,Pendiente,Cerralvo,Golfo de California,False,29,0,POSIBLE_DUPLICADO,El palito,89
+El Muro,ND,ND,Golfo de California,False,29,0,DUPLICADO_EXACTO,El muro,100
+El Tacón,CN-Afuera de San Felipe,Corredor norte,Golfo de California,False,29,0,POSIBLE_DUPLICADO,El Tacote,82
+Punta del Bajo,Pendiente,Cerralvo,Golfo de California,False,29,0,POSIBLE_DUPLICADO,Punta del Pargo,83
+Sorullo,ND,ND,Golfo de California,False,29,0,DUPLICADO_EXACTO,sorullo,100
+Bahía Sebastián Vizcaíno,ND,ND,Golfo de California,False,28,0,,,
+El Cañón PNAES,PNAES-Suroeste,PNAES,Golfo de California,False,28,0,,,
+El Limeño,Pendiente,Cerralvo,Golfo de California,False,28,0,,,
+La Tintorera,PNAES-Noroeste,PNAES,Golfo de California,False,28,0,POSIBLE_DUPLICADO,La Torera,86
+Los arbolitos,ND,ND,Golfo de California,False,28,0,DUPLICADO_EXACTO,Los Arbolitos,100
+Punta Gorda,Pendiente,Cerralvo,Golfo de California,False,28,0,POSIBLE_DUPLICADO,Punta Colorada,80
+Soruyo,ND,ND,Golfo de California,False,28,0,POSIBLE_DUPLICADO,El Soruyo,80
+El Hueco,CS-Bajos del sur,Corredor sur,Golfo de California,False,27,0,,,
+La Barra,CS-Afuera de Isla San José,Corredor sur,Golfo de California,False,27,0,DUPLICADO_EXACTO,La Barra,100
+Mal Paso,CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,27,0,POSIBLE_DUPLICADO,El Paso,80
+Norte de La Morena,CN-La Morena,Corredor norte,Golfo de California,False,27,0,POSIBLE_DUPLICADO,Este de La Morena,86
+Travesia,ND,ND,Golfo de California,False,27,0,POSIBLE_DUPLICADO,La Travesia,84
+El Bajo 13,El Bajo 13,Las Barrancas- San Juanico,Pacífico,False,26,0,POSIBLE_DUPLICADO,El Bajo,82
+Este de La Habana,CS-La Habana,Corredor sur,Golfo de California,False,26,0,DUPLICADO_PROBABLE,Oeste de La Habana,97
+La Flojera,Pendiente,Cerralvo,Golfo de California,False,26,0,POSIBLE_DUPLICADO,La Lobera,84
+Aguascalientes,CS-San José: Punta Colorada a Los Angelitos,Corredor sur,Golfo de California,False,25,0,POSIBLE_DUPLICADO,Agua Caliente,89
+Bajo de Aguilar,ND,ND,Golfo de California,False,25,0,DUPLICADO_EXACTO,bajo de aguilar,100
+El Delgadito,ND,ND,Golfo de California,False,25,0,POSIBLE_DUPLICADO,El Saladito,78
+La Hornilla,CS-Isla San Diego,Corredor sur,Golfo de California,False,25,0,POSIBLE_DUPLICADO,Lora orilla,82
+Medano,ND,ND,Golfo de California,False,25,0,POSIBLE_DUPLICADO,Medanito,86
+Oeste de Catalana,CN-Norte Isla Catalana,Corredor norte,Golfo de California,False,25,0,DUPLICADO_PROBABLE,Este de Catalana,97
+Oeste de Las Animas,CS-Las Animas,Corredor sur,Golfo de California,False,25,0,DUPLICADO_PROBABLE,Este de Las Animas,97
+El Carrizo,ND,ND,Golfo de California,False,24,0,POSIBLE_DUPLICADO,El Corrizo,90
+El Cañón San José,CS-Canal San José,Corredor sur,Golfo de California,False,23,0,POSIBLE_DUPLICADO,El Faro San José,85
+El Merito,Bahía de La Paz,Bahía de La Paz,Golfo de California,False,23,0,POSIBLE_DUPLICADO,El Esterito,80
+El Rodadero Portugués,CS-Rodadero a El Morrito,Corredor sur,Golfo de California,False,23,0,POSIBLE_DUPLICADO,El Rodadero PNAES,79
+Ensenada Grande,PNAES-Noroeste,PNAES,Golfo de California,False,23,0,POSIBLE_DUPLICADO,Ensenada Verde,83
+La Chancleta,Pendiente,Cerralvo,Golfo de California,False,23,0,,,
+La Costilla,ND,ND,Golfo de California,False,23,0,POSIBLE_DUPLICADO,La Costa,84
+Los Bajos,CS-Bajos del sur,Corredor sur,Golfo de California,False,23,0,DUPLICADO_PROBABLE,Los Ajos,94
+Los Barriles,Pendiente,Cerralvo,Golfo de California,False,23,0,POSIBLE_DUPLICADO,Los Frailes,78
+Pichilingue,Pendiente,Cerralvo,Golfo de California,False,23,0,,,
+Piedra de Zuñiga,ND,ND,Golfo de California,False,23,0,DUPLICADO_EXACTO,Piedra de Zúñiga,100
+Altamar,ND,ND,Golfo de California,False,22,0,,,
+bocana,ND,ND,Golfo de California,False,22,0,DUPLICADO_EXACTO,Bocana,100
+Cáncamo San José,CS-San José: Punta Sur de la Isla,Corredor sur,Golfo de California,False,22,0,POSIBLE_DUPLICADO,Cáncamo San Diego,79
+La Costa,Pendiente,Cerralvo,Golfo de California,False,22,0,POSIBLE_DUPLICADO,La Costilla,84
+Las Minas,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,22,0,POSIBLE_DUPLICADO,Las Minitas,90
+Punta Isla,Pendiente,Cerralvo,Golfo de California,False,22,0,POSIBLE_DUPLICADO,La punta,89
+Sur de San Diego,CS-Isla San Diego,Corredor sur,Golfo de California,False,22,0,POSIBLE_DUPLICADO,Este de San Diego,85
+Isla del Carmen,ND,ND,Golfo de California,False,21,0,,,
+La Iguana,PNAES-Noreste,PNAES,Golfo de California,False,21,0,POSIBLE_DUPLICADO,La Giganta,84
+Barra,ND,ND,Golfo de California,False,20,0,POSIBLE_DUPLICADO,Barrita,83
+Boca del Álamo,Pendiente,Cerralvo,Golfo de California,False,20,0,,,
+Dos Arroyos,CS-San José: Punta Colorada a Los Angelitos,Corredor sur,Golfo de California,False,20,0,,,
+El Morro,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,20,0,POSIBLE_DUPLICADO,El Torero,82
+La Cocina,CS-Afuera de La Cocina,Corredor sur,Golfo de California,False,20,0,,,
+La Palmita,CS-Isla San José: Calabozo a Punta Colorada,Corredor sur,Golfo de California,False,20,0,POSIBLE_DUPLICADO,Las Palmitas,91
+Los Árboles,ND,ND,Golfo de California,False,20,0,DUPLICADO_EXACTO,Los Arboles,100
+Norte de Isla Montserrat,CN-Norte de Las Galeras,Corredor norte,Golfo de California,False,20,0,POSIBLE_DUPLICADO,Sur de Isla Montserrat,87
+Oeste de San Diego,CS-Isla San Diego,Corredor sur,Golfo de California,False,20,0,DUPLICADO_PROBABLE,Este de San Diego,97
+Agua Amarga,Pendiente,Cerralvo,Golfo de California,False,19,0,,,
+Bajo Tio Kirri (La Bocana),ND,ND,Golfo de California,False,19,0,POSIBLE_DUPLICADO,Tio quirri (la bocana),83
+Bocana Cadejé,ND,ND,Golfo de California,False,19,0,,,
+Charco Azul Punta Coyote,CS-El Coyote,Corredor sur,Golfo de California,False,19,0,,,
+La Reynita,CS-Afuera de Isla San José,Corredor sur,Golfo de California,False,19,0,,,
+Los Cantiles,CN-Tembabiche,Corredor norte,Golfo de California,False,19,0,POSIBLE_DUPLICADO,Los Frailes,78
+Piedra Angelito,Pendiente,Cerralvo,Golfo de California,False,19,0,POSIBLE_DUPLICADO,Piedra El Ángel,80
+Bahía Tortugas,ND,ND,Golfo de California,False,18,0,,,
+Bajo Imán,Pendiente,Cerralvo,Golfo de California,False,18,0,POSIBLE_DUPLICADO,Bajo Aciano,80
+Bajo norte,Pendiente,Cerralvo,Golfo de California,False,18,0,DUPLICADO_EXACTO,Bajo Norte,100
+Barra La Pitahaya,La Barra,Pacífico norte,Pacífico,False,18,0,POSIBLE_DUPLICADO,Arroyo La Pitahaya,86
+Cerro Blanco,CS-San José: Punta Sur de la Isla,Corredor sur,Golfo de California,False,18,0,,,
+El Cerro,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,18,0,POSIBLE_DUPLICADO,El Charro,82
+El Conchal,ND,ND,Golfo de California,False,18,0,POSIBLE_DUPLICADO,La Concha,84
+La Caguamera,ND,ND,Golfo de California,False,18,0,DUPLICADO_EXACTO,la caguamera,100
+La Lobera,ND,ND,Golfo de California,False,18,0,DUPLICADO_EXACTO,La lobera,100
+Los Paredones,Pendiente,Cerralvo,Golfo de California,False,18,0,DUPLICADO_EXACTO,Los Paredones,100
+San Evaristito,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,18,0,DUPLICADO_PROBABLE,San Evaristo,92
+San Gabriel,PNAES-Suroeste,PNAES,Golfo de California,False,18,0,POSIBLE_DUPLICADO,Punta San Gabriel,79
+Bajo Monchi,ND,ND,Golfo de California,False,17,0,DUPLICADO_EXACTO,Bajo monchi,100
+Barco Mechudo,CS-Barra La Lobera,Corredor sur,Golfo de California,False,17,0,,,
+Las 13,ND,ND,Golfo de California,False,17,0,POSIBLE_DUPLICADO,Las 12,83
+Los Careyeros,Pendiente,Cerralvo,Golfo de California,False,17,0,,,
+Petroleo,CN-Bajo Norte Isla Catalana,Corredor norte,Golfo de California,False,17,0,,,
+Piedra del torero,ND,ND,Golfo de California,False,17,0,DUPLICADO_EXACTO,Piedra del Torero,100
+Punta Abaroa,ND,ND,Golfo de California,False,17,0,POSIBLE_DUPLICADO,Punta Baja,82
+Punta Arenas Cerralvo,Pendiente,Cerralvo,Golfo de California,False,17,0,POSIBLE_DUPLICADO,La Reyna Cerralvo,79
+Punta del Pargo,CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,17,0,POSIBLE_DUPLICADO,Punta del Bajo,83
+Santa Martha,CN-Costa de La Ballena a San Mateo,Corredor norte,Golfo de California,False,17,0,POSIBLE_DUPLICADO,Santa Clara,78
+El Kino,ND,ND,Golfo de California,False,16,0,DUPLICADO_EXACTO,El kino,100
+Estero,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,16,0,DUPLICADO_EXACTO,Estero,100
+La México,ND,ND,Golfo de California,False,16,0,,,
+Las 14,CS-Rodadero a El Morrito,Corredor sur,Golfo de California,False,16,0,POSIBLE_DUPLICADO,Las 12,83
+Las Ramas,ND,ND,Golfo de California,False,16,0,POSIBLE_DUPLICADO,Las Animas,84
+Norte de Isla San José,CS-Afuera de Palma Sola y Angelitos,Corredor sur,Golfo de California,False,16,0,POSIBLE_DUPLICADO,Sur de Isla San José,86
+Punta del Cerro,CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,16,0,POSIBLE_DUPLICADO,Punta del Pargo,80
+Sachita,ND,ND,Golfo de California,False,16,0,DUPLICADO_EXACTO,sachita,100
+El Bajo (Las Balizas),Bahía de La Paz,Bahía de La Paz,Golfo de California,False,15,0,,,
+El Barco,CS-Barra La Lobera,Corredor sur,Golfo de California,False,15,0,DUPLICADO_EXACTO,El Barco,100
+El Milagro,CN-Isla Santa Cruz,Corredor norte,Golfo de California,False,15,0,,,
+Kino,ND,ND,Golfo de California,False,15,0,DUPLICADO_EXACTO,kino,100
+Los Pargos,CN-Costa de La Ballena a San Mateo,Corredor norte,Golfo de California,False,15,0,DUPLICADO_EXACTO,Los Pargos,100
+Afuera de La Dispensa,PNAES-Suroeste,PNAES,Golfo de California,False,14,0,,,
+Caguamera,ND,ND,Golfo de California,False,14,0,POSIBLE_DUPLICADO,La Caguamera,86
+El Desague,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,14,0,,,
+El Faro y El Cementerio,ND,ND,Golfo de California,False,14,0,,,
+El Monchi,ND,ND,Golfo de California,False,14,0,DUPLICADO_EXACTO,El monchi,100
+La Barrita San Diego,CS-Isla San Diego,Corredor sur,Golfo de California,False,14,0,,,
+La mancha,ND,ND,Golfo de California,False,14,0,DUPLICADO_EXACTO,La Mancha,100
+Las Casitas,Puerto Nuevo,Pacífico norte,Pacífico,False,14,0,DUPLICADO_EXACTO,Las casitas,100
+Lomitas,ND,ND,Golfo de California,False,14,0,,,
+Muro,ND,ND,Golfo de California,False,14,0,,,
+Punta Verde,Estero El Cardón,San Ignacio,Pacífico,False,14,0,,,
+Sandoval,CS-Costa de Los Dolores,Corredor sur,Golfo de California,False,14,0,POSIBLE_DUPLICADO,El Sandoval,84
+Teti,ND,ND,Golfo de California,False,14,0,,,
+Balandra,Bahía de La Paz,Bahía de La Paz,Golfo de California,False,13,0,,,
+Bufeo,ND,ND,Golfo de California,False,13,0,DUPLICADO_EXACTO,bufeo,100
+El Corrizo,ND,ND,Golfo de California,False,13,0,POSIBLE_DUPLICADO,El Carrizo,90
+El coyote,ND,ND,Golfo de California,False,13,0,DUPLICADO_EXACTO,El Coyote,100
+El Mostrador,Pendiente,Cerralvo,Golfo de California,False,13,0,,,
+Este de El Mangle Tembabiche,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,13,0,POSIBLE_DUPLICADO,El Mangle Tembabiche,83
+Gavilancito,CN-Punta Berrendo,Corredor norte,Golfo de California,False,13,0,,,
+La Amargura,Puerto Nuevo,Pacífico norte,Pacífico,False,13,0,,,
+Línea,ND,ND,Golfo de California,False,13,0,,,
+Los Pericos,ND,ND,Golfo de California,False,13,0,POSIBLE_DUPLICADO,Los Pinos,80
+PUNTA ABREOJOS,ND,ND,Golfo de California,False,13,0,DUPLICADO_EXACTO,Punta Abreojos,100
+Afuera de Los Angelitos,CS-Afuera de Palma Sola y Angelitos,Corredor sur,Golfo de California,False,12,0,POSIBLE_DUPLICADO,Afuera de Las Animas,79
+Bajo Norte,Pendiente,Cerralvo,Golfo de California,False,12,0,DUPLICADO_EXACTO,Bajo norte,100
+El Arco,ND,ND,Golfo de California,False,12,0,DUPLICADO_PROBABLE,El Barco,93
+El Cantamar,CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,12,0,,,
+IES/Sur,PNAES-Suroeste,PNAES,Golfo de California,False,12,0,,,
+La Conquista,Pendiente,Cerralvo,Golfo de California,False,12,0,POSIBLE_DUPLICADO,La Costa,80
+La luna,ND,ND,Golfo de California,False,12,0,DUPLICADO_EXACTO,La Luna,100
+La Morga,ND,ND,Golfo de California,False,12,0,POSIBLE_DUPLICADO,La Morena,82
+Los Ajos,San Pablo a San Cristobal,Pacífico norte,Pacífico,False,12,0,DUPLICADO_EXACTO,Los ajos,100
+Los Morenos,ND,ND,Golfo de California,False,12,0,POSIBLE_DUPLICADO,Los Morros,86
+Paredones Prietos,Pendiente,Cerralvo,Golfo de California,False,12,0,POSIBLE_DUPLICADO,Paredones Rosas,81
+Piedra  de Zúñiga,ND,ND,Golfo de California,False,12,0,DUPLICADO_EXACTO,Piedra de Zúñiga,100
+Punta Estero,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,12,0,POSIBLE_DUPLICADO,Punta Pescadero,81
+Punta norte,Pendiente,Cerralvo,Golfo de California,False,12,0,DUPLICADO_EXACTO,Punta Norte,100
+Punta Piedra,ND,ND,Golfo de California,False,12,0,POSIBLE_DUPLICADO,Punta Prieta,83
+Torero,ND,ND,Golfo de California,False,12,0,DUPLICADO_EXACTO,torero,100
+Arbolitos,ND,ND,Golfo de California,False,11,0,DUPLICADO_PROBABLE,Arbolito,94
+Arroyo largo,Puerto Nuevo,Pacífico norte,Pacífico,False,11,0,,,
+Cantiles Amarillos,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,11,0,,,
+El faro con el carrizo,ND,ND,Golfo de California,False,11,0,DUPLICADO_PROBABLE,Faro con El Carrizo,93
+El Tacote,Pendiente,Cerralvo,Golfo de California,False,11,0,POSIBLE_DUPLICADO,El Tacón,82
+Este de La Morena,CN-La Morena,Corredor norte,Golfo de California,False,11,0,POSIBLE_DUPLICADO,Sureste de La Morena,92
+Este de Las Animas,CS-Las Animas,Corredor sur,Golfo de California,False,11,0,DUPLICADO_PROBABLE,Oeste de Las Animas,97
+La Luna,ND,ND,Golfo de California,False,11,0,DUPLICADO_EXACTO,La luna,100
+La pitaya,ND,ND,Golfo de California,False,11,0,DUPLICADO_EXACTO,La Pitaya,100
+Las Palmas,ND,ND,Golfo de California,False,11,0,POSIBLE_DUPLICADO,Las Palmitas,91
+Las Tinajitas,CN-Afuera de San Felipe,Corredor norte,Golfo de California,False,11,0,POSIBLE_DUPLICADO,Las Tijeritas,85
+Afuera de Cabo Tosco,ND,ND,Golfo de California,False,10,0,POSIBLE_DUPLICADO,Fuera de Cabito,80
+Afuera de El Mono,PNAES-Sureste,PNAES,Golfo de California,False,10,0,POSIBLE_DUPLICADO,Afuera de El Callo,80
+Bajo Clam Bay,ND,ND,Golfo de California,False,10,0,,,
+Cabito y El Faro,ND,ND,Golfo de California,False,10,0,,,
+El Bufeo,ND,ND,Golfo de California,False,10,0,POSIBLE_DUPLICADO,El Bule,80
+El Color de Rosa,Pendiente,Cerralvo,Golfo de California,False,10,0,,,
+El Escondido,ND,ND,Golfo de California,False,10,0,DUPLICADO_EXACTO,El escondido,100
+Francis,ND,ND,Golfo de California,False,10,0,POSIBLE_DUPLICADO,Francis 3,88
+La Higuera,CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,10,0,POSIBLE_DUPLICADO,La Huerta,84
+La Luz,Pendiente,Cerralvo,Golfo de California,False,10,0,,,
+La Rumalda,CN-Punta Berrendo,Corredor norte,Golfo de California,False,10,0,POSIBLE_DUPLICADO,Rumalda,82
+Mar Adentro,ND,ND,Golfo de California,False,10,0,,,
+Piedrita zuñiga,ND,ND,Golfo de California,False,10,0,DUPLICADO_PROBABLE,Piedra zuñiga,93
+Punta Lobos,PNAES-Sureste,PNAES,Golfo de California,False,10,0,,,
+Sur de La Morena,CN-La Morena,Corredor norte,Golfo de California,False,10,0,POSIBLE_DUPLICADO,Sureste de La Morena,89
+Campo San Hipólito,San Hipólito,Pacífico norte,Pacífico,False,9,0,POSIBLE_DUPLICADO,San Hipólito,80
+El bajito,ND,ND,Golfo de California,False,9,0,DUPLICADO_EXACTO,El Bajito,100
+El Mangle Catalana,Pendiente,Cerralvo,Golfo de California,False,9,0,,,
+El medano,ND,ND,Golfo de California,False,9,0,DUPLICADO_EXACTO,El Medano,100
+Ensenada Verde,CS-Rodadero a El Morrito,Corredor sur,Golfo de California,False,9,0,POSIBLE_DUPLICADO,Ensenada Grande,83
+Estero El Cardón,Estero El Cardón,San Ignacio,Pacífico,False,9,0,,,
+Islote Norte,PNAES-Noroeste,PNAES,Golfo de California,False,9,0,,,
+La Larga,ND,ND,Golfo de California,False,9,0,DUPLICADO_EXACTO,La larga,100
+La Mesita,CS-El Atravesado,Corredor sur,Golfo de California,False,9,0,,,
+La Pitayita,CS-San José: Punta Sur de la Isla,Corredor sur,Golfo de California,False,9,0,POSIBLE_DUPLICADO,La pitaya,90
+Las Locas,Francis,Las Barrancas- San Juanico,Pacífico,False,9,0,POSIBLE_DUPLICADO,Las Loberas,80
+Las Mojarras,ND,ND,Golfo de California,False,9,0,POSIBLE_DUPLICADO,Las Morenas,78
+Los Hornitos,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,9,0,POSIBLE_DUPLICADO,Los Morenos,78
+Mágico,CN-Bajo San Marcial,Corredor norte,Golfo de California,False,9,0,,,
+Medano amarillo,ND,ND,Golfo de California,False,9,0,DUPLICADO_EXACTO,Medano Amarillo,100
+Palo,Pendiente,Cerralvo,Golfo de California,False,9,0,POSIBLE_DUPLICADO,Palito,80
+Piedra del Swan,PNAES-Suroeste,PNAES,Golfo de California,False,9,0,POSIBLE_DUPLICADO,Piedra del Layo,80
+Piedra zuñiga,ND,ND,Golfo de California,False,9,0,DUPLICADO_EXACTO,piedra zuñiga,100
+Rechinadora,ND,ND,Golfo de California,False,9,0,POSIBLE_DUPLICADO,La Rechinadora,88
+Salina San José,CS-Isla San José: Calabozo al Mangle,Corredor sur,Golfo de California,False,9,0,POSIBLE_DUPLICADO,Isla San José,79
+Sur de Isla Montserrat,CN-Bajo Sur Isla Montserrat,Corredor norte,Golfo de California,False,9,0,POSIBLE_DUPLICADO,Norte de Isla Montserrat,87
+Afuera de Los Dolores,CS-Costa de Los Dolores,Corredor sur,Golfo de California,False,8,0,POSIBLE_DUPLICADO,Este de Los Dolores,80
+Amortajado,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,8,0,,,
+Diana,ND,ND,Golfo de California,False,8,0,,,
+El Bajo 2 (El Sachi),Bajos de El Sachi,Pacífico norte,Pacífico,False,8,0,DUPLICADO_PROBABLE,El Bajo 1 (El Sachi),95
+El Infiernito,Pendiente,Cerralvo,Golfo de California,False,8,0,,,
+El Pozo,PNAES-Suroeste,PNAES,Golfo de California,False,8,0,DUPLICADO_EXACTO,El Pozo,100
+El Púlpito,No Corredor,No Corredor,,False,8,0,POSIBLE_DUPLICADO,El Pulpo,89
+Entrada de la Ballena,PNAES-Suroeste,PNAES,Golfo de California,False,8,0,,,
+Frente a Punta Abreojos,ND,ND,Golfo de California,False,8,0,,,
+Islote Agua Verde,CN-El Islote a La Brecha,Corredor norte,Golfo de California,False,8,0,POSIBLE_DUPLICADO,Este de Agua Verde,80
+La Gaviota,Pendiente,Cerralvo,Golfo de California,False,8,0,POSIBLE_DUPLICADO,La Garcita,80
+La linea,ND,ND,Golfo de California,False,8,0,DUPLICADO_EXACTO,La Línea,100
+La Mancha,ND,ND,Golfo de California,False,8,0,DUPLICADO_EXACTO,La mancha,100
+Lagunita,ND,ND,Golfo de California,False,8,0,,,
+las 12,ND,ND,Golfo de California,False,8,0,DUPLICADO_EXACTO,Las 12,100
+Las 12 Millas,ND,ND,Golfo de California,False,8,0,DUPLICADO_PROBABLE,Las 25 Millas,92
+Las Barrancas,ND,ND,Golfo de California,False,8,0,POSIBLE_DUPLICADO,Las Burras,78
+Las Caguamas,ND,ND,Golfo de California,False,8,0,DUPLICADO_EXACTO,Las caguamas,100
+Los Mayeles,Francis,Las Barrancas- San Juanico,Pacífico,False,8,0,,,
+Los Pochos,ND,ND,Golfo de California,False,8,0,DUPLICADO_EXACTO,Los pochos,100
+Mezquite,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,8,0,,,
+Norte de la Habana,CS-La Habana,Corredor sur,Golfo de California,False,8,0,POSIBLE_DUPLICADO,Oeste de La Habana,89
+Piedra de Loro,El Coyote,Pacífico norte,Pacífico,False,8,0,POSIBLE_DUPLICADO,Piedra de torero,87
+Piedra La Partida,PNAES-Noroeste,PNAES,Golfo de California,False,8,0,POSIBLE_DUPLICADO,Isla La Partida,81
+Polaris,ND,ND,Golfo de California,False,8,0,DUPLICADO_PROBABLE,Polari,92
+Puerto Escondido,ND,ND,Golfo de California,False,8,0,POSIBLE_DUPLICADO,El Escondido,79
+Sachi,ND,ND,Golfo de California,False,8,0,DUPLICADO_EXACTO,sachi,100
+Sur de Isla Espíritu Santo,PNAES-Sureste,PNAES,Golfo de California,False,8,0,POSIBLE_DUPLICADO,Este de Isla Espíritu Santo,91
+Sur de Punta Botella,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,8,0,POSIBLE_DUPLICADO,Punta Botella,79
+3 Marcas,ND,ND,Golfo de California,False,7,0,POSIBLE_DUPLICADO,Las 3 marcas,80
+Afuera Ensenada de Cortés,CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,7,0,POSIBLE_DUPLICADO,Ensenada de Cortés,84
+Brecha,ND,ND,Golfo de California,False,7,0,DUPLICADO_EXACTO,brecha,100
+Cabito y La Travesia,ND,ND,Golfo de California,False,7,0,POSIBLE_DUPLICADO,La Travesia y El Bajito,84
+Cora,El Chicharrón,Las Barrancas- San Juanico,Pacífico,False,7,0,POSIBLE_DUPLICADO,Corona,80
+El Batequi,ND,ND,Golfo de California,False,7,0,,,
+El Borbollón,Canal Ojo de Liebre,Guerrero Negro,Pacífico,False,7,0,,,
+El Chicharrón,El Chicharrón,Las Barrancas- San Juanico,Pacífico,False,7,0,POSIBLE_DUPLICADO,El Charro,82
+El Faro Montserrat,CN-Bajo Sur Isla Montserrat,Corredor norte,Golfo de California,False,7,0,POSIBLE_DUPLICADO,Isla Montserrat,79
+El Médano,ND,ND,Golfo de California,False,7,0,DUPLICADO_EXACTO,El Medano,100
+Este de Catalana,CN-Norte Isla Catalana,Corredor norte,Golfo de California,False,7,0,DUPLICADO_PROBABLE,Oeste de Catalana,97
+La bocana,ND,ND,Golfo de California,False,7,0,DUPLICADO_EXACTO,La Bocana,100
+la gringa,ND,ND,Golfo de California,False,7,0,DUPLICADO_EXACTO,La Gringa,100
+La Kiko,ND,ND,Golfo de California,False,7,0,,,
+La Mano,PNAES-Noroeste,PNAES,Golfo de California,False,7,0,,,
+La Piedrita de zuñiga,ND,ND,Golfo de California,False,7,0,DUPLICADO_EXACTO,La piedrita de zuñiga,100
+La Ribera,ND,ND,Golfo de California,False,7,0,POSIBLE_DUPLICADO,La Freidera,80
+Lila,ND,ND,Golfo de California,False,7,0,,,
+Llamada,ND,ND,Golfo de California,False,7,0,POSIBLE_DUPLICADO,Llanada,86
+Lora,ND,ND,Golfo de California,False,7,0,DUPLICADO_EXACTO,lora,100
+Los Cabos,No Corredor,No Corredor,,False,7,0,POSIBLE_DUPLICADO,Los Ajos,82
+Piedra  de Zuñiga,ND,ND,Golfo de California,False,7,0,DUPLICADO_EXACTO,Piedra de Zúñiga,100
+Piedra de Afuera,ND,ND,Golfo de California,False,7,0,DUPLICADO_EXACTO,Piedra de afuera,100
+Piedra de Layo,ND,ND,Golfo de California,False,7,0,DUPLICADO_PROBABLE,Piedra del Layo,97
+Piedra de zuñiga,ND,ND,Golfo de California,False,7,0,DUPLICADO_EXACTO,Piedra de Zúñiga,100
+Piedra del Layo,ND,ND,Golfo de California,False,7,0,DUPLICADO_EXACTO,piedra del layo,100
+Tres marca,ND,ND,Golfo de California,False,7,0,DUPLICADO_PROBABLE,Tres Marcas,95
+Afuera Piedrita,Costa Punta Abreojos,Pacífico norte,Pacífico,False,6,0,DUPLICADO_PROBABLE,Piedra Afuera,93
+Bahía Asunción,Pendiente,Cerralvo,Golfo de California,False,6,0,,,
+Bajo del Humo,Pendiente,Cerralvo,Golfo de California,False,6,0,POSIBLE_DUPLICADO,Bajo del Medio,81
+Bajo Hondo,CN-Bajo Hondo,Corredor norte,Golfo de California,False,6,0,,,
+bajo norte Catalana,ND,ND,Golfo de California,False,6,0,DUPLICADO_EXACTO,Bajo Norte Catalana,100
+Bocana,ND,ND,Golfo de California,False,6,0,DUPLICADO_EXACTO,bocana,100
+Caballo,Costa Punta Abreojos,Pacífico norte,Pacífico,False,6,0,,,
+Canal de La Barcaza,Canal Ojo de Liebre,Guerrero Negro,Pacífico,False,6,0,,,
+Canal San Lorenzo,Bahía de La Paz,Bahía de La Paz,Golfo de California,False,6,0,POSIBLE_DUPLICADO,san lorenzo,79
+Cejuda,ND,ND,Golfo de California,False,6,0,POSIBLE_DUPLICADO,La Cejuda,80
+Cerro Barroso,CN-Tembabiche,Corredor norte,Golfo de California,False,6,0,,,
+Cuevitas San José,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,6,0,,,
+El Bajo 1 (El Sachi),Bajos de El Sachi,Pacífico norte,Pacífico,False,6,0,DUPLICADO_PROBABLE,El Bajo 2 (El Sachi),95
+El Cochi,El Cochi,Las Barrancas- San Juanico,Pacífico,False,6,0,POSIBLE_DUPLICADO,El Monchi,82
+Gaviotero,CS-Afuera de San Francisquito,Corredor sur,Golfo de California,False,6,0,,,
+Hedionda,ND,ND,Golfo de California,False,6,0,,,
+La caguama,ND,ND,Golfo de California,False,6,0,POSIBLE_DUPLICADO,La Caguamera,91
+La Garcita,Pendiente,Cerralvo,Golfo de California,False,6,0,POSIBLE_DUPLICADO,Las Garcitas,91
+La Lila,ND,ND,Golfo de California,False,6,0,DUPLICADO_EXACTO,La lila,100
+La Piedra del Pato,CN-Isla Santa Cruz,Corredor norte,Golfo de California,False,6,0,POSIBLE_DUPLICADO,Piedra del Layo,85
+Las 11,ND,ND,Golfo de California,False,6,0,POSIBLE_DUPLICADO,Las 12,83
+Las 25 Millas,ND,ND,Golfo de California,False,6,0,DUPLICADO_EXACTO,Las 25 millas,100
+Lomitas Blancas,ND,ND,Golfo de California,False,6,0,,,
+Norte de El Atravesado,CS-El Atravesado,Corredor sur,Golfo de California,False,6,0,,,
+Norte de San Evaristo,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,6,0,POSIBLE_DUPLICADO,El Morrito San Evaristo,82
+Piedra de afuera,ND,ND,Golfo de California,False,6,0,DUPLICADO_EXACTO,Piedra de Afuera,100
+Piedra del Kino,ND,ND,Golfo de California,False,6,0,DUPLICADO_EXACTO,Piedra del kino,100
+piedra zuñiga,ND,ND,Golfo de California,False,6,0,DUPLICADO_EXACTO,Piedra zuñiga,100
+Piedrita,ND,ND,Golfo de California,False,6,0,POSIBLE_DUPLICADO,La piedrita,84
+Punta La Cocina,CS-Afuera de La Cocina,Corredor sur,Golfo de California,False,6,0,POSIBLE_DUPLICADO,Punta El Cochi,83
+Punta Nopoló,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,6,0,,,
+Subaru,ND,ND,Golfo de California,False,6,0,,,
+Sureste de La Morena,CN-La Morena,Corredor norte,Golfo de California,False,6,0,DUPLICADO_PROBABLE,Suroeste de La Morena,98
+Tio kiri,ND,ND,Golfo de California,False,6,0,,,
+Trabalenguas,CS-El Atravesado,Corredor sur,Golfo de California,False,6,0,,,
+12,ND,ND,Golfo de California,False,5,0,,,
+Agua Caliente,CS-San José: Punta Colorada a Los Angelitos,Corredor sur,Golfo de California,False,5,0,POSIBLE_DUPLICADO,Aguascalientes,89
+Arbolito,ND,ND,Golfo de California,False,5,0,DUPLICADO_PROBABLE,Arbolitos,94
+Arroyo del Venado,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,5,0,,,
+Bajito,ND,ND,Golfo de California,False,5,0,DUPLICADO_EXACTO,bajito,100
+Baqueta,Pendiente,Cerralvo,Golfo de California,False,5,0,DUPLICADO_EXACTO,Baqueta,100
+Biznaga Catalana,CN-Norte Isla Catalana,Corredor norte,Golfo de California,False,5,0,,,
+Canal Sal Si Puedes,CS-Afuera de Isla San José,Corredor sur,Golfo de California,False,5,0,,,
+El Caladero PNAES,ND,ND,Golfo de California,False,5,0,POSIBLE_DUPLICADO,El Rodadero PNAES,82
+El escondido,ND,ND,Golfo de California,False,5,0,DUPLICADO_EXACTO,El Escondido,100
+El Maguey,Pendiente,Cerralvo,Golfo de California,False,5,0,,,
+El Mariscal,El Mariscal,Guerrero Negro,Pacífico,False,5,0,,,
+El Torero,ND,ND,Golfo de California,False,5,0,POSIBLE_DUPLICADO,Le torero,89
+Estacudero,PNAES-Suroeste,PNAES,Golfo de California,False,5,0,,,
+Este Isla San José,CS-Afuera de Palma Sola y Angelitos,Corredor sur,Golfo de California,False,5,0,POSIBLE_DUPLICADO,Sur de Isla San José,84
+Guamuchilito,Pendiente,Cerralvo,Golfo de California,False,5,0,,,
+IES/Sureste,PNAES-Sureste,PNAES,Golfo de California,False,5,0,,,
+Islita Tembabiche,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,5,0,POSIBLE_DUPLICADO,Islitas (Tembabiche),92
+La Burbuja,Sebastián Vizcaíno,Guerrero Negro,Pacífico,False,5,0,POSIBLE_DUPLICADO,Bajo Burbujas,78
+La Cuatería,ND,ND,Golfo de California,False,5,0,POSIBLE_DUPLICADO,La Carpintería,80
+La Cueva,Pendiente,Cerralvo,Golfo de California,False,5,0,POSIBLE_DUPLICADO,Las Cuevitas,80
+La Garropera,ND,ND,Golfo de California,False,5,0,POSIBLE_DUPLICADO,Garropera,86
+La Giganta,Pendiente,Cerralvo,Golfo de California,False,5,0,POSIBLE_DUPLICADO,La Iguana,84
+La Iván,ND,ND,Golfo de California,False,5,0,POSIBLE_DUPLICADO,La Chiva,80
+La lora,ND,ND,Golfo de California,False,5,0,DUPLICADO_EXACTO,La Lora,100
+La Piedra,Costa de Ojo de Liebre,Guerrero Negro,Pacífico,False,5,0,POSIBLE_DUPLICADO,La piedrita,90
+La piedrita,ND,ND,Golfo de California,False,5,0,DUPLICADO_EXACTO,La Piedrita,100
+La Solita,Francis,Las Barrancas- San Juanico,Pacífico,False,5,0,POSIBLE_DUPLICADO,La Salinita,80
+Laguna Ojo de Liebre,ND,ND,Golfo de California,False,5,0,,,
+Las 35,CN-Bajo San Marcial,Corredor norte,Golfo de California,False,5,0,DUPLICADO_EXACTO,Las 35,100
+Las dose,ND,ND,Golfo de California,False,5,0,POSIBLE_DUPLICADO,Las Doce,88
+Las Morenas,ND,ND,Golfo de California,False,5,0,POSIBLE_DUPLICADO,La Morena,90
+Las once,ND,ND,Golfo de California,False,5,0,POSIBLE_DUPLICADO,Las Doce,88
+Las trece,ND,ND,Golfo de California,False,5,0,,,
+Los pochos,ND,ND,Golfo de California,False,5,0,DUPLICADO_EXACTO,Los Pochos,100
+Los San Juanes,Pendiente,Cerralvo,Golfo de California,False,5,0,,,
+Meros 20,Francis,Las Barrancas- San Juanico,Pacífico,False,5,0,,,
+Morro del Varichi,Pendiente,Cerralvo,Golfo de California,False,5,0,,,
+Pantera Rosa,PNAES-Noroeste,PNAES,Golfo de California,False,5,0,,,
+Payo,ND,ND,Golfo de California,False,5,0,DUPLICADO_EXACTO,payo,100
+Piedra de torero,ND,ND,Golfo de California,False,5,0,DUPLICADO_PROBABLE,Piedra del torero,97
+Piedra del Torero,ND,ND,Golfo de California,False,5,0,DUPLICADO_EXACTO,Piedra del torero,100
+Piedra El Gallo,PNAES-Noreste,PNAES,Golfo de California,False,5,0,POSIBLE_DUPLICADO,Piedra del Gelo,87
+Pitahaya,ND,ND,Golfo de California,False,5,0,POSIBLE_DUPLICADO,La Pitahaya,84
+Puerto de San Hipólito,San Hipólito,Pacífico norte,Pacífico,False,5,0,,,
+Punta El Macho,Pendiente,Cerralvo,Golfo de California,False,5,0,POSIBLE_DUPLICADO,Punta del Bajo,79
+Punta San Evaristo,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,5,0,POSIBLE_DUPLICADO,Punta Arenas San Evaristo,84
+Tio quirri (la bocana),ND,ND,Golfo de California,False,5,0,DUPLICADO_EXACTO,Tio Quirri (La Bocana),100
+Tres Marcas y Mancha Blanca,ND,ND,Golfo de California,False,5,0,DUPLICADO_EXACTO,Mancha Blanca y Tres Marcas,100
+25 Millas,ND,ND,Golfo de California,False,4,0,DUPLICADO_EXACTO,25 millas,100
+Abajo,ND,ND,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Bajo,89
+Afuera de El Callo,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Afuera del Gallo,88
+Afuera de Punta Alta,CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Afuera de Punta Gorda,83
+Bahía Santa María,ND,ND,Golfo de California,False,4,0,,,
+Bajo Aciano,ND,ND,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Bajo Imán,80
+Bajo El Charro,El Charro,PNAES,Golfo de California,False,4,0,POSIBLE_DUPLICADO,El Charro,78
+Base,Base,Las Barrancas- San Juanico,Pacífico,False,4,0,POSIBLE_DUPLICADO,Base 1,80
+bufeo,ND,ND,Golfo de California,False,4,0,DUPLICADO_EXACTO,Bufeo,100
+Cabo San Lázaro,ND,ND,Golfo de California,False,4,0,,,
+Campamento y La Rechinadora,ND,ND,Golfo de California,False,4,0,DUPLICADO_PROBABLE,La Rechinadora y el Campamento,95
+Canal,ND,ND,Golfo de California,False,4,0,,,
+Canal llanada,ND,ND,Golfo de California,False,4,0,POSIBLE_DUPLICADO,La llanada,78
+Churea,Pendiente,Cerralvo,Golfo de California,False,4,0,,,
+Cola de Ballena,PNAES-Suroeste,PNAES,Golfo de California,False,4,0,POSIBLE_DUPLICADO,La Ballena,80
+Dos Manchas,Oeste de El Sachi,Pacífico norte,Pacífico,False,4,0,,,
+El Bajo,Pendiente,Cerralvo,Golfo de California,False,4,0,DUPLICADO_EXACTO,El Bajo,100
+El Campito,ND,ND,Golfo de California,False,4,0,POSIBLE_DUPLICADO,El Campamento,78
+El Canal,Costa Punta Abreojos,Pacífico norte,Pacífico,False,4,0,POSIBLE_DUPLICADO,El Cardonal,84
+El Gavilán,Pendiente,Cerralvo,Golfo de California,False,4,0,DUPLICADO_EXACTO,El Gavilan,100
+El Payo y Faro con Faro,ND,ND,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Faro con Faro y El Muro,87
+El Saladito,Pendiente,Cerralvo,Golfo de California,False,4,0,POSIBLE_DUPLICADO,El Saltito,86
+Este de San Francisquito,Pendiente,Cerralvo,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Sur de San Francisquito,89
+Fuera de Cabito,ND,ND,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Afuera de Cabo Tosco,80
+Gueros,Las Perlas,Las Barrancas- San Juanico,Pacífico,False,4,0,,,
+Horchata,ND,ND,Golfo de California,False,4,0,,,
+La Bocana y Punta Abreojos,ND,ND,Golfo de California,False,4,0,,,
+La Bocanita,ND,ND,Golfo de California,False,4,0,DUPLICADO_EXACTO,La bocanita,100
+La brecha,ND,ND,Golfo de California,False,4,0,DUPLICADO_EXACTO,La Brecha,100
+la caguamera,ND,ND,Golfo de California,False,4,0,DUPLICADO_EXACTO,La Caguamera,100
+La Carpintería,Pendiente,Cerralvo,Golfo de California,False,4,0,POSIBLE_DUPLICADO,La Cuatería,80
+La Cejuda,ND,ND,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Cejuda y lila,82
+La Fortuna,CS-San José: Punta Sur de la Isla,Corredor sur,Golfo de California,False,4,0,,,
+La larga,ND,ND,Golfo de California,False,4,0,DUPLICADO_EXACTO,La Larga,100
+La lila,ND,ND,Golfo de California,False,4,0,DUPLICADO_EXACTO,La Lila,100
+La Línea y La Bocana,ND,ND,Golfo de California,False,4,0,POSIBLE_DUPLICADO,La Pitahaya y La Bocana,79
+La lora-la lila,ND,ND,Golfo de California,False,4,0,,,
+La Manuelita,CS-San José: Punta Colorada a Los Angelitos,Corredor sur,Golfo de California,False,4,0,POSIBLE_DUPLICADO,La Mulita,86
+La Pinta,CS-San José: Punta Sur de la Isla,Corredor sur,Golfo de California,False,4,0,POSIBLE_DUPLICADO,La punta,88
+La rechinadora,ND,ND,Golfo de California,False,4,0,DUPLICADO_EXACTO,La Rechinadora,100
+La Reynita Cerralvo,Pendiente,Cerralvo,Golfo de California,False,4,0,DUPLICADO_PROBABLE,La Reyna Cerralvo,94
+Lado sur de la costa,DEFINIR,Corredor norte,Golfo de California,False,4,0,,,
+Las 3 marcas,ND,ND,Golfo de California,False,4,0,DUPLICADO_EXACTO,Las 3 Marcas,100
+Las 3 Marcas,ND,ND,Golfo de California,False,4,0,DUPLICADO_EXACTO,Las 3 marcas,100
+Las Pilitas,PNAES-Suroeste,PNAES,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Las Palmitas,87
+Las Tijeras,PNAES-Noroeste,PNAES,Golfo de California,False,4,0,DUPLICADO_EXACTO,Las Tijeras,100
+Las Tijeretas,CN-Norte Isla Catalana,Corredor norte,Golfo de California,False,4,0,DUPLICADO_PROBABLE,Las Tijeritas,92
+"Los arbolitos, el escondido",ND,ND,Golfo de California,False,4,0,DUPLICADO_PROBABLE,Los arbolitos-el escondido,94
+Los Cuervitos,Pendiente,Cerralvo,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Los Muertos,83
+Los Lupones,PNAES-Suroeste,PNAES,Golfo de California,False,4,0,,,
+Mancha Blanca y Tres Marcas,ND,ND,Golfo de California,False,4,0,DUPLICADO_EXACTO,Tres Marcas y Mancha Blanca,100
+Mesa Pareja,CN-Norte Isla Santa Cruz,Corredor norte,Golfo de California,False,4,0,,,
+Morro Peludo,CN-Bajo San Marcial,Corredor norte,Golfo de California,False,4,0,,,
+Norte de Las Animas,CS-Las Animas,Corredor sur,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Oeste de Las Animas,89
+Norte de San Marcial,CN-Bajo San Marcial,Corredor norte,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Norte de San Evaristo,78
+Piedra del Morro,ND,ND,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Piedra del torero,91
+Piedrita 2 y La Travesia,ND,ND,Golfo de California,False,4,0,,,
+pochos,ND,ND,Golfo de California,False,4,0,DUPLICADO_EXACTO,Pochos,100
+Pochos,ND,ND,Golfo de California,False,4,0,DUPLICADO_EXACTO,pochos,100
+Polari,ND,ND,Golfo de California,False,4,0,DUPLICADO_PROBABLE,Polaris,92
+Punta Aguja,CN-El Islote a La Brecha,Corredor norte,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Punta Baja,86
+Punta Bonanza,PNAES-Suroeste,PNAES,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Punta Blanca,80
+Punta Conchalito,Pendiente,Cerralvo,Golfo de California,False,4,0,,,
+Punta El Cochi,CS-Costa de El Cobre a Cerritos Amarillos,Corredor sur,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Punta La Cocina,83
+Punta Larga,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,4,0,POSIBLE_DUPLICADO,La punta,84
+Punta Tabolo,ND,ND,Golfo de California,False,4,0,,,
+San Lucas,ND,ND,Golfo de California,False,4,0,,,
+Suroeste de La Morena,CN-La Morena,Corredor norte,Golfo de California,False,4,0,DUPLICADO_PROBABLE,Sureste de La Morena,98
+Tepes,ND,ND,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Tepe,89
+Tepetates del faro con la baliza,ND,ND,Golfo de California,False,4,0,POSIBLE_DUPLICADO,El faro con la baliza,79
+Zachita,ND,ND,Golfo de California,False,4,0,POSIBLE_DUPLICADO,Sachita,86
+12 Millas,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,12 millas,100
+13 millas,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,13 Millas,100
+221,ND,ND,Golfo de California,False,3,0,,,
+25 Millas (al 180)-El Payo,ND,ND,Golfo de California,False,3,0,,,
+Abnegado,Pendiente,Cerralvo,Golfo de California,False,3,0,,,
+Afuera de La Brecha,El Coyote,Pacífico norte,Pacífico,False,3,0,,,
+Arroyo de La Junta,CS-San José: Punta Sur de la Isla,Corredor sur,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Arroyo de La Paz,82
+Bajo Aguilar ..las 12,ND,ND,Golfo de California,False,3,0,,,
+bajo de aguilar,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,Bajo de Aguilar,100
+Bajo de los locos,ND,ND,Golfo de California,False,3,0,,,
+Bajo Oeste Catalana,Pendiente,Cerralvo,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Bajo Norte Catalana,89
+Bocanita,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,bocana,86
+Brecha y La Travesia,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Cabito y La Travesia,80
+Campamento y La Línea,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Campamento y La Rechinadora,79
+Canpamento,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Campamento,90
+Cardenal,Pendiente,Cerralvo,Golfo de California,False,3,0,,,
+Cardón Enterrado,CS-Isla San José: Calabozo al Mangle,Corredor sur,Golfo de California,False,3,0,,,
+Costilla,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,La Costilla,84
+El 215 Buen,Francis,Las Barrancas- San Juanico,Pacífico,False,3,0,,,
+El Alambre,Costa de Ojo de Liebre,Guerrero Negro,Pacífico,False,3,0,,,
+El Arroyo,CS-Costa de Los Dolores,Corredor sur,Golfo de California,False,3,0,,,
+"El Bajo, La Vaca",Pendiente,Cerralvo,Golfo de California,False,3,0,,,
+El Espinazo,Pendiente,Cerralvo,Golfo de California,False,3,0,,,
+El faro con la baliza,ND,ND,Golfo de California,False,3,0,DUPLICADO_PROBABLE,Faro con la baliza,92
+El Faro San José,CS-San José: Punta Colorada a Los Angelitos,Corredor sur,Golfo de California,False,3,0,POSIBLE_DUPLICADO,El Cañón San José,85
+El Islote,CS-Costa de San Francisquito,Corredor sur,Golfo de California,False,3,0,,,
+El medano-el muro,ND,ND,Golfo de California,False,3,0,,,
+El muro,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,El Muro,100
+El Parguito,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,El Pardito,86
+El Payo-las doce,ND,ND,Golfo de California,False,3,0,,,
+El Payo-lora,ND,ND,Golfo de California,False,3,0,,,
+El Plato,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,El palito,82
+El Pulpo,Pendiente,Cerralvo,Golfo de California,False,3,0,POSIBLE_DUPLICADO,El Púlpito,89
+El sachit- las doce,ND,ND,Golfo de California,False,3,0,,,
+El Sorullo (Orilla),ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Sorullo orilla,85
+El torero-piedra de zuñiga,ND,ND,Golfo de California,False,3,0,DUPLICADO_PROBABLE,"El Torero, piedra de zuñiga",94
+"El Torero, piedra de zuñiga",ND,ND,Golfo de California,False,3,0,DUPLICADO_PROBABLE,El torero-piedra de zuñiga,94
+el zachi,ND,ND,Golfo de California,False,3,0,DUPLICADO_PROBABLE,El zachil,94
+El Zachil473,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,El zachil,86
+Escondido,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,escondido,100
+Espinazo del Diablo,Laguna Manuela,Guerrero Negro,Pacífico,False,3,0,POSIBLE_DUPLICADO,Punta del Diablo,80
+Este de Agua Verde,CN-El Islote a La Brecha,Corredor norte,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Sur de Agua Verde,86
+Este de Los Dolores,CS-Costa de Los Dolores,Corredor sur,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Afuera de Los Dolores,80
+Estero de Las Barritas,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Estero de Las Latas,88
+Farioncito,CS-San José: Punta Colorada a Los Angelitos,Corredor sur,Golfo de California,False,3,0,,,
+Faro con  baliza,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Faro con la baliza,91
+Faro con El Carrizo,ND,ND,Golfo de California,False,3,0,DUPLICADO_PROBABLE,El faro con el carrizo,93
+faro con faro,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,Faro con Faro,100
+Faro con Faro y El Muro,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,El Payo y Faro con Faro,87
+Garropera,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,La Garropera,86
+Isla Margarita,Pendiente,Cerralvo,Golfo de California,False,3,0,,,
+La 326,ND,ND,Golfo de California,False,3,0,,,
+La Base,Laguna media,San Ignacio,Pacífico,False,3,0,POSIBLE_DUPLICADO,Las Abas,80
+La Concha,Canal Ojo de Liebre,Guerrero Negro,Pacífico,False,3,0,POSIBLE_DUPLICADO,El Conchal,84
+La doce,ND,ND,Golfo de California,False,3,0,DUPLICADO_PROBABLE,Las Doce,93
+La Freidera,Laguna media,San Ignacio,Pacífico,False,3,0,POSIBLE_DUPLICADO,La Ribera,80
+La lila afuera,ND,ND,Golfo de California,False,3,0,DUPLICADO_PROBABLE,Ia lila  afuera,93
+"La lila, la cejuda, la larga",ND,ND,Golfo de California,False,3,0,,,
+La llanada,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,la llenada,90
+la llenada,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,La llanada,90
+La Lluvia,Bajos de El Sachi,Pacífico norte,Pacífico,False,3,0,,,
+La lobera,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,La Lobera,100
+La Lobera Cerralvo,Pendiente,Cerralvo,Golfo de California,False,3,0,POSIBLE_DUPLICADO,La Reyna Cerralvo,80
+La lorecha,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,La Brecha,84
+La luna-la caguamera- el coyote,ND,ND,Golfo de California,False,3,0,,,
+"La Mancha, Travesia por fuera",ND,ND,Golfo de California,False,3,0,,,
+La Ola Guerrero Negro,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Laguna Guerrero Negro,86
+La Piedra de Los Sanchez,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Piedra de Los Panchos,80
+La piedrita de zuñiga,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,La Piedrita de zuñiga,100
+La Piedrita de Zuñiga,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,La Piedrita de zuñiga,100
+La Pitahaya y La Bocana,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,La Bocana y La Pitahaya,100
+La Rasta,Pendiente,Cerralvo,Golfo de California,False,3,0,DUPLICADO_PROBABLE,La Rastra,94
+Laguna Guerrero Negro,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,La Ola Guerrero Negro,86
+Las 12 y Orilla,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,12 y La Lora,81
+Las doce-El Payo,ND,ND,Golfo de California,False,3,0,,,
+Las doce-la lora,ND,ND,Golfo de California,False,3,0,,,
+Las Nico,ND,ND,Golfo de California,False,3,0,,,
+Las Perlas,Las Perlas,Las Barrancas- San Juanico,Pacífico,False,3,0,POSIBLE_DUPLICADO,Las Palmas,80
+Las trece-el toby-los tepes,ND,ND,Golfo de California,False,3,0,,,
+Las tres marcas-El Soruyo,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,Las tres marcas-el soruyo,100
+Las tres marcas-La lora,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Las tres marcas-El Soruyo,83
+Las Vifas,ND,ND,Golfo de California,False,3,0,,,
+Lora orilla,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,La Hornilla,82
+Los ajos,Afuera de Puerto Nuevo,Pacífico norte,Pacífico,False,3,0,DUPLICADO_EXACTO,Los Ajos,100
+Los Arbolitos y La Brecha,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Los Arbolitos  y La Travesia,85
+Los Arbololitos,ND,ND,Golfo de California,False,3,0,DUPLICADO_PROBABLE,Los Arbolitos,93
+Los Cocos,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Los Pochos,84
+Los mannys,ND,ND,Golfo de California,False,3,0,,,
+Los Pochos y La Gringa,ND,ND,Golfo de California,False,3,0,,,
+Los Tepes,ND,ND,Golfo de California,False,3,0,,,
+Medanito,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Medano,86
+Norte de La Lobera,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Norte de La Morena,83
+Oeste de La Habana,CS-La Habana,Corredor sur,Golfo de California,False,3,0,DUPLICADO_PROBABLE,Este de La Habana,97
+Pacífico,Pendiente,Cerralvo,Golfo de California,False,3,0,,,
+Palito,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Palo,80
+payo,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,Payo,100
+Pescadito de Plata,Pendiente,Cerralvo,Golfo de California,False,3,0,,,
+Picacho con Telocolotito,Costa Punta Abreojos,Pacífico norte,Pacífico,False,3,0,POSIBLE_DUPLICADO,Pikacho con el tekolotito,82
+Piedra Afuera,ND,ND,Golfo de California,False,3,0,DUPLICADO_PROBABLE,Afuera Piedrita,93
+Piedra al Sur de La Isla,ND,ND,Golfo de California,False,3,0,,,
+Piedra de Mina,Pendiente,Cerralvo,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Piedra del Kino,83
+Piedra del Cochito,CS-Afuera de Isla San José,Corredor sur,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Piedra del Kino,79
+piedra del layo,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,Piedra del Layo,100
+Piedra El Ángel,El Chicharrón,Las Barrancas- San Juanico,Pacífico,False,3,0,POSIBLE_DUPLICADO,Piedra del Gelo,87
+Piedras,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Piedrita,80
+Piedrita y Tepetates,El Coyote,Pacífico norte,Pacífico,False,3,0,,,
+Pitaya arriba,ND,ND,Golfo de California,False,3,0,,,
+Punta Lupón,PNAES-Suroeste,PNAES,Golfo de California,False,3,0,,,
+Rene 1,Francis,Las Barrancas- San Juanico,Pacífico,False,3,0,,,
+Rodadero Blanco,Pendiente,Cerralvo,Golfo de California,False,3,0,,,
+sachita,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,Sachita,100
+San Hipólito,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,san hipolito,100
+san lorenzo,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,San Lorenzo,100
+San Lorenzo,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,san lorenzo,100
+Tacua,ND,ND,Golfo de California,False,3,0,,,
+Tecolote,Bahía de La Paz,Bahía de La Paz,Golfo de California,False,3,0,,,
+Tepe,Afuera de El Coyote,Pacífico norte,Pacífico,False,3,0,POSIBLE_DUPLICADO,Tepes,89
+"Tio kiri , llanada  y faro con faro",ND,ND,Golfo de California,False,3,0,,,
+Toby,ND,ND,Golfo de California,False,3,0,,,
+torero,ND,ND,Golfo de California,False,3,0,DUPLICADO_EXACTO,Torero,100
+Tres marcas y el payo,ND,ND,Golfo de California,False,3,0,POSIBLE_DUPLICADO,Tres Marcas y Las 12,78
+Viveros,Pendiente,Cerralvo,Golfo de California,False,3,0,,,
+Zuñiga- kino,ND,ND,Golfo de California,False,3,0,,,
+13 Millas,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,13 millas,100
+"1milla al norte de ""El Payo""",Punta Abreojos Oeste,Pacífico norte,Pacífico,False,2,0,,,
+33 Millas,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,13 millas,89
+968,ND,ND,Golfo de California,False,2,0,,,
+A una hora de Cadejé,ND,ND,Golfo de California,False,2,0,,,
+Afuera de Las Cuevitas,PNAES-Sureste,PNAES,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Afuera de Las Animas,81
+Afuera de las tres marcas,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Las tres marcas hacia afuera,87
+Afuera de Los Burros,CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Islitas (Afuera de Los Burros),80
+Afuera del Gallo,PNAES-Suroeste,PNAES,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Afuera de El Callo,88
+Arbolitos arriba,ND,ND,Golfo de California,False,2,0,,,
+Arroyo de La Paz,Pendiente,Cerralvo,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Arroyo de La Junta,82
+Arroyo del Cajote,Pendiente,Cerralvo,Golfo de California,False,2,0,,,
+Arroyo Grande,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,2,0,,,
+Bahía Los Muertos,Pendiente,Cerralvo,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Los Muertos,79
+Bajo 18,Puerto Nuevo,Pacífico norte,Pacífico,False,2,0,,,
+Bajo aguilar,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,Bajo Aguilar,100
+Bajo de aguilar,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,Bajo de Aguilar,100
+Bajo Escondido,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Escondido,78
+Bajo Las Cirvinas,ND,ND,Golfo de California,False,2,0,DUPLICADO_PROBABLE,Bajo Las Curvinas,94
+Bajo Las Curvinas,ND,ND,Golfo de California,False,2,0,DUPLICADO_PROBABLE,Bajo Las Cirvinas,94
+Bajo Sachi,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Sachit abajo,91
+Bajo Sufeo y La Travesia,ND,ND,Golfo de California,False,2,0,,,
+Barda 1,Francis,Las Barrancas- San Juanico,Pacífico,False,2,0,POSIBLE_DUPLICADO,Barda,83
+Barrita,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Barra,83
+Base 1,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Base,80
+Bateki,El Coyote,Pacífico norte,Pacífico,False,2,0,,,
+"Batequi, El Bufeo",ND,ND,Golfo de California,False,2,0,,,
+Bocana linea,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,Linea bocana,100
+Bocana y piedras,ND,ND,Golfo de California,False,2,0,,,
+Bocana- Rechinadora,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,La Rechinadora,79
+Bombón,ND,ND,Golfo de California,False,2,0,,,
+Burrito,ND,ND,Golfo de California,False,2,0,DUPLICADO_PROBABLE,Burritos,93
+Burritos,CN-Sur Isla Catalana,Corredor norte,Golfo de California,False,2,0,DUPLICADO_PROBABLE,Burrito,93
+Caguamas,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Caguamera,82
+Cahuama trav,Costa Punta Abreojos,Pacífico norte,Pacífico,False,2,0,,,
+Cañada de Leña,CN-Isla Santa Cruz,Corredor norte,Golfo de California,False,2,0,,,
+Cantil Blanco,CS-Isla San José: Calabozo a Punta Colorada,Corredor sur,Golfo de California,False,2,0,,,
+"Cejuda, el toby",ND,ND,Golfo de California,False,2,0,,,
+Cerro Marquez de León,CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,2,0,,,
+Cerro Prieto,Pendiente,Cerralvo,Golfo de California,False,2,0,,,
+Chara,ND,ND,Golfo de California,False,2,0,,,
+Charco Azul Tembabiche,CN-Tembabiche,Corredor norte,Golfo de California,False,2,0,,,
+Chuyanga,ND,ND,Golfo de California,False,2,0,,,
+Corona,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Cora,80
+El Bajo del Monchi,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Bajo del Monchi,91
+El Bladi,Francis,Las Barrancas- San Juanico,Pacífico,False,2,0,,,
+"El Bufeo , el bajo de aguilar",ND,ND,Golfo de California,False,2,0,,,
+El Bule,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,El Bufeo,80
+El campaamento,ND,ND,Golfo de California,False,2,0,DUPLICADO_PROBABLE,El Campamento,96
+El Campamento y La Piedra de Zuñiga,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,"Piedra de zuñiga, el campamento",91
+El Cardón,Pendiente,Cerralvo,Golfo de California,False,2,0,POSIBLE_DUPLICADO,El Cardonal,90
+El Corrido,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,El Corrizo,90
+El Coyote y El Medano,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,El Medano y El Coyote,100
+El Esterito,Pendiente,Cerralvo,Golfo de California,False,2,0,POSIBLE_DUPLICADO,El Merito,80
+El Gavilan,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,El Gavilán,100
+El kino,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,El Kino,100
+el medano,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,El Medano,100
+El Monchy-El Bufeo,ND,ND,Golfo de California,False,2,0,,,
+El Muro del Cochi,Pendiente,Cerralvo,Golfo de California,False,2,0,,,
+El Pargo,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,El Parguito,84
+El payo,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,El Payo,100
+El payo- los manny,ND,ND,Golfo de California,False,2,0,,,
+"El Payo, las trece",ND,ND,Golfo de California,False,2,0,,,
+El picacho con el tecolote,ND,ND,Golfo de California,False,2,0,DUPLICADO_PROBABLE,El pikacho con el tecolote,96
+El Picacho del Borrego,CS-Costa de Los Dolores,Corredor sur,Golfo de California,False,2,0,,,
+El pikacho con el tecolote,ND,ND,Golfo de California,False,2,0,DUPLICADO_PROBABLE,El picacho con el tecolote,96
+El Pile,Pendiente,Cerralvo,Golfo de California,False,2,0,,,
+El Sauce,Pendiente,Cerralvo,Golfo de California,False,2,0,,,
+El secreto,ND,ND,Golfo de California,False,2,0,,,
+El Tobi,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,El Toby,86
+El Toby,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,El Tobi,86
+"El Toby, La Larga, el tata Ray",ND,ND,Golfo de California,False,2,0,,,
+El Volte,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,El voyote,82
+El zachil,ND,ND,Golfo de California,False,2,0,DUPLICADO_PROBABLE,el zachi,94
+escondido,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,Escondido,100
+"Faro con Faro, La Travesia",ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Faro con faro y travesia.,90
+Faro con la pila,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Faro con la baliza,82
+Frente a La Planta,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,Frente a la Planta,100
+IZV,ND,ND,Golfo de California,False,2,0,,,
+Javi,ND,ND,Golfo de California,False,2,0,,,
+La 30,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,La 35,80
+La 34,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,La 35,80
+La Barrita,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,La Barra,89
+"La Caguamera, el kino",ND,ND,Golfo de California,False,2,0,,,
+La Casona,Pendiente,Cerralvo,Golfo de California,False,2,0,,,
+La cejuda y lora,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Cejuda y lila,83
+La Chiva,Pendiente,Cerralvo,Golfo de California,False,2,0,POSIBLE_DUPLICADO,La Iván,80
+La Choya,ND,ND,Golfo de California,False,2,0,,,
+La Cordillera,CS-La Travesia,Corredor sur,Golfo de California,False,2,0,,,
+La Costa Tembabiche,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,2,0,,,
+La Huerta,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,2,0,POSIBLE_DUPLICADO,La Higuera,84
+La lila-El Payo,ND,ND,Golfo de California,False,2,0,,,
+La Llanta,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,La llanada,84
+la lobera,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,La Lobera,100
+La lora-El tata Ray-El muro,ND,ND,Golfo de California,False,2,0,,,
+"La luna , el bufeo",ND,ND,Golfo de California,False,2,0,,,
+La Maizoro,ND,ND,Golfo de California,False,2,0,,,
+la mancha,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,La mancha,100
+La mancha bancla,ND,ND,Golfo de California,False,2,0,DUPLICADO_PROBABLE,La mancha blanca,94
+La mancha hacia la orilla,ND,ND,Golfo de California,False,2,0,,,
+"La Mancha,  las tres marcas",ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Tres Marcas y Mancha Blanca,83
+La Mayrani,ND,ND,Golfo de California,False,2,0,,,
+La Mulita,CN-Norte Isla Santa Cruz,Corredor norte,Golfo de California,False,2,0,POSIBLE_DUPLICADO,La Manuelita,86
+La Panocha,PNAES-Noreste,PNAES,Golfo de California,False,2,0,POSIBLE_DUPLICADO,La mancha,84
+La Pitahaya y Mancha Blanca,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,La Pitahaya y La Bocana,80
+La Portería,PNAES-Noroeste,PNAES,Golfo de California,False,2,0,POSIBLE_DUPLICADO,La Torera,80
+La punta,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Punta Alta,89
+La Rastra,Pendiente,Cerralvo,Golfo de California,False,2,0,DUPLICADO_PROBABLE,La Rasta,94
+La rechi,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,La Brecha,82
+La Travesía,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,La Travesia,100
+La Última,ND,ND,Golfo de California,False,2,0,,,
+Laguna De Los Pericos,ND,ND,Golfo de California,False,2,0,,,
+Langosta 6,ND,ND,Golfo de California,False,2,0,,,
+Las 13 y El Payo,ND,ND,Golfo de California,False,2,0,,,
+Las 25,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Las 12,83
+Las 25 millas,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,Las 25 Millas,100
+Las Burras,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Los Burros,80
+Las Delicias,Pendiente,Cerralvo,Golfo de California,False,2,0,,,
+las doce,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,Las Doce,100
+Las Flores,CS-Potrero-Cerritos Verdes,Corredor sur,Golfo de California,False,2,0,DUPLICADO_EXACTO,Las Flores,100
+Las Minitas,Pendiente,Cerralvo,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Las Minas,90
+Las tres marcas,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Tres Marcas y Las 12,86
+Las tres marcas hacia afuera,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Afuera de las tres marcas,87
+Llanada,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Llamada,86
+lora,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,Lora,100
+Los Arbolitos y El Sachi,Bajos de El Sachi,Pacífico norte,Pacífico,False,2,0,POSIBLE_DUPLICADO,Los Arboles y El Sachi,91
+Los arbolitos-el escondido,ND,ND,Golfo de California,False,2,0,DUPLICADO_PROBABLE,"Los arbolitos, el escondido",94
+Los Burritos Catalana,Pendiente,Cerralvo,Golfo de California,False,2,0,,,
+Los Islotes Cerralvo,Pendiente,Cerralvo,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Los Islotes Afuera,79
+Los Lobos,Francis,Las Barrancas- San Juanico,Pacífico,False,2,0,,,
+Los Saltos,Pendiente,Cerralvo,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Los Angelitos,78
+Los Viejos,Pendiente,Cerralvo,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Carros Viejos,78
+Los Wachos,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Los Pochos,80
+mancha,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,Mancha,100
+Marca del Sur,CS-Bajos del sur,Corredor sur,Golfo de California,False,2,0,,,
+Mayeles,ND,ND,Golfo de California,False,2,0,,,
+Mayo 1,Francis,Las Barrancas- San Juanico,Pacífico,False,2,0,,,
+Médano amarillo,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,Medano Amarillo,100
+Megano,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Medano,83
+Moncho,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Loncho,83
+Muellecitos,PNAES-Noreste,PNAES,Golfo de California,False,2,0,,,
+Noroeste de San Diego,CS-Cabeza Isla San Diego,Corredor sur,Golfo de California,False,2,0,DUPLICADO_PROBABLE,Norte de San Diego,92
+Norte Carmen,Pendiente,Cerralvo,Golfo de California,False,2,0,,,
+Norte de catalana,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,Norte de Catalana,100
+Norte de Coronado,ND,ND,Golfo de California,False,2,0,,,
+P afuera canal,ND,ND,Golfo de California,False,2,0,,,
+Pabos 4,Francis,Las Barrancas- San Juanico,Pacífico,False,2,0,POSIBLE_DUPLICADO,Pabos 9,86
+"Pallo, y las 12",ND,ND,Golfo de California,False,2,0,DUPLICADO_PROBABLE,"Pallo, las 12",93
+Palmilla,Pendiente,Cerralvo,Golfo de California,False,2,0,,,
+Palo Parado,Pendiente,Cerralvo,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Palo Dorado,82
+pargo,ND,ND,Golfo de California,False,2,0,,,
+Picacho/tecolotito,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Picacho con Telocolotito,81
+Piedra Caida,Pendiente,Cerralvo,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Piedra I,80
+Piedra de Benito,CN-Bajo Seco,Corredor norte,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Piedra de Gelo,80
+"Piedra de zuñiga, el campamento",ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,El Campamento y La Piedra de Zuñiga,91
+Piedra del Gelo,Costa Punta Abreojos,Pacífico norte,Pacífico,False,2,0,DUPLICADO_PROBABLE,Piedra de Gelo,97
+Piedra del Pum y Ostioneros,Bajos de El Sachi,Pacífico norte,Pacífico,False,2,0,,,
+Piedra del Rino,ND,ND,Golfo de California,False,2,0,DUPLICADO_PROBABLE,Piedra del Rincón,94
+"Piedra layo,medanos y sandoval",ND,ND,Golfo de California,False,2,0,,,
+Piedra Sandoval,ND,ND,Golfo de California,False,2,0,,,
+Piedrita zuñiga- monchi,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Piedrita zuñiga,79
+Punta Ahujerada,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,2,0,,,
+Punta Baja,No Corredor,No Corredor,,False,2,0,POSIBLE_DUPLICADO,Punta Aguja,86
+Punta Burrito,CN-Sur Isla Catalana,Corredor norte,Golfo de California,False,2,0,,,
+Punta Lobos Pardito,CS-Afuera de San Francisquito,Corredor sur,Golfo de California,False,2,0,,,
+Punto 116 y 117,PNAES-Suroeste,PNAES,Golfo de California,False,2,0,,,
+Punto 118-119 y 120-121,PNAES-Suroeste,PNAES,Golfo de California,False,2,0,,,
+Punto 122-123 y 124,PNAES-Suroeste,PNAES,Golfo de California,False,2,0,,,
+Puntq abreojos,ND,ND,Golfo de California,False,2,0,DUPLICADO_PROBABLE,Punta Abreojos,93
+Ray,Oeste de El Sachi,Pacífico norte,Pacífico,False,2,0,,,
+"Sachi, La Gringa y pochos",ND,ND,Golfo de California,False,2,0,,,
+Sachit abajo,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Bajo sachita,92
+San Gregorio,Pendiente,Cerralvo,Golfo de California,False,2,0,,,
+san hipolito,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,San Hipólito,100
+San Ignacio,ND,ND,Golfo de California,False,2,0,,,
+Sandoval y linea,ND,ND,Golfo de California,False,2,0,,,
+Sierra Colorada,Pendiente,Cerralvo,Golfo de California,False,2,0,,,
+Sorullo orilla,ND,ND,Golfo de California,False,2,0,POSIBLE_DUPLICADO,Sorullo ala orilla,88
+Sorullo y  las doce,ND,ND,Golfo de California,False,2,0,,,
+Tarabias,Pendiente,Cerralvo,Golfo de California,False,2,0,,,
+Tata ray,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,Tata Ray,100
+Tata Ray,ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,Tata ray,100
+Tio Quirri (La Bocana),ND,ND,Golfo de California,False,2,0,DUPLICADO_EXACTO,Tio quirri (la bocana),100
+"Travesia , mancha blanca",ND,ND,Golfo de California,False,2,0,,,
+Tres Ramas,ND,ND,Golfo de California,False,2,0,,,
+V4,Francis,Las Barrancas- San Juanico,Pacífico,False,2,0,,,
+1 C,ND,ND,Golfo de California,False,1,0,,,
+1 F,ND,ND,Golfo de California,False,1,0,,,
+12 millas,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,12 Millas,100
+12 y La Lora,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Las 12 y Orilla,81
+14 Millas,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,12 Millas,89
+16 Millas,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,12 Millas,89
+2 F,ND,ND,Golfo de California,False,1,0,,,
+25 millas,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,25 Millas,100
+27 Millas,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,25 Millas,89
+28 Millas,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,25 Millas,89
+"3 marcas,torero,brechita,y brecha",ND,ND,Golfo de California,False,1,0,,,
+34 Millas,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,13 millas,89
+549,ND,ND,Golfo de California,False,1,0,,,
+Abajo Piedrita,Costa Punta Abreojos,Pacífico norte,Pacífico,False,1,0,POSIBLE_DUPLICADO,La piedrita,80
+Afi,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,,,
+Afuera de La Partida,PNAES-Noreste,PNAES,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Afuera de Las Animas,80
+Afuera de Las Animas,CS-Las Animas,Corredor sur,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Sur de Las Animas,86
+Afuera de Punta Gorda,Pendiente,Cerralvo,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Afuera de Punta Alta,83
+Afuera de San Evaristo,CS-Costa de Nopoló a Punta Arenas,Corredor sur,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Afuera de San Gabriel,79
+Aguilar,ND,ND,Golfo de California,False,1,0,,,
+Arboles,ND,ND,Golfo de California,False,1,0,,,
+Arboles abajo,ND,ND,Golfo de California,False,1,0,,,
+Arboles parte media y abajo,ND,ND,Golfo de California,False,1,0,,,
+Arbolitos y sachi,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Sachi y Arbolitos,100
+Arbolitos y sachita,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,Arbolitos y sachi,94
+Area de la luna,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Piedra de La Luna,81
+Area de las 12,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Area de las doce,80
+Area de las doce,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Area de las 12,80
+Arroyo La Pitahaya,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Barra La Pitahaya,86
+Bachicha la luna,ND,ND,Golfo de California,False,1,0,,,
+bajito,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Bajito,100
+Bajito bateki,ND,ND,Golfo de California,False,1,0,,,
+Bajito de 24,San Roque,Pacífico norte,Pacífico,False,1,0,,,
+Bajito de Prospero,San Hipólito,Pacífico norte,Pacífico,False,1,0,,,
+Bajo,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Abajo,89
+Bajo aguilar y piedra layo,ND,ND,Golfo de California,False,1,0,,,
+Bajo Burbujas,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Burbuja,78
+Bajo del Monchi,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,El bajo monchi,97
+Bajo Islotes Chuy,Pendiente,Cerralvo,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Bajo Islotes,83
+Bajo Islotes Teti,Pendiente,Cerralvo,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Bajo Islotes,83
+Bajo monchi,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Bajo Monchi,100
+Bajo sachita,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Bajo Sachita,100
+Bajo Sachita,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Bajo sachita,100
+Barda,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,POSIBLE_DUPLICADO,Barda 1,83
+Barraquitas,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,1,0,,,
+Bifa,ND,ND,Golfo de California,False,1,0,,,
+Bladi,ND,ND,Golfo de California,False,1,0,,,
+"Bocana línea, Travesia",ND,ND,Golfo de California,False,1,0,,,
+Bofos,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,,,
+brecha,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Brecha,100
+Brecha afuerita,ND,ND,Golfo de California,False,1,0,,,
+Brecha monchi,ND,ND,Golfo de California,False,1,0,,,
+Brecha. gringa. toby,ND,ND,Golfo de California,False,1,0,,,
+Brecha.kino. muro,ND,ND,Golfo de California,False,1,0,,,
+Brechita,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Brecha,86
+Brusli,ND,ND,Golfo de California,False,1,0,,,
+Buda,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,,,
+bufeo-muro,ND,ND,Golfo de California,False,1,0,,,
+Califas,ND,ND,Golfo de California,False,1,0,,,
+Campamento,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Canpamento,90
+Campo Viejo,ND,ND,Golfo de California,False,1,0,,,
+Canalito,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Chalito,80
+Carabullo,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,Carabumllo,95
+Carabumllo,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,Carabullo,95
+Carambullo,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,Carabullo,95
+Carros Viejos,Costa de Ojo de Liebre,Guerrero Negro,Pacífico,False,1,0,POSIBLE_DUPLICADO,Los Viejos,78
+Cejuda y lila,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La cejuda y lora,83
+Chabelita,ND,ND,Golfo de California,False,1,0,,,
+Chalito,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,POSIBLE_DUPLICADO,Canalito,80
+Chuy,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Chuy 1,80
+Chuy 1,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,POSIBLE_DUPLICADO,Chuy,80
+Clavada,ND,ND,Golfo de California,False,1,0,,,
+Cochoreño,ND,ND,Golfo de California,False,1,0,,,
+Cocos,ND,ND,Golfo de California,False,1,0,,,
+Coop. La Brecha,ND,ND,Golfo de California,False,1,0,,,
+Cortez,Bahía Magdalena,Pacífico,Pacífico,False,1,0,,,
+Costa Azul,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,,,
+Coyote Cerralvo,Pendiente,Cerralvo,Golfo de California,False,1,0,,,
+Doce abajo,ND,ND,Golfo de California,False,1,0,,,
+El Apache,CS-San José: Punta Sur de la Isla,Corredor sur,Golfo de California,False,1,0,,,
+El Atracadero,CS-El Pardito,Corredor sur,Golfo de California,False,1,0,,,
+El Bajo de Aguilar,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Bajo de Aguilar,91
+El bajo monchi,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,Bajo del Monchi,97
+"El Bufeo, coyote",ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El Coyote- el bufeo,86
+El Cardonal Cerralvo,Pendiente,Cerralvo,Golfo de California,False,1,0,,,
+El Carrilo,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El Carrizo,90
+El Carriza,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El Carrizo,90
+El Chalán,Pendiente,Cerralvo,Golfo de California,False,1,0,,,
+El Comejen,ND,ND,Golfo de California,False,1,0,,,
+El Cornizo,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El Corrizo,90
+El Coromuel,Bahía de La Paz,Bahía de La Paz,Golfo de California,False,1,0,,,
+El Coyote- el bufeo,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,"El Bufeo, coyote",86
+"El Coyote, El Torero",ND,ND,Golfo de California,False,1,0,,,
+"El Coyote, kino-bajito",ND,ND,Golfo de California,False,1,0,,,
+El Eje,Punta Abreojos Oeste,Pacífico norte,Pacífico,False,1,0,,,
+El escondido y burrera,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Escondido y Brecha,80
+El Foco,ND,ND,Golfo de California,False,1,0,,,
+El Gabilon,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El Gavilán,80
+El Kino- El Monchi,ND,ND,Golfo de California,False,1,0,,,
+El Medano y El Coyote,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,El Coyote y El Medano,100
+El Medano y El Monchi,ND,ND,Golfo de California,False,1,0,,,
+El medano-La larga-Faro con faro,ND,ND,Golfo de California,False,1,0,,,
+El Medano-Luna,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El Medano,78
+El Mochi-El Medano,ND,ND,Golfo de California,False,1,0,,,
+El monchi,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,El Monchi,100
+el muro,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,El Muro,100
+"El muro, Brecha, El bufeo",ND,ND,Golfo de California,False,1,0,,,
+El palito,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El Jalito,89
+El pallo,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,El Palo,93
+El Palo,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,El pallo,93
+El Paso,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El Payo,86
+El Pato Buzo,Pendiente,Cerralvo,Golfo de California,False,1,0,,,
+El Sachi - Los Arboles,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Los Arboles y El Sachi,91
+El Sandoval,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Sandoval,84
+El Saucito,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El Sachita,80
+El Teso,Pendiente,Cerralvo,Golfo de California,False,1,0,,,
+El Tio kirri enfrente de La Bocana,ND,ND,Golfo de California,False,1,0,,,
+El torero y La piedrita,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,El Torero y La Piedrita,100
+El Torero y La Piedrita,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,El torero y La piedrita,100
+"El torero, el medano, la caguamera, la luna",ND,ND,Golfo de California,False,1,0,,,
+El Tortulo,Afuera de La Costa,Pacífico norte,Pacífico,False,1,0,POSIBLE_DUPLICADO,El Sorullo,80
+El Troncón,CS-Isla San José: Calabozo al Mangle,Corredor sur,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El Rincón,84
+El voyote,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El Coyote,89
+El zoruyo,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El Soruyo,89
+Ensenada de Muertos,Pendiente,Cerralvo,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Ensenada de Cortés,81
+Ensenada del Estero,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Ensenada de Muertos,79
+Escondido y Brecha,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El escondido y burrera,80
+Estero de Las Latas,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Estero de Las Barritas,88
+Faro,ND,ND,Golfo de California,False,1,0,,,
+"Faro con Faro ,Las tres marcas",ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Las tres marcas y faro con faro,82
+Faro con faro 4-5 Millas,ND,ND,Golfo de California,False,1,0,,,
+Faro con faro y travesia.,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,"Faro con Faro, La Travesia",90
+Faro con la baliza,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,El faro con la baliza,92
+"Faro con la pila, sorullo orilla y tepes piedrita zuñiga abajito",ND,ND,Golfo de California,False,1,0,,,
+Faro pila,ND,ND,Golfo de California,False,1,0,,,
+Francis 3,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,POSIBLE_DUPLICADO,Francis,88
+Frente a la Planta,Estero El Cardón,San Ignacio,Pacífico,False,1,0,DUPLICADO_EXACTO,Frente a La Planta,100
+Frente al Bajo,ND,ND,Golfo de California,False,1,0,,,
+Ful,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,,,
+Gelo,ND,ND,Golfo de California,False,1,0,,,
+"Gringa,escondido",ND,ND,Golfo de California,False,1,0,,,
+gringa.larga,ND,ND,Golfo de California,False,1,0,,,
+Hedyonda y arbolitos,ND,ND,Golfo de California,False,1,0,,,
+Huacho,ND,ND,Golfo de California,False,1,0,,,
+Huesos,ND,ND,Golfo de California,False,1,0,,,
+Ia lila  afuera,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,La lila afuera,93
+Isla Santos,Pendiente,Cerralvo,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Isla San José,83
+Islitas (Afuera de Los Burros),CS-Costa Punta Alta a Punta Colorada,Corredor sur,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Afuera de Los Burros,80
+Islitas (Tembabiche),CN-Tembabiche,Corredor norte,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Islita Tembabiche,92
+Islote Los Lobos,Pendiente,Cerralvo,Golfo de California,False,1,0,,,
+"Jedionda,,arbolitos",ND,ND,Golfo de California,False,1,0,,,
+kino,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Kino,100
+Kino. Bufeo,ND,ND,Golfo de California,False,1,0,,,
+La Bala,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Baliza,88
+La Ballenita,CN-Costa de La Ballena a San Mateo,Corredor norte,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Ballena,91
+La Baqueta,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Baqueta,82
+La Bart,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Barrita,82
+"La bocana ,El Torero y El Bajito",ND,ND,Golfo de California,False,1,0,,,
+La Bocana y La Pitahaya,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,La Pitahaya y La Bocana,100
+"La Bocana,Piedrita, Kino",ND,ND,Golfo de California,False,1,0,,,
+La bocanita,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,La Bocanita,100
+"La brecha , faro baliza",ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Faro con la baliza,78
+La brecha y torero,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Brecha y La Travesia,79
+"La Brecha, El Coyote, Bajo",ND,ND,Golfo de California,False,1,0,,,
+La Bulo,ND,ND,Golfo de California,False,1,0,,,
+La caguamera,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,La Caguamera,100
+La cahuamela,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Caguamera,83
+La Cañada de Agua,Pendiente,Cerralvo,Golfo de California,False,1,0,,,
+La Chalatilla,ND,ND,Golfo de California,False,1,0,,,
+La Chichita,PNAES-Noroeste,PNAES,Golfo de California,False,1,0,,,
+La Cucaracha,Pendiente,Cerralvo,Golfo de California,False,1,0,,,
+La Domi,ND,ND,Golfo de California,False,1,0,,,
+La gringa,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,La Gringa,100
+La Gringa hacia arriba,ND,ND,Golfo de California,False,1,0,,,
+La Gringa y Las  doce,ND,ND,Golfo de California,False,1,0,,,
+La Guerona,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,POSIBLE_DUPLICADO,La Higuera,80
+La Linea,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,La Línea,100
+La Lora y La Gringa,ND,ND,Golfo de California,False,1,0,,,
+La luna- La caguamera,ND,ND,Golfo de California,False,1,0,,,
+La mancha blanca,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,La mancha bancla,94
+La Nalga,CS-Costa de San Francisquito,Corredor sur,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Bala,80
+La Napi Mody,ND,ND,Golfo de California,False,1,0,,,
+La Ola San Ignacio,La Barra,Pacífico norte,Pacífico,False,1,0,,,
+La Palmita Cerralvo,Pendiente,Cerralvo,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Reynita Cerralvo,79
+La Peque,Costa Punta Abreojos,Pacífico norte,Pacífico,False,1,0,,,
+La Piedra de La Ventana,Pendiente,Cerralvo,Golfo de California,False,1,0,,,
+La Piedrita,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,La piedrita,100
+La Piefrita de Zuñiga y El Torero,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,"El Torero, piedra de zuñiga",83
+La Pitaya,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,La pitaya,100
+La Posita,CS-Bajos del sur,Corredor sur,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Costa,82
+La Poza,CS-Bajos del sur,Corredor sur,Golfo de California,False,1,0,,,
+La Rechinadora y el Campamento,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,Campamento y La Rechinadora,95
+La Salinera,Pendiente,Cerralvo,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Línea,84
+La Sierrita,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La piedrita,82
+La Torera,Pendiente,Cerralvo,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Tintorera,86
+La Travesia y El Bajito,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Cabito y La Travesia,84
+Laguna El Paso,ND,ND,Golfo de California,False,1,0,,,
+Larga,ND,ND,Golfo de California,False,1,0,,,
+Larga (afuera),ND,ND,Golfo de California,False,1,0,,,
+Larga (Orilla),ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Lora orilla,80
+Las 11 millas,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,Las 12 Millas,92
+las 12 y 14,ND,ND,Golfo de California,False,1,0,,,
+Las 12 y La Brecha,ND,ND,Golfo de California,False,1,0,,,
+las 12. piedrita zuñiga,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Piedrita de zuñiga,86
+Las 27,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Las 12,83
+Las 28,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Las 12,83
+Las 3 marcas por fuera,ND,ND,Golfo de California,False,1,0,,,
+Las Abas,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Las Abis,88
+Las Abis,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Las Abas,88
+Las Altas,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Las Palmitas,86
+Las caguamas,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Las Caguamas,100
+Las casitas,Afuera de Puerto Nuevo,Pacífico norte,Pacífico,False,1,0,DUPLICADO_EXACTO,Las Casitas,100
+Las catorces,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Las Cruces,82
+"Las doce ,El payo ,El sorullo",ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,Las doce El Payo y el sorullo,93
+"Las Doce ,Los Tepes",ND,ND,Golfo de California,False,1,0,,,
+Las doce El Payo y el sorullo,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,"Las doce ,El payo ,El sorullo",93
+Las Palmitas,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Palmita,91
+Las Tarabillas,PNAES-Noroeste,PNAES,Golfo de California,False,1,0,,,
+Las tres marcas y faro con faro,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,"Faro con Faro ,Las tres marcas",82
+Las tres marcas-el soruyo,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Las tres marcas-El Soruyo,100
+Las Vickys,ND,ND,Golfo de California,False,1,0,,,
+Layo,ND,ND,Golfo de California,False,1,0,,,
+Le torero,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El Torero,89
+Linea bocana,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Bocana linea,100
+Linea Bocana,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Bocana linea,100
+Lobera,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Lobera,80
+Lod arbolitos,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,Los Arbolitos,92
+Lok 3,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,,,
+Loncho,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Moncho,83
+Lora-las doce,ND,ND,Golfo de California,False,1,0,,,
+Los 3 Extranjeros,ND,ND,Golfo de California,False,1,0,,,
+Los arboles el sachi y la gringa,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Los Arboles y El Sachi,81
+Los Arboles y El Sachi,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Los Arbolitos y El Sachi,91
+Los arboles y La Lora,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Los Arboles y La Lora,100
+Los Arboles y La Lora,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Los arboles y La Lora,100
+Los Arbolitos  y La Travesia,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Los Arbolitos y La Brecha,85
+Los Choques,ND,ND,Golfo de California,False,1,0,,,
+Los Cisnes,CS-Isla San José: Calabozo al Mangle,Corredor sur,Golfo de California,False,1,0,,,
+Los Cortados,ND,ND,Golfo de California,False,1,0,,,
+Los Gavilanes,CN-Costa de La Ballena a San Mateo,Corredor norte,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El Gavilán,78
+Los Pinos,CS-Isla San José: Calabozo al Mangle,Corredor sur,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Los Pericos,80
+Los pocho,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,Los Pochos,95
+Los sebolitos,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Los Arbolitos,85
+Los Tetis 3,ND,ND,Golfo de California,False,1,0,,,
+Los Wilos,ND,ND,Golfo de California,False,1,0,,,
+Los Yicos,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Los Pericos,80
+Luna,ND,ND,Golfo de California,False,1,0,,,
+Lupe,ND,ND,Golfo de California,False,1,0,,,
+Madano,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Medano,83
+Mancha,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,mancha,100
+Marcas Pierneras,CS-Bajos del sur,Corredor sur,Golfo de California,False,1,0,,,
+Masmas,ND,ND,Golfo de California,False,1,0,,,
+Mayel 2,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,POSIBLE_DUPLICADO,Mayel 8,86
+Mayel 8,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,POSIBLE_DUPLICADO,Mayel 2,86
+"medano ,y torero",ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Torero y Medano,84
+Medano Amarillo y Faro s.h,ND,ND,Golfo de California,False,1,0,,,
+Medano de Las Maromas,Pendiente,Cerralvo,Golfo de California,False,1,0,,,
+Medano-coyote,ND,ND,Golfo de California,False,1,0,,,
+Medano-torero,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Torero y Medano,86
+"medano,caguamera",ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,"medano,caguamera,",97
+"medano,caguamera,",ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,"medano,caguamera",97
+Meganito Rama Verde,ND,ND,Golfo de California,False,1,0,,,
+Megano amarillo y bajo aguilar,ND,ND,Golfo de California,False,1,0,,,
+Miguel Babas,ND,ND,Golfo de California,False,1,0,,,
+Monchi,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Moncho,83
+"Monchi.. Brecha ,pargo",ND,ND,Golfo de California,False,1,0,,,
+Moro Chuy,Pendiente,Cerralvo,Golfo de California,False,1,0,,,
+Moro Nemito,Pendiente,Cerralvo,Golfo de California,False,1,0,,,
+Morro de Chivato,CN-Bajo San Marcial,Corredor norte,Golfo de California,False,1,0,,,
+Morro del Cuchillo,Pendiente,Cerralvo,Golfo de California,False,1,0,,,
+"Muro, brecha",ND,ND,Golfo de California,False,1,0,,,
+"Muro,gringa,toby",ND,ND,Golfo de California,False,1,0,,,
+"Muro,la luna,bachiCha tepes bajo aguilar",ND,ND,Golfo de California,False,1,0,,,
+Noroeste del Calabozo,CS-La Travesia,Corredor sur,Golfo de California,False,1,0,,,
+Norte de Isla Espíritu Santo,PNAES-Noroeste,PNAES,Golfo de California,False,1,0,DUPLICADO_PROBABLE,Oeste de Isla Espíritu Santo,93
+Pabos 9,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,POSIBLE_DUPLICADO,Pabos 4,86
+"Pallo, las 12",ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,"Pallo, y las 12",93
+Palo Dorado,Pendiente,Cerralvo,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Palo Parado,82
+Paraje de Huajaco,CS-El Coyote,Corredor sur,Golfo de California,False,1,0,,,
+Paredones Rosas,Pendiente,Cerralvo,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Paredones Prietos,81
+Pavos 1,ND,ND,Golfo de California,False,1,0,,,
+Piedra Ancha,ND,ND,Golfo de California,False,1,0,,,
+Piedra de Gelo,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,Piedra del Gelo,97
+Piedra de La Luna,Afuera de El Coyote,Pacífico norte,Pacífico,False,1,0,POSIBLE_DUPLICADO,Area de la luna,81
+Piedra de Los Panchos,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Piedra de Los Sanchez,80
+Piedra del kino,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Piedra del Kino,100
+Piedra del Moreno,Punta Abreojos Oeste,Pacífico norte,Pacífico,False,1,0,POSIBLE_DUPLICADO,Piedra del Morro,91
+Piedra del Rincón,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,1,0,DUPLICADO_PROBABLE,Piedra del Rino,94
+Piedra del Trini,El Coyote,Pacífico norte,Pacífico,False,1,0,POSIBLE_DUPLICADO,Piedra del Rino,90
+Piedra I,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Piedra,82
+Piedra Papo,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Piedra,80
+Piedra Zuñiga,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Piedra zuñiga,100
+"Piedra zuñiga , la luna",ND,ND,Golfo de California,False,1,0,,,
+Piedra zuñiga p/fuera,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Piedra de Zúñiga,81
+Piedras del megano,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Piedra del Moreno,86
+Piedrita Tenes,ND,ND,Golfo de California,False,1,0,,,
+piedrita zuñiga y trave,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,torero y piedrita zuñiga,89
+Pikacho con el tekolotito,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El pikacho con el tecolote,82
+"Pitaya,bocana,rechi,linea",ND,ND,Golfo de California,False,1,0,,,
+Pocho,El Coyote,Pacífico norte,Pacífico,False,1,0,POSIBLE_DUPLICADO,pochos,91
+Pochos y torero,ND,ND,Golfo de California,False,1,0,,,
+Podrá de Zúñiga,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Piedra de Zúñiga,90
+Polary,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Polari,83
+Puerto De Agua Brava,ND,ND,Golfo de California,False,1,0,,,
+Puerto de Punta Prieta,San Hipólito,Pacífico norte,Pacífico,False,1,0,,,
+Puerto Gata,CN-Costa de Carrizalito a Los Nidos,Corredor norte,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Puerto Gatos,87
+Pulpito,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El Púlpito,82
+Pulpos,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,,,
+Punta Cajón,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,1,0,,,
+Punta Cruz,CN-Isla Santa Cruz,Corredor norte,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Santa Cruz,80
+Punta de Arriba,ND,ND,Golfo de California,False,1,0,,,
+Punta Don Pancho,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,1,0,,,
+Punta Perico,CN-Isla Montserrat,Corredor norte,Golfo de California,False,1,0,,,
+Punta San Gabriel,PNAES-Suroeste,PNAES,Golfo de California,False,1,0,POSIBLE_DUPLICADO,San Gabriel,79
+Punta-medanos,ND,ND,Golfo de California,False,1,0,,,
+Rafita,ND,ND,Golfo de California,False,1,0,,,
+"Rechi, bocana",ND,ND,Golfo de California,False,1,0,,,
+Risco,Pendiente,Cerralvo,Golfo de California,False,1,0,,,
+Roca Solitaria,CN-El Islote a La Brecha,Corredor norte,Golfo de California,False,1,0,,,
+Rumalda,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,La Rumalda,82
+sachi,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Sachi,100
+sachi arbolitos,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,Arbolitos y sachi,94
+Sachi y arboles,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Arbolitos y sachi,88
+Sachi y Arbolitos,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Arbolitos y sachi,100
+Sachital,ND,ND,Golfo de California,False,1,0,DUPLICADO_PROBABLE,Sachita,93
+Sagualicoi,CS-San José: Punta Sur de la Isla,Corredor sur,Golfo de California,False,1,0,,,
+San Luis Potosí,Pendiente,Cerralvo,Golfo de California,False,1,0,,,
+Santa Clara,Pendiente,Cerralvo,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Santa Martha,78
+Santos,ND,ND,Golfo de California,False,1,0,,,
+sorullo,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Sorullo,100
+Sorullo ala orilla,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Sorullo orilla,88
+"Sorullo, La Lora",ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Sorullo ala orilla,82
+Sur de El Berrendo,CN-Bajo Berrendo,Corredor norte,Golfo de California,False,1,0,,,
+Sur de Las Loberas,CS-Barra La Lobera,Corredor sur,Golfo de California,False,1,0,,,
+Sur del Amortajado,CS-Isla San José: El Amortajado a El Cerrito,Corredor sur,Golfo de California,False,1,0,,,
+"Tata ray, gringa",ND,ND,Golfo de California,False,1,0,,,
+Tecolote con el picaho,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,El picacho con el tecolote,92
+Tepec,Afuera de El Coyote,Pacífico norte,Pacífico,False,1,0,POSIBLE_DUPLICADO,Tepe,89
+Tepes del soruyo afuera,ND,ND,Golfo de California,False,1,0,,,
+Tepes monchi,ND,ND,Golfo de California,False,1,0,,,
+Tepes y torero,ND,ND,Golfo de California,False,1,0,,,
+"Tepetate, Faro con Faro y X",ND,ND,Golfo de California,False,1,0,,,
+Tepetates y Bufeo,ND,ND,Golfo de California,False,1,0,,,
+Tobi,ND,ND,Golfo de California,False,1,0,,,
+Topolobampo,ND,ND,Golfo de California,False,1,0,,,
+Torero y Medano,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,Medano-torero,86
+torero y piedrita zuñiga,ND,ND,Golfo de California,False,1,0,POSIBLE_DUPLICADO,piedrita zuñiga y trave,89
+Trampas,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,,,
+Tres marcas,ND,ND,Golfo de California,False,1,0,DUPLICADO_EXACTO,Tres Marcas,100
+Tres Marcas y Las 12,Bajos de El Sachi,Pacífico norte,Pacífico,False,1,0,POSIBLE_DUPLICADO,Las tres marcas,86
+Trompo 1,Francis,Las Barrancas- San Juanico,Pacífico,False,1,0,,,
+Uña de Gato,CS-Potrero-Cerritos Verdes,Corredor sur,Golfo de California,False,1,0,,,
+Yico,ND,ND,Golfo de California,False,1,0,,,
+Baqueta,Francis,Las Barrancas- San Juanico,Pacífico,False,0,0,DUPLICADO_EXACTO,Baqueta,100
+El Bajito,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,El bajito,100
+El Bajo,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,El Bajo,100
+El Barco,Estero El Cardón,San Ignacio,Pacífico,False,0,0,DUPLICADO_EXACTO,El Barco,100
+El Coyote,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,El coyote,100
+El Pozo,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,El Pozo,100
+Estero,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,Estero,100
+La Barra,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,La Barra,100
+La Bawa,Pendiente,Cerralvo,Golfo de California,False,0,0,POSIBLE_DUPLICADO,La Bala,86
+La Bocana,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,La bocana,100
+La Brecha,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,La brecha,100
+La Gringa,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,la gringa,100
+La Pitahaya,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,La Pitahaya,100
+La Travesia,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,La Travesía,100
+La Ventana,Costa de Ojo de Liebre,Guerrero Negro,Pacífico,False,0,0,DUPLICADO_EXACTO,La Ventana,100
+Las 35,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,Las 35,100
+Las Flores,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,Las Flores,100
+Las Garcitas,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,Las Garcitas,100
+Las Tijeras,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,Las Tijeras,100
+Los Muertos,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,Los Muertos,100
+Los Paredones,Costa de Ojo de Liebre,Guerrero Negro,Pacífico,False,0,0,DUPLICADO_EXACTO,Los Paredones,100
+Los Pargos,Francis,Las Barrancas- San Juanico,Pacífico,False,0,0,DUPLICADO_EXACTO,Los Pargos,100
+Lugar/ Sitio de pesca,Area de Pesca,Zona de pesca,,False,0,0,,,
+Pimientillo,ND,ND,Golfo de California,False,0,0,,,
+Punta Pescadero,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,Punta Pescadero,100
+San Juanico,ND,ND,Golfo de California,False,0,0,DUPLICADO_EXACTO,San Juanico,100

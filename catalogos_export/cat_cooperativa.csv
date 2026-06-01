@@ -1,0 +1,69 @@
+﻿cooperativa,es_aprobado,uso_faenas,flag_tipo,similar_a,similitud_pct
+"S.C.P.P. Punta Abreojos, S.C. de R.L.",False,58799,,,
+Coop. Bahía de La Paz,False,11659,,,
+Coop. Islote de Agua Verde,False,9565,DUPLICADO_PROBABLE,SCPP. Islote de Agua Verde,92
+Coop. Playas del Puertito,False,6167,,,
+Coop. Coral de Tembabiche,False,1659,,,
+Coop. San Juan de la Costa,False,1465,,,
+Coop. Isla Santa Cruz,False,1212,POSIBLE_DUPLICADO,Coop. Santa Cruz,86
+S.C.P.P.P. de La Brecha S.C de R.L.,False,1147,POSIBLE_DUPLICADO,S.C.P.P P. de La Brecha S.C.L,88
+Nabor Cabuto,False,1094,,,
+Coop. Hermanos Calderón,False,1011,,,
+Coop. Isla San José,False,665,DUPLICADO_EXACTO,Coop. Isla San Jose,100
+Fraternidad Pimientillo,False,663,,,
+"SCCP y Acuicola Unión de Morillos, S.A. DE C.V. DE R.L.",False,583,,,
+Coop. Roca Solitaria,False,436,,,
+S.C.P.P P. de La Brecha S.C.L,False,200,POSIBLE_DUPLICADO,S.C.P.P.P. de La Brecha S.C de R.L.,88
+Coop. La Brecha,False,166,POSIBLE_DUPLICADO,Coop. La Barra,83
+S.C.P.P. Pescadores de La Brecha S.C. DE R.L.,False,165,POSIBLE_DUPLICADO,S.C.P.P.P. de La Brecha S.C de R.L.,85
+"S.C.P.P. Barranquitas, S.C. de R.L.",False,122,POSIBLE_DUPLICADO,"S.C.P.P. Bahía Tortugas, S.C. de R.L",79
+Asociación pesquera ribereña El Sargento y su anexo La Ventana,False,88,,,
+S.C.P.P. Emancipación,False,85,,,
+"S.C.P.P. Bahía Tortugas, S.C. de R.L",False,76,POSIBLE_DUPLICADO,"S.C.P.P. Barranquitas, S.C. de R.L.",79
+Filemon Murillo,False,73,POSIBLE_DUPLICADO,Filiberto Murillo,81
+Coop. Barranquitas,False,63,,,
+Permisionario,False,60,,,
+Granjeros Pericos,False,52,,,
+Coop. Santa Cruz,False,51,POSIBLE_DUPLICADO,Coop. Isla Santa Cruz,86
+Los Morillos,False,46,,,
+Pescadores de San Ignacio,False,44,POSIBLE_DUPLICADO,Coop. Pescadores de San Ignacio,89
+Pescadores Pimientillo,False,35,,,
+Filiberto Murillo,False,34,POSIBLE_DUPLICADO,Filemon Murillo,81
+"S.C.P.P. Ribereña Leyes De Reforma, S.C. De R.L",False,30,,,
+SCPP. Islote de Agua Verde,False,29,DUPLICADO_PROBABLE,Coop. Islote de Agua Verde,92
+Estero El Cardón,False,28,,,
+Rolando Sanchez Sanchez,False,26,,,
+S.C.P.P. Estero Datil,False,24,POSIBLE_DUPLICADO,S.C.P.P. Estero 12,82
+Coop. Tezal,False,19,,,
+Candelaria del Villar,False,12,,,
+S.C.P.P. Unión de Pescadores,False,11,POSIBLE_DUPLICADO,Union de Pescadores,81
+Coop. Puerto Chale,False,9,,,
+Alberto Castro,False,8,,,
+Union de Pescadores,False,8,POSIBLE_DUPLICADO,Pescadores Unidos,83
+Teacapan,False,7,,,
+Vencedora 7,False,7,,,
+S.C.P.P. La Purísma,False,6,,,
+Martinez Z,False,5,,,
+Pescadores de La Barra,False,5,,,
+S.C.P.P. Estero El Cardón S.C.,False,5,,,
+Coop. Boca del Alamo,False,4,,,
+Coop. Isla San Jose,False,4,DUPLICADO_EXACTO,Coop. Isla San José,100
+other,False,3,,,
+Pescadores Unidos,False,3,POSIBLE_DUPLICADO,Union de Pescadores,83
+Z16,False,3,,,
+Coop. La Barra,False,2,POSIBLE_DUPLICADO,Coop. La Brecha,83
+El Cardón,False,2,,,
+Emancipación,False,2,,,
+Fraternidad,False,2,,,
+"S.C.P.P. California de San Ignacio, S.C.L.",False,2,,,
+SCPP Pescadores de La Brecha S.L.C.,False,2,POSIBLE_DUPLICADO,S.C.P.P. Pescadores de La Brecha S.C. DE R.L.,85
+Coop. General Lázaro Cárdenas,False,1,,,
+Coop. Pescadores de San Ignacio,False,1,POSIBLE_DUPLICADO,Pescadores de San Ignacio,89
+Embarcadero de Los Morillos,False,1,,,
+Florencio Figueroa,False,1,,,
+Gomez Z,False,1,,,
+S.C.P.P. Estero 12,False,1,POSIBLE_DUPLICADO,S.C.P.P. Estero Datil,82
+Cooperativa,False,0,,,
+Desconocida,False,0,,,
+Roberto Peralta M.,False,0,,,
+"SCCP y Acuicola Ostricamichin, S.C. de R.L. de C.V.",False,0,,,

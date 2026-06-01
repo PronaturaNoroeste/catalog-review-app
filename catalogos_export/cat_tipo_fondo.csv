@@ -1,0 +1,13 @@
+﻿tipo_fondo,es_aprobado,uso_faenas,flag_tipo,similar_a,similitud_pct
+Rocoso,False,9915,,,
+Arenoso,False,514,,,
+Semirocoso,False,105,,,
+Arenoso y rocoso,False,81,DUPLICADO_PROBABLE,Rocoso arenoso,93
+Cascajo,False,40,,,
+Fangoso y rocoso,False,39,POSIBLE_DUPLICADO,Arenoso y rocoso,88
+Fangoso,False,19,,,
+Pedregoso,False,6,,,
+Semiarenoso,False,5,,,
+Rocoso arenoso,False,2,DUPLICADO_PROBABLE,Arenoso y rocoso,93
+Tepetate,False,1,,,
+Tipo de fondo,False,0,,,

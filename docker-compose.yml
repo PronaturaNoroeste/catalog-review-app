@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      # decisions persists on the host — survives container restarts
+      - ./decisions:/app/decisions
+    restart: unless-stopped

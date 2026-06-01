@@ -1,0 +1,17 @@
+﻿tipo_marea,uso_faenas,flag_tipo,similar_a,similitud_pct
+Alta,1562,,,
+Baja,1285,,,
+Muerta,576,,,
+Media,547,,,
+Creciente,37,,,
+Diurna,29,,,
+Menguante,18,,,
+Alta y baja,17,,,
+Viva,11,,,
+Llena,5,,,
+Normal,3,,,
+Baja y media,2,POSIBLE_DUPLICADO,Baja media,91
+Primer cuarto,2,,,
+Baja media,1,POSIBLE_DUPLICADO,Baja y media,91
+Nueva,1,,,
+Marea,0,,,
