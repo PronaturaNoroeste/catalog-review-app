@@ -69,12 +69,6 @@ FLAG_EMOJI = {
     "POSIBLE_DUPLICADO":  "🟡",
 }
 
-FLAG_COLOR = {
-    "DUPLICADO_EXACTO":   "#fff0f0",
-    "DUPLICADO_PROBABLE": "#fff4e6",
-    "POSIBLE_DUPLICADO":  "#fffde7",
-}
-
 DECISIONS = [
     "Decidir después",
     "Mantener A — eliminar B",
@@ -94,12 +88,17 @@ def load_csv(table: str) -> pd.DataFrame | None:
     return pd.read_csv(path, encoding="utf-8-sig", dtype=str).fillna("")
 
 
+def save_csv(table: str, df: pd.DataFrame):
+    path = EXPORT_DIR / f"{table}.csv"
+    df.to_csv(path, index=False, encoding="utf-8-sig")
+
+
 def load_decisions(table: str) -> dict:
     path = DECISIONS_DIR / f"{table}.json"
     if path.exists():
         with open(path, encoding="utf-8") as f:
             return json.load(f)
-    return {"pairs": {}, "deleted": [], "approved": []}
+    return {"pairs": {}, "deleted": [], "approved": [], "renames": []}
 
 
 def save_decisions(table: str, decisions: dict):
@@ -108,40 +107,50 @@ def save_decisions(table: str, decisions: dict):
         json.dump(decisions, f, ensure_ascii=False, indent=2)
 
 
+@st.cache_data
 def get_pairs(df: pd.DataFrame, name_col: str) -> list[dict]:
-    """Return unique flagged pairs (A↔B shown once)."""
+    """Return unique flagged pairs (A↔B shown once). Cached — cleared on CSV rename."""
     if "flag_tipo" not in df.columns:
         return []
+
+    uso_cols  = [c for c in df.columns if c.startswith("uso_")]
+    has_sci   = "nombre_cientifico" in df.columns
+    extra_cols = ["nombre_cientifico"] if has_sci else []
+
+    # Pre-build O(1) lookup: name → {col: val}
+    lookup_cols = uso_cols + extra_cols
+    lookup = (
+        df.set_index(name_col)[lookup_cols].to_dict("index")
+        if lookup_cols else {}
+    )
+
     flagged = df[(df["flag_tipo"] != "") & (df["similar_a"] != "")]
     seen: set = set()
     pairs = []
+
     for _, row in flagged.iterrows():
         a, b = row[name_col], row["similar_a"]
         key = "|".join(sorted([a, b]))
         if key in seen:
             continue
         seen.add(key)
-        uso_cols = [c for c in df.columns if c.startswith("uso_")]
-        def uso(name):
-            r = df.loc[df[name_col] == name]
-            return {c: r[c].values[0] if not r.empty else "" for c in uso_cols}
-        def extra(name):
-            if "nombre_cientifico" not in df.columns:
-                return ""
-            r = df.loc[df[name_col] == name, "nombre_cientifico"]
-            return r.values[0] if not r.empty else ""
+
+        row_a = lookup.get(a, {})
+        row_b = lookup.get(b, {})
+
         pairs.append({
-            "key":    key,
-            "a":      a,
-            "b":      b,
-            "flag":   row["flag_tipo"],
-            "pct":    row.get("similitud_pct", ""),
-            "uso_a":  uso(a),
-            "uso_b":  uso(b),
-            "extra_a": extra(a),
-            "extra_b": extra(b),
+            "key":     key,
+            "a":       a,
+            "b":       b,
+            "flag":    row["flag_tipo"],
+            "pct":     row.get("similitud_pct", ""),
+            "uso_a":   {c: row_a.get(c, "") for c in uso_cols},
+            "uso_b":   {c: row_b.get(c, "") for c in uso_cols},
+            "extra_a": row_a.get("nombre_cientifico", ""),
+            "extra_b": row_b.get("nombre_cientifico", ""),
             "uso_cols": uso_cols,
         })
+
     return pairs
 
 
@@ -151,6 +160,31 @@ def progress(pairs: list[dict], decisions: dict) -> tuple[int, int]:
         if decisions["pairs"].get(p["key"], "Decidir después") != "Decidir después"
     )
     return decided, len(pairs)
+
+
+def _apply_rename(decisions: dict, old: str, new: str) -> dict:
+    """Update all references to `old` name inside a decisions dict."""
+    # renames log
+    renames = decisions.get("renames", [])
+    # collapse chains: if old was itself a rename target, update the chain
+    renames = [r for r in renames if r["to"] != old]
+    renames.append({"from": old, "to": new})
+    decisions["renames"] = renames
+
+    # deleted / approved lists
+    decisions["deleted"]  = [new if n == old else n for n in decisions.get("deleted", [])]
+    decisions["approved"] = [new if n == old else n for n in decisions.get("approved", [])]
+
+    # pair keys: key is "|".join(sorted([a, b])), value is decision string
+    new_pairs = {}
+    for key, val in decisions.get("pairs", {}).items():
+        parts = key.split("|")
+        parts = [new if p == old else p for p in parts]
+        new_key = "|".join(sorted(parts))
+        new_pairs[new_key] = val
+    decisions["pairs"] = new_pairs
+
+    return decisions
 
 
 # ---------------------------------------------------------------------------
@@ -172,8 +206,8 @@ def sidebar() -> str:
         df = load_csv(t)
         if df is None:
             continue
-        pairs = get_pairs(df, NAME_COLS[t])
-        dec = load_decisions(t)
+        pairs = get_pairs(df, NAME_COLS[t])   # cached after first call
+        dec   = load_decisions(t)
         done, total = progress(pairs, dec)
         badge = "✅" if (total > 0 and done == total) else (f"{done}/{total}" if total > 0 else "—")
         options.append((f"{TABLE_LABELS.get(t, t)}  [{badge}]", t))
@@ -193,7 +227,7 @@ def sidebar() -> str:
 # ---------------------------------------------------------------------------
 
 def render_pairs(table: str, df: pd.DataFrame, name_col: str):
-    pairs = get_pairs(df, name_col)
+    pairs     = get_pairs(df, name_col)
     decisions = load_decisions(table)
 
     if not pairs:
@@ -216,11 +250,11 @@ def render_pairs(table: str, df: pd.DataFrame, name_col: str):
 
         if filt == "Solo pendientes" and not pending:
             continue
-        if filt == "🔴 Exacto"    and pair["flag"] != "DUPLICADO_EXACTO":
+        if filt == "🔴 Exacto"   and pair["flag"] != "DUPLICADO_EXACTO":
             continue
-        if filt == "🟠 Probable"  and pair["flag"] != "DUPLICADO_PROBABLE":
+        if filt == "🟠 Probable" and pair["flag"] != "DUPLICADO_PROBABLE":
             continue
-        if filt == "🟡 Posible"   and pair["flag"] != "POSIBLE_DUPLICADO":
+        if filt == "🟡 Posible"  and pair["flag"] != "POSIBLE_DUPLICADO":
             continue
 
         emoji = FLAG_EMOJI.get(pair["flag"], "⚪")
@@ -291,10 +325,12 @@ def render_pairs(table: str, df: pd.DataFrame, name_col: str):
 # ---------------------------------------------------------------------------
 
 def render_all(table: str, df: pd.DataFrame, name_col: str):
-    decisions  = load_decisions(table)
+    decisions    = load_decisions(table)
     deleted_set  = set(decisions.get("deleted", []))
     approved_set = set(decisions.get("approved", []))
+    all_names    = set(df[name_col].tolist())
 
+    # --- columns to show ---
     display_cols = [name_col]
     if "nombre_cientifico" in df.columns:
         display_cols.append("nombre_cientifico")
@@ -309,6 +345,7 @@ def render_all(table: str, df: pd.DataFrame, name_col: str):
         else ("✅ Aprobado" if n in approved_set else "")
     ))
 
+    # --- batch actions ---
     col1, col2, col3 = st.columns(3)
     with col1:
         if st.button("✅ Aprobar todos los no eliminados", use_container_width=True):
@@ -326,10 +363,12 @@ def render_all(table: str, df: pd.DataFrame, name_col: str):
         pending = len(df) - len(approved_set) - len(deleted_set)
         st.caption(f"{len(approved_set)} aprobados · {len(deleted_set)} a eliminar · {pending} pendientes")
 
+    # --- filter ---
     show = st.selectbox(
         "Filtrar",
-        ["Todas", "Solo pendientes", "Aprobados", "A eliminar", "Flaggeados"],
+        ["Todas", "Solo pendientes", "Aprobados", "A eliminar", "Flaggeados", "Renombrados"],
     )
+    renamed_names = {r["from"] for r in decisions.get("renames", [])}
     if show == "Solo pendientes":
         display = display[~display[name_col].isin(approved_set | deleted_set)]
     elif show == "Aprobados":
@@ -339,25 +378,100 @@ def render_all(table: str, df: pd.DataFrame, name_col: str):
     elif show == "Flaggeados" and "flag_tipo" in df.columns:
         flagged_names = set(df[df["flag_tipo"] != ""][name_col])
         display = display[display[name_col].isin(flagged_names)]
+    elif show == "Renombrados":
+        display = display[display[name_col].isin(renamed_names)]
+
+    # --- editable columns ---
+    editable = {"✓ Aprobar", name_col}
+    if "nombre_cientifico" in display.columns:
+        editable.add("nombre_cientifico")
+    read_only = [c for c in display.columns if c not in editable]
+
+    st.caption("✏️ Los campos **nombre** son editables — doble clic para corregir una entrada directamente.")
+
+    # keep a snapshot of names before editing (by index) for rename detection
+    pre_edit = display[[name_col]].copy()
+    if "nombre_cientifico" in display.columns:
+        pre_edit = display[[name_col, "nombre_cientifico"]].copy()
 
     edited = st.data_editor(
         display,
         column_config={
             "✓ Aprobar": st.column_config.CheckboxColumn("✓ Aprobar", width="small"),
             "Estado":    st.column_config.TextColumn("Estado", width="small", disabled=True),
+            name_col:    st.column_config.TextColumn("Nombre", help="Editable — corrige el texto directamente"),
         },
         use_container_width=True,
         hide_index=True,
-        disabled=[c for c in display.columns if c != "✓ Aprobar"],
+        disabled=read_only,
         key=f"editor_{table}",
     )
 
+    # --- detect renames ---
+    renames_applied = False
+    for idx in pre_edit.index:
+        if idx not in edited.index:
+            continue
+
+        old_name = pre_edit.at[idx, name_col]
+        new_name = edited.at[idx, name_col].strip()
+
+        if new_name and new_name != old_name:
+            if new_name in all_names and new_name != old_name:
+                st.warning(
+                    f"⚠️ **'{new_name}'** ya existe en este catálogo. "
+                    "Considera usar la pestaña de duplicados para gestionar este par."
+                )
+            else:
+                # Update CSV
+                full_df = load_csv(table).copy()
+                full_df.loc[full_df[name_col] == old_name, name_col] = new_name
+                save_csv(table, full_df)
+
+                # Update decisions
+                decisions = _apply_rename(decisions, old_name, new_name)
+
+                # Update approved/deleted sets for subsequent iterations
+                approved_set = {new_name if n == old_name else n for n in approved_set}
+                deleted_set  = {new_name if n == old_name else n for n in deleted_set}
+                all_names    = {new_name if n == old_name else n for n in all_names}
+
+                st.toast(f"✏️ Renombrado: '{old_name}' → '{new_name}'")
+                renames_applied = True
+
+        # nombre_cientifico edit (cat_especie only)
+        if "nombre_cientifico" in pre_edit.columns:
+            old_sci = pre_edit.at[idx, "nombre_cientifico"]
+            new_sci = edited.at[idx, "nombre_cientifico"].strip()
+            if new_sci and new_sci != old_sci:
+                full_df = load_csv(table).copy()
+                full_df.loc[full_df[name_col] == new_name, "nombre_cientifico"] = new_sci
+                save_csv(table, full_df)
+                st.toast(f"✏️ Nombre científico actualizado: '{old_sci}' → '{new_sci}'")
+                renames_applied = True
+
+    if renames_applied:
+        save_decisions(table, decisions)
+        load_csv.clear()    # invalidate Streamlit cache so rerun sees updated CSV
+        get_pairs.clear()   # pairs may reference old names
+        st.rerun()
+
+    # --- persist approval checkbox changes ---
     new_approved = set(edited.loc[edited["✓ Aprobar"], name_col].tolist())
     new_rejected  = set(edited.loc[~edited["✓ Aprobar"], name_col].tolist())
     merged = (approved_set | new_approved) - new_rejected - deleted_set
     if merged != approved_set:
         decisions["approved"] = sorted(merged)
         save_decisions(table, decisions)
+
+    # --- renames log at bottom ---
+    if decisions.get("renames"):
+        with st.expander(f"📝 Renombres aplicados ({len(decisions['renames'])})"):
+            st.dataframe(
+                pd.DataFrame(decisions["renames"]),
+                use_container_width=True,
+                hide_index=True,
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -378,17 +492,18 @@ def main():
         st.error(f"No se pudo cargar {table}.csv")
         return
 
-    name_col  = NAME_COLS.get(table, df.columns[0])
-    decisions = load_decisions(table)
-    pairs     = get_pairs(df, name_col)
+    name_col    = NAME_COLS.get(table, df.columns[0])
+    decisions   = load_decisions(table)
+    pairs       = get_pairs(df, name_col)
     done, total = progress(pairs, decisions)
 
     st.title(f"📋 {TABLE_LABELS.get(table, table)}")
-    m1, m2, m3, m4 = st.columns(4)
+    m1, m2, m3, m4, m5 = st.columns(5)
     m1.metric("Total entradas",   len(df))
     m2.metric("Pares flaggeados", total)
     m3.metric("Pares revisados",  f"{done}/{total}")
     m4.metric("A eliminar",       len(decisions.get("deleted", [])))
+    m5.metric("Renombrados",      len(decisions.get("renames", [])))
 
     tab_pairs, tab_all = st.tabs([
         f"🔁 Duplicados posibles  ({total})",
