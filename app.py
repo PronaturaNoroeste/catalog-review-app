@@ -120,7 +120,7 @@ def get_pairs(df: pd.DataFrame, name_col: str) -> list[dict]:
     # Pre-build O(1) lookup: name → {col: val}
     lookup_cols = uso_cols + extra_cols
     lookup = (
-        df.set_index(name_col)[lookup_cols].to_dict("index")
+        df.drop_duplicates(subset=[name_col]).set_index(name_col)[lookup_cols].to_dict("index")
         if lookup_cols else {}
     )
 
