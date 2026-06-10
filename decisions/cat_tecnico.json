@@ -1,0 +1,28 @@
+{
+  "pairs": {
+    "Fabián González Cota|Francisco González Cota": "Ambos son válidos",
+    "Bitacora electronica|Bitácora electrónica": "Mantener A — eliminar B",
+    "Esteban Moreno Higuera|Gregorio Esteban Moreno Higuera": "Mantener A — eliminar B",
+    "Mariely Álvarez León|María León Álvarez": "Ambos son válidos",
+    "Francisco Javier Calderón León|Javier Calderón León": "Mantener B — eliminar A",
+    "Felipe Cuevas Amador|Marcelo Amador Cuevas": "Ambos son válidos",
+    "Jaime de La Toba Lara|Jaime de la Toba Lara": "Mantener A — eliminar B",
+    "Valentin Murillo Rodriguez|Valentín Murillo Rodríguez": "Mantener A — eliminar B",
+    "Felix Amador Amador|Iván Amador Amador": "Ambos son válidos",
+    "Eduardo Castro Navarro|Eduardo Castro Romero": "Ambos son válidos",
+    "Saul Gonzalez, Miriam Ochoa y Miguel Ojeda|Saúl Gonzalez y Miriam Ochoa": "Ambos son válidos",
+    "Martín de la Toba|María de La Toba": "Ambos son válidos",
+    "Leandro de La Toba Lara|Leandro de la Toba Lara": "Mantener A — eliminar B",
+    "Blanca de la Toba|María de La Toba": "Ambos son válidos"
+  },
+  "deleted": [
+    "Bitacora electronica",
+    "Esteban Moreno Higuera",
+    "Jaime de La Toba Lara",
+    "Javier Calderón León",
+    "Leandro de la Toba Lara",
+    "Valentin Murillo Rodriguez"
+  ],
+  "approved": [],
+  "renames": []
+}

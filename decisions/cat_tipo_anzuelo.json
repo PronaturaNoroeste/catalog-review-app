@@ -1,0 +1,14 @@
+{
+  "pairs": {
+    "Kahle|Khale": "Mantener A — eliminar B",
+    "Japones|Japonés": "Mantener A — eliminar B",
+    "Japones y Kahle|Kahle y japones": "Mantener B — eliminar A"
+  },
+  "deleted": [
+    "Japones",
+    "Japones y Kahle",
+    "Khale"
+  ],
+  "approved": [],
+  "renames": []
+}

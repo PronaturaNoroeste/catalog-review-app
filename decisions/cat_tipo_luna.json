@@ -1,0 +1,15 @@
+{
+  "pairs": {
+    "Este|Oeste": "Ambos son válidos",
+    "Creciente|creciente": "Mantener A — eliminar B",
+    "Cuarto Menguante|Cuarto menguante": "Mantener A — eliminar B",
+    "Cuarto Creciente|Cuarto creciente": "Mantener A — eliminar B"
+  },
+  "deleted": [
+    "Cuarto Creciente",
+    "Cuarto Menguante",
+    "creciente"
+  ],
+  "approved": [],
+  "renames": []
+}

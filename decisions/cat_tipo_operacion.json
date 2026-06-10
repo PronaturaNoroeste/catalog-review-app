@@ -1,0 +1,20 @@
+{
+  "pairs": {
+    "Fondo|fondo": "Mantener A — eliminar B",
+    "Aboyado|aboyado": "Mantener A — eliminar B",
+    "Media agua|MediaAgua": "Mantener A — eliminar B",
+    "Fondo y media agua|Media agua y fondo": "Mantener B — eliminar A",
+    "Aboyado y media agua|Aboyado, fondo y media agua": "Ambos son válidos",
+    "Aboyado, fondo y media agua|Aboyado, media agua y fondo": "Mantener B — eliminar A",
+    "Fondo y  media agua|Fondo y media agua": "Mantener B — eliminar A"
+  },
+  "deleted": [
+    "Aboyado, fondo y media agua",
+    "Fondo y  media agua",
+    "MediaAgua",
+    "aboyado",
+    "fondo"
+  ],
+  "approved": [],
+  "renames": []
+}

@@ -1,0 +1,11 @@
+{
+  "pairs": {
+    "Arenoso y rocoso|Rocoso arenoso": "Mantener A — eliminar B",
+    "Arenoso y rocoso|Fangoso y rocoso": "Ambos son válidos"
+  },
+  "deleted": [
+    "Rocoso arenoso"
+  ],
+  "approved": [],
+  "renames": []
+}
