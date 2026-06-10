@@ -6,6 +6,7 @@ Run:  streamlit run app.py
 Docker: docker compose up
 """
 
+import collections
 import json
 from pathlib import Path
 
@@ -154,6 +155,16 @@ def get_pairs(df: pd.DataFrame, name_col: str) -> list[dict]:
     return pairs
 
 
+@st.cache_data
+def table_pairs(table: str) -> list[dict]:
+    """Pairs for a table, cached by NAME (cheap lookup) — avoids re-hashing the
+    full DataFrame on every rerun, which the sidebar does once per catalog."""
+    df = load_csv(table)
+    if df is None:
+        return []
+    return get_pairs(df, NAME_COLS.get(table, df.columns[0]))
+
+
 def progress(pairs: list[dict], decisions: dict) -> tuple[int, int]:
     decided = sum(
         1 for p in pairs
@@ -188,6 +199,210 @@ def _apply_rename(decisions: dict, old: str, new: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Cluster helpers  (Phase 1 — read-only validation)
+# ---------------------------------------------------------------------------
+
+DECISION_KEEP_A = "Mantener A — eliminar B"
+DECISION_KEEP_B = "Mantener B — eliminar A"
+DECISION_BOTH   = "Ambos son válidos"
+DECISION_LATER  = "Decidir después"
+
+
+@st.cache_data
+def usage_lookup(df: pd.DataFrame, name_col: str) -> dict:
+    """name → total usage across all uso_* columns (non-numeric coerced to 0)."""
+    uso_cols = [c for c in df.columns if c.startswith("uso_")]
+    if not uso_cols:
+        return {}
+    sub = df.drop_duplicates(subset=[name_col]).set_index(name_col)[uso_cols]
+    totals = sub.apply(pd.to_numeric, errors="coerce").fillna(0).sum(axis=1)
+    return totals.to_dict()
+
+
+def _components(nodes: set, edges: list) -> list[list]:
+    """Connected components via union-find. `edges` is a list of (a, b) tuples."""
+    parent = {n: n for n in nodes}
+
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    for a, b in edges:
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[ra] = rb
+
+    groups: dict = {}
+    for n in nodes:
+        groups.setdefault(find(n), []).append(n)
+    return list(groups.values())
+
+
+def _connected(adj: dict, src, dst, skip: frozenset) -> bool:
+    """Is `dst` reachable from `src` if we ignore the single edge `skip`?"""
+    seen = {src}
+    stack = [src]
+    while stack:
+        x = stack.pop()
+        for y in adj[x]:
+            if frozenset((x, y)) == skip:
+                continue
+            if y == dst:
+                return True
+            if y not in seen:
+                seen.add(y)
+                stack.append(y)
+    return False
+
+
+def find_bridges(edges: list[dict]) -> set:
+    """Edges (as frozenset{a,b}) whose removal disconnects their endpoints."""
+    adj: dict = collections.defaultdict(set)
+    for e in edges:
+        adj[e["a"]].add(e["b"])
+        adj[e["b"]].add(e["a"])
+    bridges = set()
+    for e in edges:
+        key = frozenset((e["a"], e["b"]))
+        if not _connected(adj, e["a"], e["b"], skip=key):
+            bridges.add(key)
+    return bridges
+
+
+def build_clusters(pairs: list[dict], decisions: dict) -> list[dict]:
+    """Connected components of flagged records, ignoring 'Ambos válidos' edges (cuts).
+
+    Edge orientation (a, b) is preserved from get_pairs so the pairwise decision
+    strings ('Mantener A …') can be interpreted later. Singletons are dropped.
+    """
+    pair_dec = decisions.get("pairs", {})
+    nodes: set = set()
+    live: list[dict] = []
+    for p in pairs:
+        nodes.add(p["a"]); nodes.add(p["b"])
+        if pair_dec.get(p["key"]) == DECISION_BOTH:
+            continue  # edge cut — biologist confirmed these are distinct
+        live.append({"a": p["a"], "b": p["b"], "pct": p.get("pct", ""), "flag": p["flag"]})
+
+    edge_tuples = [(e["a"], e["b"]) for e in live]
+    clusters = []
+    for members in _components(nodes, edge_tuples):
+        if len(members) < 2:
+            continue
+        mset = set(members)
+        edges = [e for e in live if e["a"] in mset and e["b"] in mset]
+        clusters.append({
+            "members": sorted(members),
+            "edges":   edges,
+            "bridges": find_bridges(edges),
+        })
+    clusters.sort(key=lambda c: -len(c["members"]))
+    return clusters
+
+
+@st.cache_data
+def table_clusters(table: str, cut_keys: tuple) -> list[dict]:
+    """build_clusters cached by table + the set of cut ('Ambos válidos') edges —
+    cluster shape depends only on those, so ordinary decisions don't trigger a rebuild.
+    Runs in both main() and render_clusters; caching avoids the double O(E²) cost."""
+    decisions = {"pairs": {k: DECISION_BOTH for k in cut_keys}}
+    return build_clusters(table_pairs(table), decisions)
+
+
+def cut_keys_of(decisions: dict) -> tuple:
+    """Sorted tuple of pair keys the biologist marked as 'Ambos válidos' (edge cuts)."""
+    return tuple(sorted(
+        k for k, v in decisions.get("pairs", {}).items() if v == DECISION_BOTH
+    ))
+
+
+def reconcile_cluster(cluster: dict, decisions: dict) -> dict:
+    """Derive a cluster-level conclusion from the existing pairwise decisions."""
+    pair_dec = decisions.get("pairs", {})
+    survivors: set = set()   # implied kept
+    losers: set = set()      # implied deleted
+    pending = 0
+
+    for e in cluster["edges"]:
+        key = "|".join(sorted([e["a"], e["b"]]))
+        dec = pair_dec.get(key, DECISION_LATER)
+        if dec == DECISION_KEEP_A:
+            survivors.add(e["a"]); losers.add(e["b"])
+        elif dec == DECISION_KEEP_B:
+            survivors.add(e["b"]); losers.add(e["a"])
+        else:  # Decidir después / unknown
+            pending += 1
+
+    contradictory  = survivors & losers          # kept in one pair, deleted in another
+    pure_survivors = survivors - losers
+    decided        = len(cluster["edges"]) - pending
+
+    conflicts = []
+    if contradictory:
+        conflicts.append(
+            "Conservado y eliminado a la vez: " + ", ".join(sorted(contradictory))
+        )
+    if len(pure_survivors) > 1:
+        conflicts.append(
+            "Más de un sobreviviente implícito: " + ", ".join(sorted(pure_survivors))
+        )
+
+    if conflicts:
+        status = "conflicto"
+    elif pending == 0 and decided > 0 and len(pure_survivors) <= 1:
+        status = "resuelto"
+    else:
+        status = "pendiente"
+
+    return {
+        "status":           status,
+        "implied_survivor": next(iter(pure_survivors)) if len(pure_survivors) == 1 else "",
+        "survivors":        survivors,
+        "losers":           losers,
+        "pending":          pending,
+        "conflicts":        conflicts,
+    }
+
+
+def cluster_survivor_default(cluster: dict, recon: dict, usage: dict) -> str:
+    """Honor the biologist's implied survivor; else the most-used record."""
+    if recon["implied_survivor"]:
+        return recon["implied_survivor"]
+    # most usage wins; shorter name breaks ties (tends to be the clean spelling)
+    return max(cluster["members"], key=lambda n: (usage.get(n, 0), -len(n)))
+
+
+def _pct_below(pct, threshold: float) -> bool:
+    try:
+        return float(pct) < threshold
+    except (ValueError, TypeError):
+        return False
+
+
+def over_merge_warning(cluster: dict) -> str:
+    """Heuristic flag for likely false clustering (transitive over-merge)."""
+    members, edges, bridges = cluster["members"], cluster["edges"], cluster["bridges"]
+    if len(members) < 3:
+        return ""
+
+    reasons = []
+    weak_bridges = [
+        e for e in edges
+        if frozenset((e["a"], e["b"])) in bridges and _pct_below(e["pct"], 92)
+    ]
+    if weak_bridges:
+        reasons.append("se sostiene por enlaces débiles (puente <92%)")
+
+    pcts = [float(e["pct"]) for e in edges if _pct_below(e["pct"], 1e9)]  # numeric only
+    if len(members) >= 6 and pcts and max(pcts) <= 92 and len(edges) <= len(members):
+        reasons.append("grupo grande con similitud uniformemente baja")
+
+    return "; ".join(reasons)
+
+
+# ---------------------------------------------------------------------------
 # Sidebar
 # ---------------------------------------------------------------------------
 
@@ -201,25 +416,33 @@ def sidebar() -> str:
         st.sidebar.error(f"No se encontraron CSVs en:\n{EXPORT_DIR}")
         st.stop()
 
-    options = []
-    for t in available:
-        df = load_csv(t)
-        if df is None:
-            continue
-        pairs = get_pairs(df, NAME_COLS[t])   # cached after first call
-        dec   = load_decisions(t)
-        done, total = progress(pairs, dec)
-        badge = "✅" if (total > 0 and done == total) else (f"{done}/{total}" if total > 0 else "—")
-        options.append((f"{TABLE_LABELS.get(t, t)}  [{badge}]", t))
+    # The radio options/labels MUST stay static. Previously each label embedded a live
+    # progress badge (e.g. "[138/535]"); when a decision changed that badge during the
+    # st.rerun(), the browser radio lost its checked state and the next click fell back
+    # to index 0 — jumping the user to the first catalog. Options are now the table ids
+    # with fixed names; progress is rendered separately below as plain markdown.
+    selected = st.sidebar.radio(
+        "Catálogo",
+        available,
+        format_func=lambda t: TABLE_LABELS.get(t, t),
+        key="sidebar_catalog",
+    )
 
-    labels = [o[0] for o in options]
-    idx = st.sidebar.radio("Catálogo", range(len(labels)), format_func=lambda i: labels[i])
+    st.sidebar.divider()
+    st.sidebar.caption("**Progreso**")
+    rows = []
+    for t in available:
+        done, total = progress(table_pairs(t), load_decisions(t))
+        badge = "✅" if (total > 0 and done == total) else (f"{done}/{total}" if total > 0 else "—")
+        mark  = "**▶**" if t == selected else "•"
+        rows.append(f"- {mark} {TABLE_LABELS.get(t, t)} — `{badge}`")
+    st.sidebar.markdown("\n".join(rows))
 
     st.sidebar.divider()
     st.sidebar.caption("**Leyenda**")
     st.sidebar.markdown("🔴 Duplicado exacto\n🟠 Probable (≥92%)\n🟡 Posible (≥78%)")
 
-    return options[idx][1]
+    return selected
 
 
 # ---------------------------------------------------------------------------
@@ -227,7 +450,7 @@ def sidebar() -> str:
 # ---------------------------------------------------------------------------
 
 def render_pairs(table: str, df: pd.DataFrame, name_col: str):
-    pairs     = get_pairs(df, name_col)
+    pairs     = table_pairs(table)
     decisions = load_decisions(table)
 
     if not pairs:
@@ -241,21 +464,46 @@ def render_pairs(table: str, df: pd.DataFrame, name_col: str):
         "Mostrar",
         ["Todos", "Solo pendientes", "🔴 Exacto", "🟠 Probable", "🟡 Posible"],
         default="Solo pendientes",
+        key=f"pairs_filt_{table}",
     )
 
-    changed = False
-    for pair in pairs:
-        current = decisions["pairs"].get(pair["key"], "Decidir después")
-        pending = current == "Decidir después"
+    # Filter first, then paginate. Rendering every pair as its own card+radio is the
+    # bottleneck (e.g. cat_sitio_pesca has 400+ pending pairs → ~8s per rerun), so we
+    # only ever render one page of cards.
+    def _passes(pair) -> bool:
+        if filt == "Solo pendientes":
+            return decisions["pairs"].get(pair["key"], "Decidir después") == "Decidir después"
+        if filt == "🔴 Exacto":   return pair["flag"] == "DUPLICADO_EXACTO"
+        if filt == "🟠 Probable": return pair["flag"] == "DUPLICADO_PROBABLE"
+        if filt == "🟡 Posible":  return pair["flag"] == "POSIBLE_DUPLICADO"
+        return True  # Todos
 
-        if filt == "Solo pendientes" and not pending:
-            continue
-        if filt == "🔴 Exacto"   and pair["flag"] != "DUPLICADO_EXACTO":
-            continue
-        if filt == "🟠 Probable" and pair["flag"] != "DUPLICADO_PROBABLE":
-            continue
-        if filt == "🟡 Posible"  and pair["flag"] != "POSIBLE_DUPLICADO":
-            continue
+    visible = [p for p in pairs if _passes(p)]
+    if not visible:
+        st.success("✅ No hay pares que coincidan con este filtro.")
+        return
+
+    PAGE_SIZE = 25
+    n_pages   = (len(visible) + PAGE_SIZE - 1) // PAGE_SIZE
+    page_key  = f"pairs_page_{table}"
+    # clamp any stale page before the widget is built (e.g. after decisions shrink the list)
+    if st.session_state.get(page_key, 1) > n_pages:
+        st.session_state[page_key] = n_pages
+
+    if n_pages > 1:
+        page = st.number_input(
+            f"Página (1–{n_pages})", min_value=1, max_value=n_pages, step=1, key=page_key
+        )
+    else:
+        page = 1
+
+    start      = (page - 1) * PAGE_SIZE
+    page_pairs = visible[start:start + PAGE_SIZE]
+    st.caption(f"Mostrando {start + 1}–{start + len(page_pairs)} de {len(visible)} pares")
+
+    changed = False
+    for pair in page_pairs:
+        current = decisions["pairs"].get(pair["key"], "Decidir después")
 
         emoji = FLAG_EMOJI.get(pair["flag"], "⚪")
         pct   = f" ({pair['pct']}% similitud)" if pair["pct"] else ""
@@ -452,8 +700,10 @@ def render_all(table: str, df: pd.DataFrame, name_col: str):
 
     if renames_applied:
         save_decisions(table, decisions)
-        load_csv.clear()    # invalidate Streamlit cache so rerun sees updated CSV
-        get_pairs.clear()   # pairs may reference old names
+        load_csv.clear()     # invalidate Streamlit cache so rerun sees updated CSV
+        get_pairs.clear()    # pairs may reference old names
+        table_pairs.clear()    # name-keyed pairs cache also references old names
+        table_clusters.clear() # clusters derive from pairs → rebuild after rename
         st.rerun()
 
     # --- persist approval checkbox changes ---
@@ -472,6 +722,136 @@ def render_all(table: str, df: pd.DataFrame, name_col: str):
                 use_container_width=True,
                 hide_index=True,
             )
+
+
+# ---------------------------------------------------------------------------
+# Clusters tab  (read-only — Phase 1)
+# ---------------------------------------------------------------------------
+
+STATUS_CHIP = {
+    "resuelto":  "✅ Resuelto",
+    "pendiente": "🕓 Pendiente",
+    "conflicto": "⚠️ Conflicto",
+}
+
+
+def render_clusters(table: str, df: pd.DataFrame, name_col: str):
+    decisions = load_decisions(table)
+    usage     = usage_lookup(df, name_col)
+    clusters  = table_clusters(table, cut_keys_of(decisions))
+
+    if not clusters:
+        st.info("No hay grupos de duplicados en este catálogo.")
+        return
+
+    recons = [reconcile_cluster(c, decisions) for c in clusters]
+    warns  = [over_merge_warning(c) for c in clusters]
+
+    n_multi = sum(1 for c in clusters if len(c["members"]) >= 3)
+    n_res   = sum(1 for r in recons if r["status"] == "resuelto")
+    n_pen   = sum(1 for r in recons if r["status"] == "pendiente")
+    n_con   = sum(1 for r in recons if r["status"] == "conflicto")
+    n_warn  = sum(1 for w in warns if w)
+
+    st.caption(
+        f"**{len(clusters)} grupos**  •  {n_multi} con 3+ miembros  •  "
+        f"✅ {n_res} resueltos  •  🕓 {n_pen} pendientes  •  "
+        f"⚠️ {n_con} conflictos  •  🚩 {n_warn} posible sobre-agrupación"
+    )
+    st.caption(
+        "Vista de **solo lectura**. Reconstruye los grupos a partir de las decisiones por "
+        "pares ya tomadas. Las acciones para colapsar grupos llegarán en una fase posterior."
+    )
+
+    filt = st.segmented_control(
+        "Mostrar",
+        ["Todos", "Pendientes", "Conflictos", "🚩 Sobre-agrupación", "Resueltos"],
+        default="Todos",
+        key=f"cluster_filt_{table}",
+    )
+
+    # distinguishing columns for context
+    has_sci  = "nombre_cientifico" in df.columns
+    geo_cols = [c for c in ["region", "zona", "area"] if c in df.columns and c != name_col]
+    dedup    = df.drop_duplicates(subset=[name_col]).set_index(name_col)
+    sci_lk   = dedup["nombre_cientifico"].to_dict() if has_sci else {}
+    geo_lk   = {c: dedup[c].to_dict() for c in geo_cols}
+
+    def _passes(recon, warn) -> bool:
+        if filt == "Pendientes":          return recon["status"] == "pendiente"
+        if filt == "Conflictos":          return recon["status"] == "conflicto"
+        if filt == "Resueltos":           return recon["status"] == "resuelto"
+        if filt == "🚩 Sobre-agrupación": return bool(warn)
+        return True  # Todos
+
+    visible = [t for t in zip(clusters, recons, warns) if _passes(t[1], t[2])]
+    if not visible:
+        st.success("✅ No hay grupos que coincidan con este filtro.")
+        return
+
+    PAGE_SIZE = 20
+    n_pages   = (len(visible) + PAGE_SIZE - 1) // PAGE_SIZE
+    page_key  = f"cluster_page_{table}"
+    if st.session_state.get(page_key, 1) > n_pages:
+        st.session_state[page_key] = n_pages
+
+    if n_pages > 1:
+        page = st.number_input(
+            f"Página (1–{n_pages})", min_value=1, max_value=n_pages, step=1, key=page_key
+        )
+    else:
+        page = 1
+
+    start = (page - 1) * PAGE_SIZE
+    page_clusters = visible[start:start + PAGE_SIZE]
+    st.caption(f"Mostrando {start + 1}–{start + len(page_clusters)} de {len(visible)} grupos")
+
+    for cluster, recon, warn in page_clusters:
+        status   = recon["status"]
+        members  = cluster["members"]
+        survivor = cluster_survivor_default(cluster, recon, usage)
+
+        with st.container(border=True):
+            head = f"**Grupo de {len(members)}**  —  {STATUS_CHIP.get(status, status)}"
+            if warn:
+                head += "  •  🚩 **Posible sobre-agrupación**"
+            st.markdown(head)
+
+            if warn:
+                st.caption(
+                    f"🚩 {warn}. Revisa los enlaces antes de colapsar — "
+                    "podrían ser registros **distintos**."
+                )
+            for c in recon["conflicts"]:
+                st.caption(f"⚠️ {c}")
+
+            # --- members ---
+            rows = []
+            for m in members:
+                if m == survivor:
+                    role = "👑 sobreviviente"
+                elif m in recon["losers"]:
+                    role = "🗑 eliminar"
+                else:
+                    role = "—"
+                row = {"Registro": m, "Uso": usage.get(m, 0), "Rol propuesto": role}
+                if has_sci:
+                    row["Nombre científico"] = sci_lk.get(m, "")
+                for c in geo_cols:
+                    row[c] = geo_lk[c].get(m, "")
+                rows.append(row)
+            st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+            # --- edge evidence ---
+            with st.expander(f"🔗 Enlaces internos ({len(cluster['edges'])})"):
+                erows = [{
+                    "A":           e["a"],
+                    "B":           e["b"],
+                    "Similitud %": e["pct"],
+                    "Tipo":        e["flag"].replace("_", " ").title(),
+                    "Puente":      "🌉 sí" if frozenset((e["a"], e["b"])) in cluster["bridges"] else "",
+                } for e in cluster["edges"]]
+                st.dataframe(pd.DataFrame(erows), use_container_width=True, hide_index=True)
 
 
 # ---------------------------------------------------------------------------
@@ -494,27 +874,43 @@ def main():
 
     name_col    = NAME_COLS.get(table, df.columns[0])
     decisions   = load_decisions(table)
-    pairs       = get_pairs(df, name_col)
+    pairs       = table_pairs(table)
     done, total = progress(pairs, decisions)
+    clusters    = table_clusters(table, cut_keys_of(decisions))
 
     st.title(f"📋 {TABLE_LABELS.get(table, table)}")
-    m1, m2, m3, m4, m5 = st.columns(5)
+    m1, m2, m3, m4, m5, m6 = st.columns(6)
     m1.metric("Total entradas",   len(df))
     m2.metric("Pares flaggeados", total)
     m3.metric("Pares revisados",  f"{done}/{total}")
-    m4.metric("A eliminar",       len(decisions.get("deleted", [])))
-    m5.metric("Renombrados",      len(decisions.get("renames", [])))
+    m4.metric("Grupos",           len(clusters))
+    m5.metric("A eliminar",       len(decisions.get("deleted", [])))
+    m6.metric("Renombrados",      len(decisions.get("renames", [])))
 
-    tab_pairs, tab_all = st.tabs([
-        f"🔁 Duplicados posibles  ({total})",
-        f"📋 Todas las entradas  ({len(df)})",
-    ])
+    # NOTE: deliberately NOT st.tabs — st.tabs resets to the first tab on every
+    # rerun (e.g. after a decision triggers st.rerun()), which threw the user back
+    # to "Duplicados". A keyed radio persists the active view across reruns, and we
+    # render only the selected view (faster than st.tabs, which renders all three).
+    view = st.radio(
+        "Vista",
+        ["pairs", "all", "clusters"],
+        format_func=lambda v: {
+            "pairs":    f"🔁 Duplicados posibles  ({total})",
+            "all":      f"📋 Todas las entradas  ({len(df)})",
+            "clusters": f"🧬 Grupos  ({len(clusters)})",
+        }[v],
+        horizontal=True,
+        key="main_view",
+        label_visibility="collapsed",
+    )
+    st.divider()
 
-    with tab_pairs:
+    if view == "pairs":
         render_pairs(table, df, name_col)
-
-    with tab_all:
+    elif view == "all":
         render_all(table, df, name_col)
+    else:
+        render_clusters(table, df, name_col)
 
 
 if __name__ == "__main__":
