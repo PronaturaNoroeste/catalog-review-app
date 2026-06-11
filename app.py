@@ -165,11 +165,28 @@ def table_pairs(table: str) -> list[dict]:
     return get_pairs(df, NAME_COLS.get(table, df.columns[0]))
 
 
+def merge_lookup(decisions: dict) -> dict:
+    """record name → its survivor, for every collapsed group (Phase 2 `merges`)."""
+    lk: dict = {}
+    for survivor, absorbed in decisions.get("merges", {}).items():
+        lk[survivor] = survivor
+        for a in absorbed:
+            lk[a] = survivor
+    return lk
+
+
+def pair_decided(pair: dict, decisions: dict, lk: dict) -> bool:
+    """A pair counts as decided if it has a pairwise decision, OR both of its
+    records were collapsed into the same survivor (resolved via a cluster merge)."""
+    if decisions.get("pairs", {}).get(pair["key"], "Decidir después") != "Decidir después":
+        return True
+    ga, gb = lk.get(pair["a"]), lk.get(pair["b"])
+    return ga is not None and ga == gb
+
+
 def progress(pairs: list[dict], decisions: dict) -> tuple[int, int]:
-    decided = sum(
-        1 for p in pairs
-        if decisions["pairs"].get(p["key"], "Decidir después") != "Decidir después"
-    )
+    lk = merge_lookup(decisions)
+    decided = sum(1 for p in pairs if pair_decided(p, decisions, lk))
     return decided, len(pairs)
 
 
@@ -303,12 +320,19 @@ def build_clusters(pairs: list[dict], decisions: dict) -> list[dict]:
 
 
 @st.cache_data
-def table_clusters(table: str, cut_keys: tuple) -> list[dict]:
-    """build_clusters cached by table + the set of cut ('Ambos válidos') edges —
-    cluster shape depends only on those, so ordinary decisions don't trigger a rebuild.
-    Runs in both main() and render_clusters; caching avoids the double O(E²) cost."""
+def table_clusters(table: str, cut_keys: tuple, manual: tuple = ()) -> list[dict]:
+    """build_clusters cached by table + the set of cut ('Ambos válidos') edges and any
+    manually-added links — cluster shape depends only on those, so ordinary decisions
+    don't trigger a rebuild. Runs in both main() and render_clusters; caching avoids the
+    double O(E²) cost."""
     decisions = {"pairs": {k: DECISION_BOTH for k in cut_keys}}
-    return build_clusters(table_pairs(table), decisions)
+    pairs = list(table_pairs(table))
+    existing = {p["key"] for p in pairs}
+    for a, b in manual:                      # user-added edges the matcher missed
+        key = _pairkey(a, b)
+        if key not in existing:
+            pairs.append({"key": key, "a": a, "b": b, "pct": "", "flag": "MANUAL"})
+    return build_clusters(pairs, decisions)
 
 
 def cut_keys_of(decisions: dict) -> tuple:
@@ -316,6 +340,11 @@ def cut_keys_of(decisions: dict) -> tuple:
     return tuple(sorted(
         k for k, v in decisions.get("pairs", {}).items() if v == DECISION_BOTH
     ))
+
+
+def manual_links_of(decisions: dict) -> tuple:
+    """Sorted tuple of (a, b) edges the user manually added to groups."""
+    return tuple(sorted(tuple(sorted(p)) for p in decisions.get("manual_links", [])))
 
 
 def reconcile_cluster(cluster: dict, decisions: dict) -> dict:
@@ -366,8 +395,12 @@ def reconcile_cluster(cluster: dict, decisions: dict) -> dict:
     }
 
 
-def cluster_survivor_default(cluster: dict, recon: dict, usage: dict) -> str:
-    """Honor the biologist's implied survivor; else the most-used record."""
+def cluster_survivor_default(cluster: dict, recon: dict, usage: dict, new_records=()) -> str:
+    """A record the user just created (the correct spelling) wins; then the biologist's
+    implied survivor; else the most-used record."""
+    created = [m for m in cluster["members"] if m in new_records]
+    if created:
+        return created[-1]
     if recon["implied_survivor"]:
         return recon["implied_survivor"]
     # most usage wins; shorter name breaks ties (tends to be the clean spelling)
@@ -400,6 +433,172 @@ def over_merge_warning(cluster: dict) -> str:
         reasons.append("grupo grande con similitud uniformemente baja")
 
     return "; ".join(reasons)
+
+
+# --- Phase 2: interactive collapse (all writes are intent-only; CSV is never mutated) ---
+
+ACT_KEEP  = "👑 Conservar"
+ACT_MERGE = "Fusionar"
+ACT_SEP   = "Separar"
+ACT_LATER = "Decidir después"
+ACTION_OPTS = [ACT_KEEP, ACT_MERGE, ACT_SEP, ACT_LATER]
+
+
+def _pairkey(a: str, b: str) -> str:
+    return "|".join(sorted([a, b]))
+
+
+def cluster_collapsed(cluster: dict, lk: dict) -> str | None:
+    """If every member maps to the same survivor in `merges`, return that survivor."""
+    groups = {lk.get(m) for m in cluster["members"]}
+    if len(groups) == 1 and None not in groups:
+        return next(iter(groups))
+    return None
+
+
+def apply_collapse(decisions: dict, cluster: dict, survivor: str, actions: dict) -> dict:
+    """Collapse a cluster around `survivor`. `actions` maps each NON-survivor member to
+    one of ACT_MERGE / ACT_SEP / ACT_LATER. Mutates and returns `decisions`.
+
+      Fusionar → record in merges[survivor] + mark deleted; set the survivor-incident
+                 pair decision so the Duplicados tab agrees.
+      Separar  → cut every edge touching that member ('Ambos válidos') so it splits off.
+      Decidir después → left untouched.
+    """
+    pairs   = decisions.setdefault("pairs", {})
+    merges  = decisions.setdefault("merges", {})
+    deleted = set(decisions.get("deleted", []))
+    approved = set(decisions.get("approved", []))
+
+    absorbed  = [m for m, a in actions.items() if a == ACT_MERGE]
+    separated = [m for m, a in actions.items() if a == ACT_SEP]
+
+    edge_by_pair = {frozenset((e["a"], e["b"])): e for e in cluster["edges"]}
+
+    # merges
+    group = set(merges.get(survivor, [])) | set(absorbed)
+    deleted |= set(absorbed)
+    deleted.discard(survivor)
+    approved.add(survivor)
+    for m in absorbed:
+        e = edge_by_pair.get(frozenset((survivor, m)))
+        if e:  # only direct survivor↔loser edges are representable pairwise
+            pairs[_pairkey(survivor, m)] = (
+                "Mantener A — eliminar B" if e["a"] == survivor else "Mantener B — eliminar A"
+            )
+
+    # separations cut edges and undo any prior merge of that member
+    for m in separated:
+        for e in cluster["edges"]:
+            if m in (e["a"], e["b"]):
+                pairs[_pairkey(e["a"], e["b"])] = "Ambos son válidos"
+        deleted.discard(m)
+        group.discard(m)
+
+    if group:
+        merges[survivor] = sorted(group)
+    else:
+        merges.pop(survivor, None)
+
+    decisions["deleted"]  = sorted(deleted)
+    decisions["approved"] = sorted(approved)
+    return decisions
+
+
+def apply_separate_all(decisions: dict, cluster: dict) -> dict:
+    """Mark the whole cluster as distinct records (cut every internal edge)."""
+    pairs = decisions.setdefault("pairs", {})
+    for e in cluster["edges"]:
+        pairs[_pairkey(e["a"], e["b"])] = "Ambos son válidos"
+    return decisions
+
+
+def reopen_cluster(decisions: dict, cluster: dict, survivor: str) -> dict:
+    """Undo a collapse: drop the merge, un-delete absorbed members, and reset the
+    cluster's internal pair decisions back to pending."""
+    merges   = decisions.setdefault("merges", {})
+    deleted  = set(decisions.get("deleted", []))
+    approved = set(decisions.get("approved", []))
+
+    deleted -= set(merges.get(survivor, []))
+    approved.discard(survivor)
+    merges.pop(survivor, None)
+
+    pairs = decisions.setdefault("pairs", {})
+    for e in cluster["edges"]:
+        pairs.pop(_pairkey(e["a"], e["b"]), None)
+
+    decisions["deleted"]  = sorted(deleted)
+    decisions["approved"] = sorted(approved)
+    return decisions
+
+
+def add_manual_link(decisions: dict, member: str, new: str) -> dict:
+    """Manually link `new` (a record the matcher missed) to a cluster member, so it
+    joins that group. Reverses any prior 'Separar' cut on the same pair."""
+    links = decisions.setdefault("manual_links", [])
+    pair  = sorted([member, new])
+    if pair not in [sorted(p) for p in links]:
+        links.append(pair)
+    decisions.get("pairs", {}).pop(_pairkey(member, new), None)  # un-cut if separated before
+    return decisions
+
+
+def create_new_record(table: str, name: str, name_col: str, fields: dict | None = None) -> bool:
+    """Append a brand-new row to the catalog CSV — used when the correct name doesn't
+    exist in the data yet. `fields` fills the other columns (else blank). Returns False
+    if it already exists. Mutates the CSV (like renames do) and clears derived caches."""
+    df = load_csv(table)
+    if df is None or name in set(df[name_col].tolist()):
+        return False
+    row = {c: "" for c in df.columns}
+    row[name_col] = name
+    for c, v in (fields or {}).items():
+        if c in row:
+            row[c] = v
+    save_csv(table, pd.concat([df, pd.DataFrame([row])], ignore_index=True))
+    for cache in (load_csv, get_pairs, table_pairs, table_clusters, usage_lookup):
+        cache.clear()
+    return True
+
+
+def _rename_in_phase2(decisions: dict, old: str, new: str):
+    """Update the Phase 2 decision keys (merges / manual_links / new_records) on rename."""
+    merges = decisions.get("merges", {})
+    if old in merges:
+        merges[new] = merges.pop(old)
+    for s in list(merges):
+        merges[s] = [new if x == old else x for x in merges[s]]
+    decisions["manual_links"] = [[new if x == old else x for x in p]
+                                 for p in decisions.get("manual_links", [])]
+    decisions["new_records"]  = [new if x == old else x for x in decisions.get("new_records", [])]
+
+
+def rename_record(table: str, old: str, new: str, name_col: str, decisions: dict) -> str:
+    """Rename an existing record to fix its spelling. Updates the CSV (both `name_col`
+    AND every `similar_a` that referenced the old name, so cluster edges stay intact)
+    and all decision keys. Returns "" on success, else an error message."""
+    new = new.strip()
+    if not new or new == old:
+        return "Escribe un nombre distinto."
+    df = load_csv(table)
+    names = set(df[name_col].tolist()) if df is not None else set()
+    if old not in names:
+        return f"'{old}' no existe."
+    if new in names:
+        return f"'{new}' ya existe — usa **Fusionar** para unirlos, no renombrar."
+
+    df = df.copy()
+    df.loc[df[name_col] == old, name_col] = new
+    if "similar_a" in df.columns:                       # keep matcher edges consistent
+        df.loc[df["similar_a"] == old, "similar_a"] = new
+    save_csv(table, df)
+
+    _apply_rename(decisions, old, new)                  # renames log / deleted / approved / pairs
+    _rename_in_phase2(decisions, old, new)              # merges / manual_links / new_records
+    for cache in (load_csv, get_pairs, table_pairs, table_clusters, usage_lookup):
+        cache.clear()
+    return ""
 
 
 # ---------------------------------------------------------------------------
@@ -470,9 +669,10 @@ def render_pairs(table: str, df: pd.DataFrame, name_col: str):
     # Filter first, then paginate. Rendering every pair as its own card+radio is the
     # bottleneck (e.g. cat_sitio_pesca has 400+ pending pairs → ~8s per rerun), so we
     # only ever render one page of cards.
+    lk = merge_lookup(decisions)
     def _passes(pair) -> bool:
         if filt == "Solo pendientes":
-            return decisions["pairs"].get(pair["key"], "Decidir después") == "Decidir después"
+            return not pair_decided(pair, decisions, lk)  # merge-aware
         if filt == "🔴 Exacto":   return pair["flag"] == "DUPLICADO_EXACTO"
         if filt == "🟠 Probable": return pair["flag"] == "DUPLICADO_PROBABLE"
         if filt == "🟡 Posible":  return pair["flag"] == "POSIBLE_DUPLICADO"
@@ -725,7 +925,7 @@ def render_all(table: str, df: pd.DataFrame, name_col: str):
 
 
 # ---------------------------------------------------------------------------
-# Clusters tab  (read-only — Phase 1)
+# Clusters tab  (interactive collapse — Phase 2)
 # ---------------------------------------------------------------------------
 
 STATUS_CHIP = {
@@ -735,88 +935,117 @@ STATUS_CHIP = {
 }
 
 
+def _edge_evidence(cluster: dict):
+    with st.expander(f"🔗 Enlaces internos ({len(cluster['edges'])})"):
+        erows = [{
+            "A":           e["a"],
+            "B":           e["b"],
+            "Similitud %": e["pct"],
+            "Tipo":        e["flag"].replace("_", " ").title(),
+            "Puente":      "🌉 sí" if frozenset((e["a"], e["b"])) in cluster["bridges"] else "",
+        } for e in cluster["edges"]]
+        st.dataframe(pd.DataFrame(erows), use_container_width=True, hide_index=True)
+
+
 def render_clusters(table: str, df: pd.DataFrame, name_col: str):
     decisions = load_decisions(table)
     usage     = usage_lookup(df, name_col)
-    clusters  = table_clusters(table, cut_keys_of(decisions))
+    clusters  = table_clusters(table, cut_keys_of(decisions), manual_links_of(decisions))
 
     if not clusters:
         st.info("No hay grupos de duplicados en este catálogo.")
         return
 
+    lk     = merge_lookup(decisions)
     recons = [reconcile_cluster(c, decisions) for c in clusters]
     warns  = [over_merge_warning(c) for c in clusters]
+    collap = [cluster_collapsed(c, lk) for c in clusters]
 
-    n_multi = sum(1 for c in clusters if len(c["members"]) >= 3)
-    n_res   = sum(1 for r in recons if r["status"] == "resuelto")
-    n_pen   = sum(1 for r in recons if r["status"] == "pendiente")
-    n_con   = sum(1 for r in recons if r["status"] == "conflicto")
-    n_warn  = sum(1 for w in warns if w)
+    n_multi     = sum(1 for c in clusters if len(c["members"]) >= 3)
+    n_collapsed = sum(1 for c in collap if c)
+    n_con       = sum(1 for r, cc in zip(recons, collap) if not cc and r["status"] == "conflicto")
+    n_warn      = sum(1 for w, cc in zip(warns, collap) if not cc and w)
 
     st.caption(
         f"**{len(clusters)} grupos**  •  {n_multi} con 3+ miembros  •  "
-        f"✅ {n_res} resueltos  •  🕓 {n_pen} pendientes  •  "
-        f"⚠️ {n_con} conflictos  •  🚩 {n_warn} posible sobre-agrupación"
+        f"✅ {n_collapsed} colapsados  •  ⚠️ {n_con} conflictos  •  "
+        f"🚩 {n_warn} posible sobre-agrupación"
     )
     st.caption(
-        "Vista de **solo lectura**. Reconstruye los grupos a partir de las decisiones por "
-        "pares ya tomadas. Las acciones para colapsar grupos llegarán en una fase posterior."
+        "Elige el registro a **conservar** (👑) y marca el resto como **Fusionar** "
+        "(se elimina y se cuenta como el sobreviviente) o **Separar** (no es duplicado). "
+        "Nada se borra del CSV — las decisiones quedan registradas y son reversibles."
     )
 
     filt = st.segmented_control(
         "Mostrar",
-        ["Todos", "Pendientes", "Conflictos", "🚩 Sobre-agrupación", "Resueltos"],
+        ["Todos", "Pendientes", "Conflictos", "🚩 Sobre-agrupación", "✅ Colapsados"],
         default="Todos",
         key=f"cluster_filt_{table}",
     )
 
-    # distinguishing columns for context
-    has_sci  = "nombre_cientifico" in df.columns
-    geo_cols = [c for c in ["region", "zona", "area"] if c in df.columns and c != name_col]
-    dedup    = df.drop_duplicates(subset=[name_col]).set_index(name_col)
-    sci_lk   = dedup["nombre_cientifico"].to_dict() if has_sci else {}
-    geo_lk   = {c: dedup[c].to_dict() for c in geo_cols}
+    has_sci   = "nombre_cientifico" in df.columns
+    geo_cols  = [c for c in ["region", "zona", "area"] if c in df.columns and c != name_col]
+    dedup     = df.drop_duplicates(subset=[name_col]).set_index(name_col)
+    sci_lk    = dedup["nombre_cientifico"].to_dict() if has_sci else {}
+    geo_lk    = {c: dedup[c].to_dict() for c in geo_cols}
+    all_names   = [n for n in dedup.index.tolist() if n]   # catalog records for manual add
+    new_records = set(decisions.get("new_records", []))    # user-created records (default survivor)
+    # columns a user can fill on a brand-new record (everything but the name + matcher internals)
+    field_cols  = [c for c in df.columns
+                   if c != name_col and c not in {"flag_tipo", "similar_a", "similitud_pct"}]
 
-    def _passes(recon, warn) -> bool:
-        if filt == "Pendientes":          return recon["status"] == "pendiente"
-        if filt == "Conflictos":          return recon["status"] == "conflicto"
-        if filt == "Resueltos":           return recon["status"] == "resuelto"
-        if filt == "🚩 Sobre-agrupación": return bool(warn)
+    def _passes(recon, warn, collapsed) -> bool:
+        if filt == "✅ Colapsados":       return bool(collapsed)
+        if filt == "Pendientes":          return not collapsed and recon["status"] == "pendiente"
+        if filt == "Conflictos":          return not collapsed and recon["status"] == "conflicto"
+        if filt == "🚩 Sobre-agrupación": return not collapsed and bool(warn)
         return True  # Todos
 
-    visible = [t for t in zip(clusters, recons, warns) if _passes(t[1], t[2])]
+    visible = [t for t in zip(clusters, recons, warns, collap) if _passes(t[1], t[2], t[3])]
     if not visible:
         st.success("✅ No hay grupos que coincidan con este filtro.")
         return
 
-    PAGE_SIZE = 20
+    PAGE_SIZE = 12   # each card has an editable table; keep the page light
     n_pages   = (len(visible) + PAGE_SIZE - 1) // PAGE_SIZE
     page_key  = f"cluster_page_{table}"
     if st.session_state.get(page_key, 1) > n_pages:
         st.session_state[page_key] = n_pages
-
-    if n_pages > 1:
-        page = st.number_input(
-            f"Página (1–{n_pages})", min_value=1, max_value=n_pages, step=1, key=page_key
-        )
-    else:
-        page = 1
+    page = st.number_input(
+        f"Página (1–{n_pages})", min_value=1, max_value=n_pages, step=1, key=page_key
+    ) if n_pages > 1 else 1
 
     start = (page - 1) * PAGE_SIZE
     page_clusters = visible[start:start + PAGE_SIZE]
     st.caption(f"Mostrando {start + 1}–{start + len(page_clusters)} de {len(visible)} grupos")
 
-    for cluster, recon, warn in page_clusters:
-        status   = recon["status"]
-        members  = cluster["members"]
-        survivor = cluster_survivor_default(cluster, recon, usage)
+    for cluster, recon, warn, collapsed in page_clusters:
+        members = cluster["members"]
+        cid     = "|".join(members)
 
+        # ---- already collapsed: show summary + reopen ----
+        if collapsed:
+            absorbed = [m for m in members if m != collapsed]
+            with st.container(border=True):
+                st.markdown(f"**Grupo de {len(members)}**  —  ✅ **Colapsado**")
+                st.success(
+                    f"👑 Se conserva **{collapsed}**  ·  🗑 {len(absorbed)} fusionados: "
+                    + ", ".join(absorbed)
+                )
+                if st.button("↩️ Reabrir grupo", key=f"reopen_{table}_{cid}"):
+                    reopen_cluster(decisions, cluster, collapsed)
+                    save_decisions(table, decisions)
+                    st.rerun()
+            continue
+
+        # ---- actionable cluster ----
+        survivor_default = cluster_survivor_default(cluster, recon, usage, new_records)
         with st.container(border=True):
-            head = f"**Grupo de {len(members)}**  —  {STATUS_CHIP.get(status, status)}"
+            head = f"**Grupo de {len(members)}**  —  {STATUS_CHIP.get(recon['status'], recon['status'])}"
             if warn:
                 head += "  •  🚩 **Posible sobre-agrupación**"
             st.markdown(head)
-
             if warn:
                 st.caption(
                     f"🚩 {warn}. Revisa los enlaces antes de colapsar — "
@@ -825,33 +1054,128 @@ def render_clusters(table: str, df: pd.DataFrame, name_col: str):
             for c in recon["conflicts"]:
                 st.caption(f"⚠️ {c}")
 
-            # --- members ---
             rows = []
             for m in members:
-                if m == survivor:
-                    role = "👑 sobreviviente"
-                elif m in recon["losers"]:
-                    role = "🗑 eliminar"
-                else:
-                    role = "—"
-                row = {"Registro": m, "Uso": usage.get(m, 0), "Rol propuesto": role}
+                row = {"Registro": m, "Uso": usage.get(m, 0)}
                 if has_sci:
                     row["Nombre científico"] = sci_lk.get(m, "")
                 for c in geo_cols:
                     row[c] = geo_lk[c].get(m, "")
+                row["Acción"] = ACT_KEEP if m == survivor_default else ACT_MERGE
                 rows.append(row)
-            st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
-            # --- edge evidence ---
-            with st.expander(f"🔗 Enlaces internos ({len(cluster['edges'])})"):
-                erows = [{
-                    "A":           e["a"],
-                    "B":           e["b"],
-                    "Similitud %": e["pct"],
-                    "Tipo":        e["flag"].replace("_", " ").title(),
-                    "Puente":      "🌉 sí" if frozenset((e["a"], e["b"])) in cluster["bridges"] else "",
-                } for e in cluster["edges"]]
-                st.dataframe(pd.DataFrame(erows), use_container_width=True, hide_index=True)
+            colcfg = {
+                "Registro": st.column_config.TextColumn("Registro", disabled=True),
+                "Uso":      st.column_config.NumberColumn("Uso", disabled=True),
+                "Acción":   st.column_config.SelectboxColumn(
+                    "Acción", options=ACTION_OPTS, required=True, width="medium"
+                ),
+            }
+            if has_sci:
+                colcfg["Nombre científico"] = st.column_config.TextColumn("Nombre científico", disabled=True)
+            for c in geo_cols:
+                colcfg[c] = st.column_config.TextColumn(c, disabled=True)
+
+            edited = st.data_editor(
+                pd.DataFrame(rows),
+                column_config=colcfg,
+                hide_index=True,
+                use_container_width=True,
+                key=f"act_{table}_{cid}",
+            )
+            actions = dict(zip(edited["Registro"], edited["Acción"]))
+            keepers = [m for m, a in actions.items() if a == ACT_KEEP]
+
+            c1, c2, _ = st.columns([2, 2, 3])
+            if c1.button("✅ Colapsar grupo", key=f"col_{table}_{cid}", use_container_width=True):
+                if len(keepers) != 1:
+                    st.warning("Marca **exactamente un** registro como 👑 Conservar.")
+                else:
+                    surv = keepers[0]
+                    apply_collapse(decisions, cluster, surv,
+                                   {m: a for m, a in actions.items() if m != surv})
+                    save_decisions(table, decisions)
+                    st.rerun()
+            if c2.button("✂️ Separar todos", key=f"sep_{table}_{cid}", use_container_width=True,
+                         help="Marca todo el grupo como registros distintos (no duplicados)"):
+                apply_separate_all(decisions, cluster)
+                save_decisions(table, decisions)
+                st.rerun()
+
+            # ---- membership actions: one toggle row + a single panel (kept light: the
+            # heavy selectbox/editor only renders for the group being edited) ----
+            panel_key = f"panel_{table}_{cid}"
+            mode = st.session_state.get(panel_key, "")
+            tb1, tb2, tb3 = st.columns(3)
+            if tb1.button("➕ Agregar existente", key=f"pbadd_{table}_{cid}", use_container_width=True):
+                st.session_state[panel_key] = "" if mode == "add" else "add"
+                st.rerun()
+            if tb2.button("✨ Crear nuevo", key=f"pbnew_{table}_{cid}", use_container_width=True):
+                st.session_state[panel_key] = "" if mode == "new" else "new"
+                st.rerun()
+            if tb3.button("✏️ Renombrar", key=f"pbren_{table}_{cid}", use_container_width=True):
+                st.session_state[panel_key] = "" if mode == "rename" else "rename"
+                st.rerun()
+
+            if mode == "add":
+                pick = st.selectbox(
+                    "Registro existente a agregar (no fue detectado automáticamente)",
+                    [n for n in all_names if n not in set(members)],
+                    index=None, placeholder="Busca un registro del catálogo…",
+                    key=f"addsel_{table}_{cid}",
+                )
+                if st.button("➕ Agregar al grupo", key=f"addok_{table}_{cid}",
+                             use_container_width=True, disabled=not pick):
+                    add_manual_link(decisions, survivor_default, pick)
+                    save_decisions(table, decisions)
+                    st.session_state[panel_key] = ""
+                    st.rerun()
+
+            elif mode == "new":
+                newname = st.text_input("Nombre del nuevo registro",
+                                        key=f"nn_{table}_{cid}").strip()
+                fields = {}
+                if field_cols:
+                    st.caption("Completa los demás campos del registro (opcional):")
+                    ed = st.data_editor(
+                        pd.DataFrame([{c: "" for c in field_cols}]),
+                        hide_index=True, use_container_width=True, key=f"nf_{table}_{cid}",
+                    )
+                    fields = {c: str(ed.iloc[0][c]) for c in field_cols}
+                if st.button("✨ Crear y agregar", key=f"nok_{table}_{cid}",
+                             use_container_width=True, disabled=not newname):
+                    if newname in set(all_names):
+                        st.warning(f"'{newname}' ya existe — usa **Agregar existente**.")
+                    elif create_new_record(table, newname, name_col, fields):
+                        add_manual_link(decisions, survivor_default, newname)
+                        nr = decisions.setdefault("new_records", [])
+                        if newname not in nr:
+                            nr.append(newname)
+                        save_decisions(table, decisions)
+                        st.session_state[panel_key] = ""
+                        st.rerun()
+
+            elif mode == "rename":
+                old = st.selectbox(
+                    "Registro a renombrar", members, index=None,
+                    placeholder="Elige el registro con el nombre incorrecto…",
+                    key=f"rensel_{table}_{cid}",
+                )
+                corrected = st.text_input("Nombre correcto", key=f"rennew_{table}_{cid}").strip()
+                if st.button("✏️ Aplicar nombre", key=f"renok_{table}_{cid}",
+                             use_container_width=True, disabled=not (old and corrected)):
+                    err = rename_record(table, old, corrected, name_col, decisions)
+                    if err:
+                        st.warning(err)
+                    else:
+                        nr = decisions.setdefault("new_records", [])  # default survivor = corrected
+                        if corrected not in nr:
+                            nr.append(corrected)
+                        save_decisions(table, decisions)
+                        st.session_state[panel_key] = ""
+                        st.rerun()
+
+            _edge_evidence(cluster)
 
 
 # ---------------------------------------------------------------------------
@@ -876,7 +1200,7 @@ def main():
     decisions   = load_decisions(table)
     pairs       = table_pairs(table)
     done, total = progress(pairs, decisions)
-    clusters    = table_clusters(table, cut_keys_of(decisions))
+    clusters    = table_clusters(table, cut_keys_of(decisions), manual_links_of(decisions))
 
     st.title(f"📋 {TABLE_LABELS.get(table, table)}")
     m1, m2, m3, m4, m5, m6 = st.columns(6)
