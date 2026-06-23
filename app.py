@@ -1190,18 +1190,23 @@ def main():
         initial_sidebar_state="expanded",
     )
 
-    # Top-level console mode: catalog dedup review (CSV) vs the DB-backed form builder.
+    # Top-level console mode: CSV dedup review · DB-backed form builder · proposal queue.
     mode = st.sidebar.radio(
         "Modo",
-        ["catalogos", "formularios"],
+        ["catalogos", "formularios", "propuestas"],
         format_func=lambda m: {"catalogos": "📋 Revisión de catálogos",
-                               "formularios": "🛠️ Constructor de formularios"}[m],
+                               "formularios": "🛠️ Constructor de formularios",
+                               "propuestas": "📥 Propuestas de catálogo"}[m],
         key="console_mode",
     )
     st.sidebar.divider()
     if mode == "formularios":
         from form_builder import render_form_builder
         render_form_builder()
+        return
+    if mode == "propuestas":
+        from proposals_review import render_proposal_queue
+        render_proposal_queue()
         return
 
     table    = sidebar()
