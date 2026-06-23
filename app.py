@@ -1184,11 +1184,25 @@ def render_clusters(table: str, df: pd.DataFrame, name_col: str):
 
 def main():
     st.set_page_config(
-        page_title="Revisión Catálogos",
+        page_title="Consola de monitoreo",
         page_icon="🐟",
         layout="wide",
         initial_sidebar_state="expanded",
     )
+
+    # Top-level console mode: catalog dedup review (CSV) vs the DB-backed form builder.
+    mode = st.sidebar.radio(
+        "Modo",
+        ["catalogos", "formularios"],
+        format_func=lambda m: {"catalogos": "📋 Revisión de catálogos",
+                               "formularios": "🛠️ Constructor de formularios"}[m],
+        key="console_mode",
+    )
+    st.sidebar.divider()
+    if mode == "formularios":
+        from form_builder import render_form_builder
+        render_form_builder()
+        return
 
     table    = sidebar()
     df       = load_csv(table)
