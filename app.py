@@ -1190,13 +1190,14 @@ def main():
         initial_sidebar_state="expanded",
     )
 
-    # Top-level console mode: CSV dedup review · DB-backed form builder · proposal queue.
+    # Top-level console mode: CSV dedup review · form builder · proposals · R export.
     mode = st.sidebar.radio(
         "Modo",
-        ["catalogos", "formularios", "propuestas"],
+        ["catalogos", "formularios", "propuestas", "exportar"],
         format_func=lambda m: {"catalogos": "📋 Revisión de catálogos",
                                "formularios": "🛠️ Constructor de formularios",
-                               "propuestas": "📥 Propuestas de catálogo"}[m],
+                               "propuestas": "📥 Propuestas de catálogo",
+                               "exportar": "📤 Exportar datos (R)"}[m],
         key="console_mode",
     )
     st.sidebar.divider()
@@ -1207,6 +1208,10 @@ def main():
     if mode == "propuestas":
         from proposals_review import render_proposal_queue
         render_proposal_queue()
+        return
+    if mode == "exportar":
+        from export_data import render_export
+        render_export()
         return
 
     table    = sidebar()
