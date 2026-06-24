@@ -131,6 +131,15 @@ def _has_suspect_flag() -> bool:
                       WHERE table_name='medicion' AND column_name='longitud_sospechosa'"""))
 
 
+def recompute_suspect_flags() -> int:
+    """Re-run the per-species suspicious-length flag (migration 0009). Returns total flagged."""
+    cur = get_conn().cursor()
+    cur.execute("SELECT flag_longitudes_sospechosas()")
+    n = cur.fetchone()[0]
+    cur.close()
+    return n
+
+
 def _build(dataset: str, f: dict) -> tuple[str, list]:
     cfg = DATASETS[dataset]
     where, params = [], []
@@ -212,8 +221,15 @@ def render_export():
         f["excluir_sospechosas"] = st.checkbox(
             "Excluir tallas sospechosas (outliers por especie)", value=True,
             key="exp_susp", disabled=not has_flag,
-            help="Activo cuando exista la columna longitud_sospechosa (pendiente, item D)."
-                 if not has_flag else "Excluye filas marcadas como talla atípica.")
+            help="Activo cuando exista la columna longitud_sospechosa (migración 0009)."
+                 if not has_flag else "Excluye filas marcadas como talla atípica (06).")
+        if has_flag:
+            with st.expander("🔧 Calidad de tallas (longitud sospechosa)"):
+                cur_flag = _q("SELECT count(*) AS n FROM medicion WHERE longitud_sospechosa")[0]["n"]
+                st.caption(f"Marcadas como sospechosas: **{cur_flag:,}**. Recalcula tras importar "
+                           "datos o ajustar `cat_especie.longitud_maxima_cm` por especie (Lmax).")
+                if st.button("♻️ Recalcular tallas sospechosas", key="exp_recompute"):
+                    st.success(f"Recalculado: {recompute_suspect_flags():,} mediciones marcadas.")
 
     if st.button("🔍 Generar vista previa", key="exp_run", type="primary"):
         sql, params = _build(ds, f)
