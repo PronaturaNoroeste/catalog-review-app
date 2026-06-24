@@ -84,7 +84,12 @@ def get_conn():
 
 def _q(sql, args=None):
     cur = get_conn().cursor()
-    cur.execute(sql, args or ())
+    # Pass params only when present: with an empty tuple psycopg2 still tries to
+    # interpolate literal '%' (e.g. LIKE 'cat\_%') and raises "tuple index out of range".
+    if args:
+        cur.execute(sql, args)
+    else:
+        cur.execute(sql)
     rows = cur.fetchall()
     cols = [c[0] for c in cur.description]
     cur.close()
