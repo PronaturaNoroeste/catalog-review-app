@@ -103,6 +103,12 @@ def load_decisions(table: str) -> dict:
 
 
 def save_decisions(table: str, decisions: dict):
+    # Invariant: a name must not be both a new_record AND a rename target. That combo
+    # makes the importer insert it (Phase 0) and then collide renaming onto it (Phase 1).
+    # The rename produces the name, so it stays out of new_records.
+    targets = {r.get("to") for r in decisions.get("renames", [])}
+    if decisions.get("new_records"):
+        decisions["new_records"] = [n for n in decisions["new_records"] if n not in targets]
     path = DECISIONS_DIR / f"{table}.json"
     with open(path, "w", encoding="utf-8") as f:
         json.dump(decisions, f, ensure_ascii=False, indent=2)
@@ -190,13 +196,18 @@ def progress(pairs: list[dict], decisions: dict) -> tuple[int, int]:
     return decided, len(pairs)
 
 
-def _apply_rename(decisions: dict, old: str, new: str) -> dict:
-    """Update all references to `old` name inside a decisions dict."""
+def _apply_rename(decisions: dict, old: str, new: str, log: bool = True) -> dict:
+    """Update all references to `old` name inside a decisions dict. When `log` is
+    False (the row is a user-created new_record with no row in the DB yet), the
+    rename is NOT recorded in the renames log — otherwise the importer would try to
+    rename a non-existent row and the corrected name would be both a new_record and a
+    rename target (Phase-0 insert + Phase-1 rename → unique-key collision)."""
     # renames log
     renames = decisions.get("renames", [])
     # collapse chains: if old was itself a rename target, update the chain
     renames = [r for r in renames if r["to"] != old]
-    renames.append({"from": old, "to": new})
+    if log:
+        renames.append({"from": old, "to": new})
     decisions["renames"] = renames
 
     # deleted / approved lists
@@ -594,7 +605,10 @@ def rename_record(table: str, old: str, new: str, name_col: str, decisions: dict
         df.loc[df["similar_a"] == old, "similar_a"] = new
     save_csv(table, df)
 
-    _apply_rename(decisions, old, new)                  # renames log / deleted / approved / pairs
+    # If `old` is a record the user created this session, this is just correcting the
+    # new record's name — not a catalog rename (there's no DB row to rename). Don't log it.
+    is_new = old in decisions.get("new_records", [])
+    _apply_rename(decisions, old, new, log=not is_new)  # renames log / deleted / approved / pairs
     _rename_in_phase2(decisions, old, new)              # merges / manual_links / new_records
     for cache in (load_csv, get_pairs, table_pairs, table_clusters, usage_lookup):
         cache.clear()
@@ -1168,9 +1182,10 @@ def render_clusters(table: str, df: pd.DataFrame, name_col: str):
                     if err:
                         st.warning(err)
                     else:
-                        nr = decisions.setdefault("new_records", [])  # default survivor = corrected
-                        if corrected not in nr:
-                            nr.append(corrected)
+                        # Do NOT add `corrected` to new_records — it's a rename TARGET,
+                        # not a brand-new row. Doing so made the importer insert it
+                        # (Phase 0) AND rename another row onto it (Phase 1) → unique-key
+                        # collision. rename_record already records the rename.
                         save_decisions(table, decisions)
                         st.session_state[panel_key] = ""
                         st.rerun()
