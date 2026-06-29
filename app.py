@@ -1205,17 +1205,20 @@ def main():
         initial_sidebar_state="expanded",
     )
 
-    # Top-level console mode: CSV dedup review · form builder · proposals · edit · R export.
-    mode = st.sidebar.radio(
-        "Modo",
-        ["catalogos", "formularios", "propuestas", "editar", "exportar"],
-        format_func=lambda m: {"catalogos": "📋 Revisión de catálogos",
-                               "formularios": "🛠️ Constructor de formularios",
-                               "propuestas": "📥 Propuestas de catálogo",
-                               "editar": "✏️ Edición de catálogos",
-                               "exportar": "📤 Exportar datos (R)"}[m],
-        key="console_mode",
-    )
+    # Login gate (ADMINISTRADOR → all modes, ANALISTA → export only).
+    from console_auth import require_login, logout_button
+    rol, nombre = require_login()
+    st.sidebar.caption(f"👤 {nombre} · {rol}")
+    logout_button()
+    st.sidebar.divider()
+
+    # Top-level console mode (gated by role).
+    labels = {"catalogos": "📋 Revisión de catálogos", "formularios": "🛠️ Constructor de formularios",
+              "propuestas": "📥 Propuestas de catálogo", "editar": "✏️ Edición de catálogos",
+              "usuarios": "👤 Usuarios", "exportar": "📤 Exportar datos (R)"}
+    options = (["catalogos", "formularios", "propuestas", "editar", "usuarios", "exportar"]
+               if rol == "ADMINISTRADOR" else ["exportar"])
+    mode = st.sidebar.radio("Modo", options, format_func=lambda m: labels[m], key="console_mode")
     st.sidebar.divider()
     if mode == "formularios":
         from form_builder import render_form_builder
@@ -1228,6 +1231,10 @@ def main():
     if mode == "editar":
         from catalog_admin import render_catalog_admin
         render_catalog_admin()
+        return
+    if mode == "usuarios":
+        from users_admin import render_users_admin
+        render_users_admin()
         return
     if mode == "exportar":
         from export_data import render_export
