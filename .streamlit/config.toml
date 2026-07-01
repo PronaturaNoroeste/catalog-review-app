@@ -1,0 +1,8 @@
+# Pronatura Noroeste — console theme (Dashboard Extension). See Planning/DESIGN-pronatura.md.
+[theme]
+base = "light"
+primaryColor = "#1b5c5a"              # Tide — primary action, active states
+backgroundColor = "#f0f0ed"           # Shell — app background
+secondaryBackgroundColor = "#ffffff"  # Canvas — cards, widgets
+textColor = "#1e1c19"                 # Ink
+font = "sans serif"

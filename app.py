@@ -1204,6 +1204,8 @@ def main():
         layout="wide",
         initial_sidebar_state="expanded",
     )
+    from console_theme import apply_theme
+    apply_theme()
 
     # Login gate (ADMINISTRADOR → all modes, ANALISTA → export only).
     from console_auth import require_login, logout_button
