@@ -45,7 +45,8 @@ _FAENA_CTX = """
 
 DATASETS = {
     "mediciones": {
-        "label": "Mediciones (tallas)",
+        "label": "Mediciones de tallas",
+        "desc": "Cada fila es un pez medido: talla, peso, sexo y madurez.",
         "select": """
             m.id, e.nombre_comun AS especie,
             m.longitud_total_cm, m.longitud_furcal_cm, m.peso_gr, m.peso_gonada_gr,
@@ -61,7 +62,8 @@ DATASETS = {
         "orphans": True, "lengths": True,
     },
     "capturas": {
-        "label": "Capturas (composición / CPUE)",
+        "label": "Capturas",
+        "desc": "Cada fila es la captura de una especie en un viaje: kilos, organismos y precio.",
         "select": """
             c.id, e.nombre_comun AS especie, c.captura_kg, c.num_organismos, c.precio_kg,
             c.tipo_captura, c.presentacion, c.categoria_tamano,
@@ -75,7 +77,8 @@ DATASETS = {
         "orphans": False, "lengths": False,
     },
     "faenas": {
-        "label": "Faenas (esfuerzo)",
+        "label": "Faenas (viajes)",
+        "desc": "Cada fila es un viaje de pesca: esfuerzo, pescadores, gasolina, capitán y técnico.",
         "select": """
             f.id, f.fecha, f.tipo_registro, f.num_pescadores, f.tiempo_efectivo_pesca_h,
             f.gasolina_lts, f.profundidad_min_brazas, f.profundidad_max_brazas,
@@ -95,7 +98,8 @@ DATASETS = {
         "orphans": False, "lengths": False,
     },
     "etp": {
-        "label": "Interacciones ETP (bycatch)",
+        "label": "Interacciones ETP",
+        "desc": "Cada fila es un encuentro con especies protegidas (tortugas, mamíferos, aves…).",
         "select": """
             i.id, e.nombre_comun AS especie, ti.nombre AS interaccion, i.cantidad,
             i.faena_id, f.fecha, f.tipo_registro,
@@ -123,6 +127,43 @@ def _opts():
     sexos = [r["sexo"] for r in _q("SELECT DISTINCT sexo FROM medicion WHERE sexo IS NOT NULL ORDER BY sexo")]
     proc = [r["procesado"] for r in _q("SELECT DISTINCT procesado FROM medicion WHERE procesado IS NOT NULL ORDER BY procesado")]
     return esp, reg, fmt, sexos, proc
+
+
+# Plain-Spanish meaning of every exported column (diccionario de columnas).
+COL_DIC = {
+    "id": "Identificador único de la fila",
+    "especie": "Nombre común de la especie",
+    "longitud_total_cm": "Longitud total en centímetros",
+    "longitud_furcal_cm": "Longitud furcal en centímetros",
+    "peso_gr": "Peso en gramos",
+    "peso_gonada_gr": "Peso de la gónada en gramos",
+    "procesado": "Estado del pez al medirlo (entero, eviscerado…)",
+    "sexo": "Sexo del organismo",
+    "madurez_nikolsky": "Etapa de madurez (escala de Nikolsky)",
+    "faena_id": "Viaje al que pertenece (vacío = medición huérfana)",
+    "fecha": "Fecha de la faena",
+    "tipo_registro": "MASIVO o BITACORA — nunca se suman entre sí",
+    "region": "Región",
+    "zona": "Zona de pesca",
+    "comunidad": "Comunidad",
+    "formato": "Formato de origen del dato (comunidad/proyecto)",
+    "captura_kg": "Kilogramos capturados",
+    "num_organismos": "Número de organismos",
+    "precio_kg": "Precio por kilogramo (MXN)",
+    "tipo_captura": "Tipo de captura",
+    "presentacion": "Presentación del producto",
+    "categoria_tamano": "Categoría de tamaño",
+    "tiempo_efectivo_pesca_h": "Horas efectivas de pesca",
+    "num_pescadores": "Número de pescadores en el viaje",
+    "gasolina_lts": "Litros de gasolina",
+    "profundidad_min_brazas": "Profundidad mínima (brazas)",
+    "profundidad_max_brazas": "Profundidad máxima (brazas)",
+    "sitio": "Sitio de pesca",
+    "capitan": "Capitán de la embarcación",
+    "tecnico": "Técnico que registró",
+    "interaccion": "Tipo de interacción con la especie protegida",
+    "cantidad": "Cantidad de organismos",
+}
 
 
 @st.cache_data(ttl=300, show_spinner=False)
@@ -195,6 +236,7 @@ def render_export():
     ds = st.selectbox("Conjunto de datos", list(DATASETS),
                       format_func=lambda d: DATASETS[d]["label"], key="exp_ds")
     cfg = DATASETS[ds]
+    st.caption(cfg["desc"])
     cols = cfg["filters"]
     f: dict = {}
 
@@ -210,7 +252,8 @@ def render_export():
         f["formato"] = c1.multiselect("Formato origen", list(fmap), format_func=lambda i: fmap[i], key="exp_fmt")
     if "tipo" in cols:
         f["tipo"] = c2.radio("Tipo de registro", ["Todos", "MASIVO", "BITACORA"], horizontal=True, key="exp_tipo")
-        c2.caption("⚠️ MASIVO y BITÁCORA **no se suman**. La columna se incluye para separarlos en R.")
+        c2.warning("MASIVO y BITÁCORA **no se suman**: son dos formas distintas de registrar. "
+                   "La columna `tipo_registro` va incluida para separarlos en el análisis.")
     if "sexo" in cols and sexos:
         f["sexo"] = c1.multiselect("Sexo", sexos, key="exp_sexo")
     if "procesado" in cols and proc:
@@ -220,17 +263,22 @@ def render_export():
                                (2005, _dt.date.today().year), key="exp_years")
 
     if cfg["orphans"]:
+        st.info("Las mediciones **huérfanas** son tallas biológicamente válidas pero sin viaje "
+                "asociado (~36% del histórico). Sirven para análisis por especie; cualquier "
+                "filtro de contexto (región, tipo, año) las excluye automáticamente.")
         f["incluir_huerfanas"] = st.checkbox(
-            "Incluir mediciones huérfanas (sin faena)", value=True, key="exp_orph",
-            help="Tallas válidas sin contexto de viaje (~36% del histórico). "
-                 "Cualquier filtro de contexto (región/tipo/año) las excluye automáticamente.")
+            "Incluir mediciones huérfanas (sin faena)", value=True, key="exp_orph")
     if cfg["lengths"]:
         has_flag = _has_suspect_flag()
+        if has_flag:
+            st.info("Las tallas **sospechosas** son valores atípicos para su especie (p. ej. "
+                    "milímetros capturados como centímetros en el histórico). Se excluyen por "
+                    "defecto; inclúyelas solo si sabes lo que haces.")
         f["excluir_sospechosas"] = st.checkbox(
             "Excluir tallas sospechosas (outliers por especie)", value=True,
             key="exp_susp", disabled=not has_flag,
-            help="Activo cuando exista la columna longitud_sospechosa (migración 0009)."
-                 if not has_flag else "Excluye filas marcadas como talla atípica (06).")
+            help="Se activa cuando exista la columna longitud_sospechosa (migración 0009)."
+                 if not has_flag else "Excluye filas marcadas como talla atípica.")
         if has_flag:
             with st.expander("🔧 Calidad de tallas (longitud sospechosa)"):
                 cur_flag = _q("SELECT count(*) AS n FROM medicion WHERE longitud_sospechosa")[0]["n"]
@@ -283,17 +331,33 @@ def render_export():
     st.dataframe(df.head(100), use_container_width=True, height=300)
     st.caption(f"Mostrando 100 de {len(df):,} filas.")
 
+    with st.expander("📖 Diccionario de columnas"):
+        st.dataframe(pd.DataFrame(
+            [{"columna": c, "significado": COL_DIC.get(c, "—")} for c in df.columns]),
+            use_container_width=True, hide_index=True)
+
     # ---- download ----
     st.divider()
     stamp = _dt.date.today().isoformat()
     base = f"{ds}_{stamp}"
     d1, d2 = st.columns(2)
-    d1.download_button("⬇️ CSV", df.to_csv(index=False).encode("utf-8"),
+    d1.download_button("⬇️ CSV (Excel / R)", df.to_csv(index=False).encode("utf-8"),
                        file_name=f"{base}.csv", mime="text/csv", use_container_width=True)
     if HAS_PARQUET:
         buf = io.BytesIO(); df.to_parquet(buf, index=False)
-        d2.download_button("⬇️ Parquet", buf.getvalue(),
+        d2.download_button("⬇️ Parquet (R / Python)", buf.getvalue(),
                            file_name=f"{base}.parquet", mime="application/octet-stream",
                            use_container_width=True)
     else:
-        d2.button("⬇️ Parquet (instala pyarrow)", disabled=True, use_container_width=True)
+        d2.button("⬇️ Parquet", disabled=True, use_container_width=True)
+        d2.caption("Parquet no disponible: falta el paquete `pyarrow` en el servidor "
+                   "(`pip install pyarrow`). El CSV funciona igual.")
+
+    with st.expander("💻 Cómo cargar el archivo en R o Python"):
+        st.code(f'datos <- read.csv("{base}.csv", fileEncoding = "UTF-8")\n'
+                f'# o con Parquet:  datos <- arrow::read_parquet("{base}.parquet")',
+                language="r")
+        st.code(f'import pandas as pd\n'
+                f'datos = pd.read_csv("{base}.csv")\n'
+                f'# o con Parquet:  datos = pd.read_parquet("{base}.parquet")',
+                language="python")
