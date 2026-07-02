@@ -316,6 +316,7 @@ def validate_definition(definicion: dict, constantes: dict, bindable: dict) -> t
 # =====================================================================
 _FIELD_COLS = ["key", "label", "tipo", "requerido", "autocompletar",
                "bind_tipo", "bind_columna", "bind_catalogo",
+               "lista", "permite_proponer", "permite_otro_texto",
                "opciones", "visible_si", "filtrado_por", "validacion",
                "opciones_prioritarias", "ayuda"]
 
@@ -330,6 +331,9 @@ def fields_to_df(campos: list[dict]) -> pd.DataFrame:
             "autocompletar": bool(c.get("autocompletar", False)),
             "bind_tipo": b.get("tipo", "core"), "bind_columna": b.get("columna", ""),
             "bind_catalogo": b.get("catalogo", ""),
+            "lista": c.get("lista", ""),
+            "permite_proponer": bool(c.get("permite_proponer", False)),
+            "permite_otro_texto": bool(c.get("permite_otro_texto", False)),
             "opciones": _j(c.get("opciones")), "visible_si": _j(c.get("visible_si")),
             "filtrado_por": _j(c.get("filtrado_por")), "validacion": _j(c.get("validacion")),
             "opciones_prioritarias": _j(c.get("opciones_prioritarias")),
@@ -352,6 +356,13 @@ def df_to_fields(df: pd.DataFrame) -> list[dict]:
             c["autocompletar"] = True
         if r.get("ayuda"):
             c["ayuda"] = r["ayuda"]
+        # curated-list wiring — dropping these breaks the tablet picker (doc 16)
+        if (r.get("lista") or "").strip():
+            c["lista"] = r["lista"].strip()
+        if bool(r.get("permite_proponer")):
+            c["permite_proponer"] = True
+        if bool(r.get("permite_otro_texto")):
+            c["permite_otro_texto"] = True
         b: dict = {"tipo": r.get("bind_tipo") or "core"}
         if (r.get("bind_columna") or "").strip():
             b["columna"] = r["bind_columna"].strip()
@@ -544,6 +555,13 @@ def render_form_builder():
                 "bind_tipo": st.column_config.SelectboxColumn("binding", options=BIND_TIPOS),
                 "bind_columna": st.column_config.SelectboxColumn("columna core", options=bind_cols, width="medium"),
                 "bind_catalogo": st.column_config.SelectboxColumn("catálogo", options=cat_tables),
+                "lista": st.column_config.TextColumn(
+                    "lista curada 🔒", disabled=True,
+                    help="Lista curada de opciones (se administra en 📑 Listas del formulario)."),
+                "permite_proponer": st.column_config.CheckboxColumn(
+                    "proponer", help="El técnico puede proponer nombres fuera de la lista."),
+                "permite_otro_texto": st.column_config.CheckboxColumn(
+                    "otro texto", help="Permite escribir un valor libre («otro»)."),
                 "opciones": st.column_config.TextColumn("opciones (JSON)"),
                 "visible_si": st.column_config.TextColumn("visible_si (JSON)"),
                 "filtrado_por": st.column_config.TextColumn("filtrado_por (JSON)"),
@@ -552,6 +570,12 @@ def render_form_builder():
                 "ayuda": st.column_config.TextColumn("ayuda"),
             })
         sec["campos"] = df_to_fields(f_df)
+        listados = [f"**{c.get('label') or c['key']}** → `{c['lista']}`"
+                    for c in sec["campos"] if c.get("lista")]
+        if listados:
+            st.caption("📑 Con lista curada: " + " · ".join(listados) +
+                       ". Las opciones de estas listas se administran en "
+                       "**📑 Listas del formulario** (no aquí).")
         # auto-fill catalogo from the bindable registry when a core column is chosen
         for c in sec["campos"]:
             b = c.get("binding", {})

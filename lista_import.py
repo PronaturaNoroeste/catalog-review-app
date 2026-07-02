@@ -99,7 +99,7 @@ def _coop_index() -> dict[str, str]:
     return {_norm(r["nombre"]): r["id"] for r in _q("SELECT id::text AS id, nombre FROM cat_cooperativa")}
 
 
-def _resolve_coop(name, idx: dict) -> str | None:
+def _resolve_coop(name, idx: dict, created: list | None = None) -> str | None:
     if not name or not str(name).strip():
         return None
     key = _norm(name)
@@ -109,6 +109,8 @@ def _resolve_coop(name, idx: dict) -> str | None:
     _exec("INSERT INTO cat_cooperativa (id, nombre, es_aprobado) VALUES (%s,%s,true)", (cid, str(name).strip()))
     idx[key] = cid
     _log("cat_cooperativa", cid, "crear", {"nombre": str(name).strip(), "origen": "lista"})
+    if created is not None:
+        created.append(str(name).strip())
     return cid
 
 
@@ -187,12 +189,26 @@ def render_lista_import():
     st.caption(f"{len(df)} filas · columnas: {', '.join(df.columns)}")
 
     cols = list(df.columns)
+
+    def _guess(needles: tuple, offset: int = 0, default: int = 0) -> int:
+        """Best-guess default for a mapping selectbox by column-name keywords."""
+        for i, c in enumerate(cols):
+            if any(k in _norm(c) for k in needles):
+                return i + offset
+        return default
+
     m1, m2, m3, m4 = st.columns(4)
-    col_name = m1.selectbox("Columna nombre", cols, key="li_name")
-    col_sci = (m2.selectbox("Nombre científico", ["—"] + cols, key="li_sci")
+    col_name = m1.selectbox("Columna nombre", cols, key="li_name",
+                            index=_guess(("nombre", "especie", "pescador", "comun")))
+    col_sci = (m2.selectbox("Nombre científico", ["—"] + cols, key="li_sci",
+                            index=_guess(("cient",), offset=1))
                if tabla == "cat_especie" else "—")
-    col_imp = m3.selectbox("Importancia", ["—"] + cols, key="li_imp") if cfg["importancia"] else "—"
-    col_coop = m4.selectbox("Cooperativa", ["—"] + cols, key="li_coop") if cfg["cooperativa"] else "—"
+    col_imp = (m3.selectbox("Importancia", ["—"] + cols, key="li_imp",
+                            index=_guess(("import", "prior", "rank"), offset=1))
+               if cfg["importancia"] else "—")
+    col_coop = (m4.selectbox("Cooperativa", ["—"] + cols, key="li_coop",
+                             index=_guess(("coop",), offset=1))
+                if cfg["cooperativa"] else "—")
 
     rows = []
     for _, r in df.iterrows():
@@ -227,23 +243,35 @@ def render_lista_import():
     if counts["ambiguo"]:
         st.warning(f"{counts['ambiguo']} fila(s) ambiguas (varios registros con el mismo nombre) — se "
                    "enlaza uno; revísalas.")
+        with st.expander("Ver filas ambiguas y el registro que se enlazará"):
+            st.dataframe(pd.DataFrame([p for p in prev if p["acción"] == "ambiguo"]),
+                         use_container_width=True)
     st.dataframe(pd.DataFrame(prev), use_container_width=True, height=300)
 
     st.divider()
     if st.button(f"✅ Aplicar {len(rows)} opciones a «{lista}»", type="primary", key="li_apply"):
         coop_idx = _coop_index() if cfg["cooperativa"] else {}
+        coops_nuevas: list[str] = []
+        fallidas: list[dict] = []
         prog = st.progress(0.0)
         done = {"crear": 0, "enlazar": 0, "renombrar": 0, "ambiguo": 0}
         for i, r in enumerate(rows):
             accion, rid, cur = r["_c"]
-            coop_id = _resolve_coop(r["coop"], coop_idx) if cfg["cooperativa"] else None
+            coop_id = _resolve_coop(r["coop"], coop_idx, coops_nuevas) if cfg["cooperativa"] else None
             try:
                 _apply_row(tabla, lista, cfg["carnada"], formato_id, r["nombre"], r["sci"], r["imp"],
                            accion, rid, cur, coop_id)
                 done[accion] += 1
             except Exception as e:  # noqa: BLE001
-                st.warning(f"«{r['nombre']}»: {friendly_error(e)}")
+                fallidas.append({"nombre": r["nombre"], "error": friendly_error(e)})
             prog.progress((i + 1) / max(len(rows), 1))
         total = _q("SELECT count(*) AS n FROM lista_opcion WHERE formato_origen_id=%s AND lista=%s",
                    (formato_id, lista))[0]["n"]
-        st.success(f"Aplicado a «{lista}»: {done}. Total en la lista: {total}.")
+        st.success(f"Aplicado a «{lista}»: {done['crear']} creadas · {done['enlazar']} enlazadas · "
+                   f"{done['renombrar']} renombradas · {done['ambiguo']} ambiguas enlazadas. "
+                   f"Total en la lista: **{total}**.")
+        if coops_nuevas:
+            st.info("Cooperativas creadas (no existían): " + ", ".join(sorted(set(coops_nuevas))))
+        if fallidas:
+            st.error(f"{len(fallidas)} fila(s) no se aplicaron:")
+            st.dataframe(pd.DataFrame(fallidas), use_container_width=True)

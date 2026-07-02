@@ -39,11 +39,18 @@ def referencing_columns(tabla: str) -> list[tuple[str, str]]:
     return [(r["t"], r["c"]) for r in rows]
 
 
-def dependents(tabla: str, registro_id: str) -> int:
-    total = 0
+def dependents_detail(tabla: str, registro_id: str) -> list[tuple[str, int]]:
+    """(referencing table, count) for every table that points at this row."""
+    out = []
     for t, c in referencing_columns(tabla):
-        total += _q(f'SELECT count(*) AS n FROM public."{t}" WHERE "{c}"=%s', (registro_id,))[0]["n"]
-    return total
+        n = _q(f'SELECT count(*) AS n FROM public."{t}" WHERE "{c}"=%s', (registro_id,))[0]["n"]
+        if n:
+            out.append((t, n))
+    return out
+
+
+def dependents(tabla: str, registro_id: str) -> int:
+    return sum(n for _, n in dependents_detail(tabla, registro_id))
 
 
 def pending_proposals() -> list[dict]:
@@ -64,10 +71,27 @@ def approved_candidates(tabla: str, q: str) -> list[dict]:
                   WHERE es_aprobado AND nombre ILIKE %s ORDER BY nombre LIMIT 25""", (like,))
 
 
+# Proposals that can join a curated form list on approval (doc 16 follow-up:
+# an approved-but-unlisted species vanishes from the strict tablet picker).
+LISTABLE = {"cat_especie": ["especies", "carnada"], "cat_pescador": ["pescadores"]}
+
+
 # ---- actions ----
 def approve(tabla: str, rid: str, nombre: str):
     _exec(f'UPDATE public."{tabla}" SET estado=\'aprobado\', es_aprobado=true WHERE id=%s', (rid,))
     _log(tabla, rid, "aprobar", {"nombre": nombre})
+
+
+def add_to_lista(formato_id: str, lista: str, tabla: str, rid: str, nombre: str):
+    """Insert the approved row into the form's curated list (idempotent)."""
+    _exec("""INSERT INTO lista_opcion (formato_origen_id, lista, tabla, registro_id, importancia)
+             VALUES (%s,%s,%s,%s,0)
+             ON CONFLICT (formato_origen_id, lista, registro_id) DO NOTHING""",
+          (formato_id, lista, tabla, rid))
+    if tabla == "cat_especie" and lista == "carnada":
+        _exec("UPDATE cat_especie SET apta_carnada=true WHERE id=%s", (rid,))
+    _log("lista_opcion", rid, "crear",
+         {"lista": lista, "formato_origen_id": formato_id, "nombre": nombre, "origen": "propuesta"})
 
 
 def reject(tabla: str, rid: str, nombre: str):
@@ -128,10 +152,34 @@ def render_proposal_queue():
             top[1].metric("Faenas que lo usan", dep)
             top[2].caption(f"sesión: `{(p['por'] or '—')[:8]}`")
 
+            # optional: put the approved entry straight on the form's curated list —
+            # a strict picker only shows listed entries, so an approved-but-unlisted
+            # name would vanish from the tablet.
+            add_l = False
+            fsel = lsel = None
+            if tabla in LISTABLE:
+                from form_builder import list_formatos
+                formatos = list_formatos()
+                if formatos:
+                    lc1, lc2, lc3 = st.columns([3, 2, 2])
+                    add_l = lc1.checkbox(
+                        "Al aprobar, añadir a la lista del formulario", value=True,
+                        key=f"addl_{rid}",
+                        help="Si no está en la lista curada, el técnico no la verá en la "
+                             "tableta aunque esté aprobada.")
+                    fmap = {f["id"]: f["codigo"] for f in formatos}
+                    fsel = lc2.selectbox("Formulario", list(fmap), format_func=lambda i: fmap[i],
+                                         key=f"addlf_{rid}", disabled=not add_l)
+                    listas = LISTABLE[tabla]
+                    lsel = lc3.selectbox("Lista", listas, key=f"addll_{rid}",
+                                         disabled=not add_l or len(listas) == 1)
+
             a, r = st.columns(2)
             if a.button("✅ Aprobar", key=f"ap_{rid}", use_container_width=True):
                 try:
                     approve(tabla, rid, nombre)
+                    if add_l and fsel and lsel:
+                        add_to_lista(fsel, lsel, tabla, rid, nombre)
                     st.rerun()
                 except Exception as e:  # noqa: BLE001
                     st.error(friendly_error(e))
@@ -153,6 +201,13 @@ def render_proposal_queue():
                         "Sobrevive (las faenas se repuntan a esta)", [c["id"] for c in cands],
                         format_func=lambda i, m={c["id"]: c["nombre"] for c in cands}: m.get(i, i),
                         key=f"surv_{rid}")
+                    detail = dependents_detail(tabla, rid)
+                    if detail:
+                        st.info("Al fusionar se moverán: " +
+                                " · ".join(f"**{n}** registro(s) de `{t}`" for t, n in detail))
+                    else:
+                        st.caption("Ningún registro usa esta propuesta todavía; la fusión "
+                                   "solo la marca como fusionada.")
                     if confirm_button(f"Fusionar «{nombre}» → la seleccionada", key=f"mg_{rid}",
                                       help="La fusión mueve las faenas a la entrada elegida; "
                                            "no se puede deshacer."):
