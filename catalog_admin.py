@@ -16,11 +16,54 @@ import uuid
 import streamlit as st
 
 from form_builder import _q, _exec, _log
-from proposals_review import referencing_columns
+from proposals_review import dependents_detail
 
 # Columns shown read-only (identity / audit plumbing).
 SYSTEM_RO = {"id", "created_at", "updated_at", "propuesto_por", "propuesto_at"}
 NAME_COL = {"cat_especie": "nombre_comun", "cat_formato_origen": "codigo"}
+
+# Human labels + optional help for the columns that appear across cat_* tables.
+COLUMN_LABELS: dict[str, tuple[str, str | None]] = {
+    "nombre":             ("Nombre", None),
+    "nombre_comun":       ("Nombre común", "Como se conoce localmente (p. ej. Bonito)."),
+    "nombre_cientifico":  ("Nombre científico", "Género y especie (p. ej. Sarda chiliensis)."),
+    "es_aprobado":        ("Aprobado", "Solo lo aprobado aparece en los catálogos oficiales."),
+    "estado":             ("Estado", "pendiente → aprobado / rechazado / fusionado."),
+    "apta_carnada":       ("Apta como carnada", "La especie puede ofrecerse en la lista de carnada."),
+    "cooperativa_id":     ("Cooperativa", None),
+    "region_id":          ("Región", None),
+    "zona_pesca_id":      ("Zona de pesca", None),
+    "area_pesca_id":      ("Área de pesca", None),
+    "codigo":             ("Código", None),
+    "descripcion":        ("Descripción", None),
+    "activo":             ("Activo", None),
+    "limite":             ("Límite", None),
+    "es_etp":             ("Especie ETP", "Especie protegida (tortugas, mamíferos, aves…)."),
+    "grupo_taxonomico":   ("Grupo taxonómico", None),
+    "iniciales":          ("Iniciales", None),
+    "longitud_maxima_cm": ("Longitud máxima (cm)", "Tallas mayores a esto se marcan como sospechosas."),
+    "rfc":                ("RFC", None),
+    "tipo_lugar_muestreo": ("Tipo de lugar de muestreo", None),
+    "ubicacion":          ("Ubicación", None),
+    "id":                 ("ID", None),
+    "created_at":         ("Creado el", None),
+    "updated_at":         ("Actualizado el", None),
+    "propuesto_por":      ("Propuesto por (sesión)", None),
+    "propuesto_at":       ("Propuesto el", None),
+}
+
+
+def _col_label(name: str) -> str:
+    if name in COLUMN_LABELS:
+        return COLUMN_LABELS[name][0]
+    return name.removesuffix("_id").replace("_", " ").capitalize()
+
+
+def _col_help(name: str, nullable: bool) -> str | None:
+    h = COLUMN_LABELS.get(name, (None, None))[1]
+    if not nullable:
+        return ("Obligatorio. " + h) if h else "Obligatorio."
+    return h
 
 
 def _name_col(tabla: str) -> str:
@@ -75,10 +118,25 @@ def column_meta(tabla: str) -> list[dict]:
     return out
 
 
+FK_CAP = 5000
+
+
 @st.cache_data(ttl=120, show_spinner=False)
 def fk_options(ref_table: str) -> list[dict]:
     nc = _name_col(ref_table)
-    return _q(f'SELECT id::text AS id, {nc} AS nombre FROM public."{ref_table}" ORDER BY {nc} LIMIT 5000')
+    return _q(f'SELECT id::text AS id, {nc} AS nombre FROM public."{ref_table}" ORDER BY {nc} LIMIT %s',
+              (FK_CAP,))
+
+
+def fk_search_options(ref_table: str, q: str, cur_val) -> list[dict]:
+    """Filtered options for an oversized FK catalog; keeps the current value visible."""
+    nc = _name_col(ref_table)
+    opts = _q(f'SELECT id::text AS id, {nc} AS nombre FROM public."{ref_table}" '
+              f'WHERE {nc} ILIKE %s ORDER BY {nc} LIMIT 200', (f"%{q.strip()}%",))
+    if cur_val and cur_val not in {o["id"] for o in opts}:
+        opts = _q(f'SELECT id::text AS id, {nc} AS nombre FROM public."{ref_table}" WHERE id=%s',
+                  (cur_val,)) + opts
+    return opts
 
 
 def search_rows(tabla: str, q: str) -> list[dict]:
@@ -91,11 +149,6 @@ def search_rows(tabla: str, q: str) -> list[dict]:
 
 def load_row(tabla: str, rid: str) -> dict:
     return _q(f'SELECT * FROM public."{tabla}" WHERE id=%s', (rid,))[0]
-
-
-def dependents(tabla: str, rid: str) -> int:
-    return sum(_q(f'SELECT count(*) AS n FROM public."{t}" WHERE "{c}"=%s', (rid,))[0]["n"]
-               for t, c in referencing_columns(tabla))
 
 
 def save_row(tabla: str, meta: list[dict], rid: str | None, values: dict) -> str:
@@ -152,7 +205,10 @@ def render_catalog_admin():
         st.info("Configura DATABASE_URL (env o .env). Ver Planning/supabase/TODO.md.")
         return
 
-    tabla = st.selectbox("Catálogo", tablas, key="ca_tabla")
+    from app import TABLE_LABELS
+    tabla = st.selectbox("Catálogo", tablas, key="ca_tabla",
+                         format_func=lambda t: TABLE_LABELS.get(
+                             t, t.removeprefix("cat_").replace("_", " ").capitalize()))
     meta = column_meta(tabla)
     q = st.text_input("Buscar", key="ca_q", placeholder="nombre…")
     rows = search_rows(tabla, q)
@@ -166,36 +222,50 @@ def render_catalog_admin():
     current = {} if is_new else load_row(tabla, pick)
 
     st.divider()
+
+    # Oversized FK catalogs can't ship every option to a selectbox: give those a
+    # live search box (outside the form so it filters while typing).
+    fk_query: dict[str, str] = {}
+    for m in meta:
+        if m["kind"] == "fk" and len(fk_options(m["fk"])) >= FK_CAP:
+            st.warning(f"El catálogo de «{_col_label(m['name'])}» es muy grande para "
+                       "mostrarlo completo — escribe para buscar la entrada.")
+            fk_query[m["name"]] = st.text_input(
+                f"Buscar {_col_label(m['name']).lower()}", key=f"ca_fkq_{tabla}_{m['name']}")
+
     values: dict = {}
     with st.form(key=f"ca_form_{tabla}_{pick}"):
+        ro_meta = [m for m in meta if m["kind"] == "ro"]
         for m in meta:
             name, kind = m["name"], m["kind"]
-            cur_val = current.get(name)
-            label = name + ("" if m.get("nullable", True) or kind == "ro" else " *")
             if kind == "ro":
-                if not is_new:
-                    st.text_input(name, value=str(cur_val) if cur_val is not None else "", disabled=True,
-                                  key=f"ca_{name}")
                 continue
+            cur_val = current.get(name)
+            label = _col_label(name) + ("" if m.get("nullable", True) else " *")
+            helptxt = _col_help(name, m.get("nullable", True))
             if kind == "fk":
-                opts = fk_options(m["fk"])
+                if name in fk_query:
+                    opts = fk_search_options(m["fk"], fk_query[name], cur_val)
+                else:
+                    opts = fk_options(m["fk"])
                 omap = {o["id"]: o["nombre"] for o in opts}
                 ids = [None] + [o["id"] for o in opts]
                 idx = ids.index(cur_val) if cur_val in ids else 0
                 values[name] = st.selectbox(
-                    f"{label}  → {m['fk']}", ids, index=idx,
+                    label, ids, index=idx,
                     format_func=lambda i, mm=omap: "— (vacío) —" if i is None else mm.get(i, i),
-                    key=f"ca_{name}")
+                    key=f"ca_{name}", help=helptxt)
             elif kind == "enum":
                 ids = ([None] if m["nullable"] else []) + m["enum"]
                 idx = ids.index(cur_val) if cur_val in ids else 0
                 values[name] = st.selectbox(label, ids, index=idx,
                                             format_func=lambda v: "— (vacío) —" if v is None else v,
-                                            key=f"ca_{name}")
+                                            key=f"ca_{name}", help=helptxt)
             elif kind == "bool":
-                values[name] = st.checkbox(label, value=bool(cur_val), key=f"ca_{name}")
+                values[name] = st.checkbox(label, value=bool(cur_val), key=f"ca_{name}", help=helptxt)
             elif kind == "num":
-                v = st.text_input(label, value="" if cur_val is None else str(cur_val), key=f"ca_{name}")
+                v = st.text_input(label, value="" if cur_val is None else str(cur_val),
+                                  key=f"ca_{name}", help=helptxt)
                 if v.strip() == "":
                     values[name] = None
                 else:
@@ -203,15 +273,23 @@ def render_catalog_admin():
                         values[name] = int(v) if m.get("int") else float(v)
                     except ValueError:
                         values[name] = cur_val
-                        st.caption(f"⚠️ '{v}' no es un número válido para {name}.")
+                        st.caption(f"⚠️ «{v}» no es un número válido para {_col_label(name)}.")
             else:
-                v = st.text_input(label, value="" if cur_val is None else str(cur_val), key=f"ca_{name}")
+                v = st.text_input(label, value="" if cur_val is None else str(cur_val),
+                                  key=f"ca_{name}", help=helptxt)
                 values[name] = v if v.strip() != "" else None
+        if not is_new and ro_meta:
+            with st.expander("🔧 Datos del sistema (solo lectura)"):
+                for m in ro_meta:
+                    cur_val = current.get(m["name"])
+                    st.text_input(_col_label(m["name"]),
+                                  value=str(cur_val) if cur_val is not None else "",
+                                  disabled=True, key=f"ca_{m['name']}")
         submitted = st.form_submit_button("💾 Guardar", use_container_width=True)
 
     if submitted:
         # required-field check (NOT NULL editable cols)
-        missing = [m["name"] for m in meta
+        missing = [_col_label(m["name"]) for m in meta
                    if m["kind"] not in ("ro",) and not m.get("nullable")
                    and values.get(m["name"]) in (None, "")]
         if missing:
@@ -226,10 +304,12 @@ def render_catalog_admin():
 
     if not is_new:
         st.divider()
-        dep = dependents(tabla, pick)
-        if dep:
-            st.info(f"🔒 Esta entrada está en uso por **{dep}** registro(s) — no se puede "
-                    "eliminar. Para consolidar dos entradas repetidas, usa "
+        detail = dependents_detail(tabla, pick)
+        if detail:
+            dep = sum(n for _, n in detail)
+            st.info(f"🔒 Esta entrada está en uso por **{dep}** registro(s): " +
+                    " · ".join(f"{n} en `{t}`" for t, n in detail) +
+                    ". No se puede eliminar. Para consolidar dos entradas repetidas, usa "
                     "**📥 Propuestas de campo → Fusionar**.")
         else:
             if confirm_button("🗑️ Eliminar", key=f"ca_del_{pick}",
