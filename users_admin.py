@@ -16,6 +16,13 @@ from console_config import SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 
 ROLES = ["TECNICO", "ADMINISTRADOR", "ANALISTA"]
 
+ROLES_MD = (
+    "- **TECNICO** — captura faenas en la tableta; no entra a esta consola.\n"
+    "- **ADMINISTRADOR** — usa toda la consola: catálogos, propuestas, formularios, "
+    "usuarios y descargas.\n"
+    "- **ANALISTA** — solo puede **descargar datos** para analizarlos."
+)
+
 
 def _svc_headers() -> dict:
     k = SUPABASE_SERVICE_ROLE_KEY
@@ -71,12 +78,21 @@ def _regiones():
 
 
 def render_users_admin():
-    st.title("👤 Usuarios")
+    from console_ui import page_header, friendly_error, empty_state
+    page_header(
+        "👤 Usuarios",
+        "Crea cuentas y decide quién entra a la consola y a la tableta.",
+        help_md=(
+            "1. Llena nombre, correo y contraseña, y elige el **rol**.\n"
+            "2. Un **técnico** se vincula a su nombre del catálogo para que el "
+            "formulario de la tableta salga prellenado.\n"
+            "3. Para quitar el acceso a alguien usa **Desactivar** (se puede reactivar "
+            "después).\n\n" + ROLES_MD
+        ),
+    )
     if not SUPABASE_SERVICE_ROLE_KEY:
         st.error("Falta SUPABASE_SERVICE_ROLE_KEY en catalog-review-app/.env (clave service_role).")
         return
-    st.caption("Crea y administra cuentas. Un técnico se vincula a un cat_tecnico para prefijar "
-               "el formulario; el registrante real se guarda aparte (auth_uid). Ver AppDashboardSpec/15.")
 
     tecs = _tecnicos(); tmap = {t["id"]: t["nombre"] for t in tecs}
     regs = _regiones(); rmap = {r["id"]: r["nombre"] for r in regs}
@@ -88,6 +104,8 @@ def render_users_admin():
         c3, c4 = st.columns(2)
         password = c3.text_input("Contraseña", key="ua_pass", type="password")
         rol = c4.selectbox("Rol", ROLES, key="ua_rol")
+        with c4.popover("❓ ¿Qué puede hacer cada rol?"):
+            st.markdown(ROLES_MD)
         tecnico_id = None
         if rol == "TECNICO":
             tecnico_id = st.selectbox("Técnico (cat_tecnico)", [None] + list(tmap),
@@ -105,10 +123,13 @@ def render_users_admin():
                 st.success(f"Cuenta creada: {nombre} ({rol}).")
                 st.rerun()
             except Exception as e:  # noqa: BLE001
-                st.error(f"No se pudo crear: {e}")
+                st.error(f"No se pudo crear: {friendly_error(e)}")
 
     st.subheader("Cuentas")
     rows = list_usuarios()
+    if not rows:
+        empty_state("Aún no hay cuentas. Crea la primera con «➕ Crear cuenta».", "👥")
+        return
     st.caption(f"{len(rows)} cuenta(s).")
     for u in rows:
         with st.container(border=True):

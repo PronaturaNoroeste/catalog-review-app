@@ -52,7 +52,11 @@ def require_login() -> tuple[str, str]:
         return "ADMINISTRADOR", "(configuración inicial)"
 
     st.title("🔐 Consola de monitoreo")
-    st.caption("Inicia sesión (ADMINISTRADOR o ANALISTA).")
+    st.caption("Inicia sesión con tu correo y contraseña.")
+    with st.popover("❓ ¿Quién puede entrar?"):
+        from users_admin import ROLES_MD
+        st.markdown(ROLES_MD)
+        st.caption("Si no tienes cuenta, pídesela a un administrador.")
     email = st.text_input("Correo", key="login_email")
     pw = st.text_input("Contraseña", key="login_pass", type="password")
     if st.button("Entrar", type="primary", disabled=not (email and pw), key="login_btn"):
@@ -71,7 +75,10 @@ def require_login() -> tuple[str, str]:
 
 
 def logout_button():
-    if st.sidebar.button("Salir", key="console_logout"):
-        for k in ("auth_rol", "auth_nombre"):
-            st.session_state.pop(k, None)
-        st.rerun()
+    # Confirm inside a popover so a stray click doesn't drop the session.
+    with st.sidebar.popover("Salir", use_container_width=True):
+        st.caption("¿Cerrar la sesión?")
+        if st.button("Sí, salir", key="console_logout"):
+            for k in ("auth_rol", "auth_nombre"):
+                st.session_state.pop(k, None)
+            st.rerun()

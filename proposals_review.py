@@ -87,9 +87,20 @@ def merge(tabla: str, proposed: str, survivor: str, nombre: str):
 # UI
 # =====================================================================
 def render_proposal_queue():
-    st.title("📥 Propuestas de catálogo")
-    st.caption("Entradas propuestas por técnicos desde la app (offline). Aprueba, rechaza o "
-               "fusiona con una entrada existente. Cada acción queda en la bitácora.")
+    from console_ui import page_header, friendly_error, confirm_button, empty_state
+    page_header(
+        "📥 Propuestas de campo",
+        "Nombres nuevos que los técnicos capturaron en la tableta y esperan tu decisión.",
+        help_md=(
+            "Cuando un técnico no encuentra un nombre en la lista, lo **propone** desde la "
+            "tableta. Aquí decides qué hacer con cada propuesta:\n\n"
+            "1. **✅ Aprobar** — el nombre es correcto y nuevo: entra al catálogo.\n"
+            "2. **❌ Rechazar** — no debe entrar al catálogo (error o prueba).\n"
+            "3. **🔀 Fusionar** — ya existe con otro nombre: los registros de pesca se "
+            "mueven a la entrada existente.\n\n"
+            "Cada acción queda registrada en la bitácora de cambios."
+        ),
+    )
 
     try:
         props = pending_proposals()
@@ -100,7 +111,7 @@ def render_proposal_queue():
 
     st.metric("Propuestas pendientes", len(props))
     if not props:
-        st.success("No hay propuestas pendientes. 🎉")
+        empty_state("No hay propuestas pendientes. ¡Todo revisado!", "🎉")
         return
 
     labels = {"cat_pescador": "Pescador/Capitán", "cat_embarcacion": "Embarcación",
@@ -119,10 +130,18 @@ def render_proposal_queue():
 
             a, r = st.columns(2)
             if a.button("✅ Aprobar", key=f"ap_{rid}", use_container_width=True):
-                approve(tabla, rid, nombre); st.rerun()
+                try:
+                    approve(tabla, rid, nombre)
+                    st.rerun()
+                except Exception as e:  # noqa: BLE001
+                    st.error(friendly_error(e))
             if r.button("❌ Rechazar", key=f"rj_{rid}", use_container_width=True,
                         help="Marca como rechazada. Si hay faenas que la usan, considera fusionar."):
-                reject(tabla, rid, nombre); st.rerun()
+                try:
+                    reject(tabla, rid, nombre)
+                    st.rerun()
+                except Exception as e:  # noqa: BLE001
+                    st.error(friendly_error(e))
 
             with st.expander("🔀 Fusionar con una entrada existente"):
                 q = st.text_input("Buscar entrada aprobada", value=nombre, key=f"q_{rid}")
@@ -134,7 +153,12 @@ def render_proposal_queue():
                         "Sobrevive (las faenas se repuntan a esta)", [c["id"] for c in cands],
                         format_func=lambda i, m={c["id"]: c["nombre"] for c in cands}: m.get(i, i),
                         key=f"surv_{rid}")
-                    if st.button(f"Fusionar «{nombre}» → la seleccionada", key=f"mg_{rid}"):
-                        merge(tabla, rid, pick, nombre)
-                        st.success("Fusionada y repuntada.")
-                        st.rerun()
+                    if confirm_button(f"Fusionar «{nombre}» → la seleccionada", key=f"mg_{rid}",
+                                      help="La fusión mueve las faenas a la entrada elegida; "
+                                           "no se puede deshacer."):
+                        try:
+                            merge(tabla, rid, pick, nombre)
+                            st.success("Fusionada: las faenas ahora apuntan a la entrada elegida.")
+                            st.rerun()
+                        except Exception as e:  # noqa: BLE001
+                            st.error(friendly_error(e))

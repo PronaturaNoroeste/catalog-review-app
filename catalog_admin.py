@@ -131,9 +131,19 @@ def delete_row(tabla: str, rid: str, nombre: str):
 # UI
 # =====================================================================
 def render_catalog_admin():
-    st.title("✏️ Edición de catálogos")
-    st.caption("CRUD completo sobre cualquier catálogo (campos FK, enums, banderas). Borrado seguro "
-               "(bloqueado si está referenciado). Cada cambio queda en la bitácora. OD-17.")
+    from console_ui import page_header, friendly_error, confirm_button
+    page_header(
+        "✏️ Catálogos",
+        "Corrige o da de alta entradas de los catálogos (especies, pescadores, sitios…).",
+        help_md=(
+            "1. Elige el **catálogo** y busca la entrada por nombre.\n"
+            "2. Corrige los campos y pulsa **💾 Guardar** (o elige «➕ Nueva entrada» "
+            "para dar de alta).\n"
+            "3. Una entrada usada por registros de pesca **no se puede eliminar** — para "
+            "unir dos entradas repetidas usa **📥 Propuestas de campo → Fusionar**.\n\n"
+            "Cada cambio queda registrado en la bitácora."
+        ),
+    )
 
     try:
         tablas = editable_tables()
@@ -212,19 +222,21 @@ def render_catalog_admin():
                 st.success(("Creado" if is_new else "Guardado") + f" ✓  ({rid[:8]})")
                 st.rerun()
             except Exception as e:  # noqa: BLE001
-                st.error(f"No se pudo guardar: {e}")
+                st.error(friendly_error(e))
 
     if not is_new:
         st.divider()
         dep = dependents(tabla, pick)
         if dep:
-            st.info(f"🔒 {dep} referencia(s) en faenas/otros — no se puede eliminar. "
-                    "Usa la cola de propuestas para **fusionar** con otra entrada.")
+            st.info(f"🔒 Esta entrada está en uso por **{dep}** registro(s) — no se puede "
+                    "eliminar. Para consolidar dos entradas repetidas, usa "
+                    "**📥 Propuestas de campo → Fusionar**.")
         else:
-            if st.button("🗑️ Eliminar", key="ca_del"):
+            if confirm_button("🗑️ Eliminar", key=f"ca_del_{pick}",
+                              help="Elimina la entrada de forma definitiva."):
                 try:
                     delete_row(tabla, pick, rmap.get(pick) or pick)
                     st.success("Eliminado.")
                     st.rerun()
                 except Exception as e:  # noqa: BLE001
-                    st.error(f"No se pudo eliminar: {e}")
+                    st.error(friendly_error(e))

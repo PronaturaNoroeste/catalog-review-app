@@ -1259,7 +1259,19 @@ def main():
     done, total = progress(pairs, decisions)
     clusters    = table_clusters(table, cut_keys_of(decisions), manual_links_of(decisions))
 
-    st.title(f"📋 {TABLE_LABELS.get(table, table)}")
+    from console_ui import page_header
+    page_header(
+        f"🔎 Duplicados — {TABLE_LABELS.get(table, table)}",
+        "Limpia el catálogo: decide si dos nombres parecidos son el mismo registro.",
+        help_md=(
+            "El sistema marcó pares de nombres que se parecen. Para cada par decide:\n\n"
+            "1. **Mantener uno** — son lo mismo; se conserva el bien escrito.\n"
+            "2. **Ambos son válidos** — son registros distintos.\n"
+            "3. **Decidir después** — lo dejas pendiente.\n\n"
+            "En **🧬 Grupos** puedes revisar familias de nombres parecidos y fusionarlas "
+            "de una vez. Las decisiones se guardan solas; puedes salir y continuar luego."
+        ),
+    )
     m1, m2, m3, m4, m5, m6 = st.columns(6)
     m1.metric("Total entradas",   len(df))
     m2.metric("Pares flaggeados", total)

@@ -410,9 +410,19 @@ def _load_into_work(f: dict) -> dict:
 
 
 def render_form_builder():
-    st.title("🛠️ Constructor de formularios")
-    st.caption("Editor estructurado · vincula a campos core existentes (firewall de gobernanza) · "
-               "publica versiones inmutables. Ver AppDashboardSpec/08.")
+    from console_ui import page_header, friendly_error
+    page_header(
+        "🛠️ Formularios",
+        "Edita y publica las versiones del formulario que llena el técnico en la tableta.",
+        help_md=(
+            "1. Elige un formulario (o «➕ Nuevo») — cada uno tiene **versiones**.\n"
+            "2. Una versión **publicada** no se puede tocar: crea una **Nueva versión** "
+            "para editarla.\n"
+            "3. Edita secciones y campos, revisa la **validación** y la **vista previa**.\n"
+            "4. **💾 Guardar borrador** mientras trabajas; **🚀 Publicar** cuando esté listo "
+            "(la tableta usa la última versión publicada)."
+        ),
+    )
 
     try:
         bindable = load_bindable_core()
@@ -583,7 +593,7 @@ def render_form_builder():
             st.success("Borrador guardado.")
             st.rerun()
         except Exception as e:  # noqa: BLE001
-            st.error(f"No se pudo guardar: {e}")
+            st.error(f"No se pudo guardar: {friendly_error(e)}")
 
     pub_disabled = published or bool(errores) or work["id"] is None
     if a4.button("🚀 Publicar", key="fb_publish", disabled=pub_disabled, use_container_width=True,
@@ -594,7 +604,7 @@ def render_form_builder():
             st.success("Formulario publicado (inmutable).")
             st.rerun()
         except Exception as e:  # noqa: BLE001
-            st.error(f"No se pudo publicar: {e}")
+            st.error(f"No se pudo publicar: {friendly_error(e)}")
 
     if published:
         if st.button("🌱 Nueva versión (editable)", key="fb_newver"):
@@ -605,7 +615,7 @@ def render_form_builder():
                 st.success("Nueva versión creada como borrador.")
                 st.rerun()
             except Exception as e:  # noqa: BLE001
-                st.error(f"No se pudo crear la versión: {e}")
+                st.error(f"No se pudo crear la versión: {friendly_error(e)}")
 
     # ---- preview ----------------------------------------------------
     st.divider()

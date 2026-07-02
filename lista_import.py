@@ -148,10 +148,21 @@ def _apply_row(tabla, lista, carnada, formato_id, name, sci, importancia, accion
 # UI
 # =====================================================================
 def render_lista_import():
-    st.title("📑 Listas curadas por formato")
-    st.caption("Sube la lista limpia de opciones de un formulario (CSV). El catálogo se reutiliza y "
-               "limpia por NOMBRE+CIENTÍFICO (nunca fusiona homónimos); las opciones del formulario "
-               "salen de aquí. Ver AppDashboardSpec/16.")
+    from console_ui import page_header, friendly_error
+    page_header(
+        "📑 Listas del formulario",
+        "Sube la lista limpia de opciones (especies, carnada, pescadores) que verá el "
+        "técnico en la tableta.",
+        help_md=(
+            "El técnico no ve el catálogo completo, sino una **lista curada** por formulario. "
+            "Para actualizarla:\n\n"
+            "1. Elige el **formulario** y la **lista** (especies / carnada / pescadores).\n"
+            "2. Sube el **CSV** con la lista limpia e indica qué columna es cada cosa.\n"
+            "3. Revisa la **vista previa** (qué se crea, qué se enlaza, qué se renombra).\n"
+            "4. Pulsa **Aplicar** — el catálogo se reutiliza sin fusionar homónimos "
+            "(dos especies pueden compartir nombre común).\n"
+        ),
+    )
 
     try:
         formatos = list_formatos()
@@ -231,7 +242,7 @@ def render_lista_import():
                            accion, rid, cur, coop_id)
                 done[accion] += 1
             except Exception as e:  # noqa: BLE001
-                st.warning(f"«{r['nombre']}»: {e}")
+                st.warning(f"«{r['nombre']}»: {friendly_error(e)}")
             prog.progress((i + 1) / max(len(rows), 1))
         total = _q("SELECT count(*) AS n FROM lista_opcion WHERE formato_origen_id=%s AND lista=%s",
                    (formato_id, lista))[0]["n"]

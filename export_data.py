@@ -173,9 +173,17 @@ def _build(dataset: str, f: dict) -> tuple[str, list]:
 # UI
 # =====================================================================
 def render_export():
-    st.title("📤 Exportar datos para R")
-    st.caption("Descarga filtrada (CSV / Parquet) con un resumen previo. Análisis en R; "
-               "esto solo entrega los datos. Ver AppDashboardSpec/02, OD-19.")
+    from console_ui import page_header
+    page_header(
+        "📤 Descargar datos",
+        "Extrae los datos filtrados a un archivo CSV o Parquet para abrirlo en Excel o R.",
+        help_md=(
+            "1. Elige el **conjunto de datos** (mediciones, capturas, faenas o ETP).\n"
+            "2. Ajusta los **filtros** (especie, región, años…).\n"
+            "3. Pulsa **🔍 Generar vista previa** y revisa el resumen.\n"
+            "4. Descarga con **⬇️ CSV** (Excel/R) o **⬇️ Parquet** (R/Python)."
+        ),
+    )
 
     try:
         esp, reg, fmt, sexos, proc = _opts()
