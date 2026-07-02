@@ -111,7 +111,7 @@ def merge(tabla: str, proposed: str, survivor: str, nombre: str):
 # UI
 # =====================================================================
 def render_proposal_queue():
-    from console_ui import page_header, friendly_error, confirm_button, empty_state
+    from console_ui import page_header, friendly_error, confirm_button, empty_state, flash
     page_header(
         "📥 Propuestas de campo",
         "Nombres nuevos que los técnicos capturaron en la tableta y esperan tu decisión.",
@@ -139,7 +139,7 @@ def render_proposal_queue():
         return
 
     labels = {"cat_pescador": "Pescador/Capitán", "cat_embarcacion": "Embarcación",
-              "cat_sitio_pesca": "Sitio de pesca"}
+              "cat_sitio_pesca": "Sitio de pesca", "cat_especie": "Especie"}
 
     for p in props:
         rid, tabla, nombre = p["id"], p["tabla"], p["nombre"]
@@ -180,6 +180,9 @@ def render_proposal_queue():
                     approve(tabla, rid, nombre)
                     if add_l and fsel and lsel:
                         add_to_lista(fsel, lsel, tabla, rid, nombre)
+                        flash(f"«{nombre}» aprobada y añadida a la lista «{lsel}».")
+                    else:
+                        flash(f"«{nombre}» aprobada.")
                     st.rerun()
                 except Exception as e:  # noqa: BLE001
                     st.error(friendly_error(e))
@@ -187,6 +190,7 @@ def render_proposal_queue():
                         help="Marca como rechazada. Si hay faenas que la usan, considera fusionar."):
                 try:
                     reject(tabla, rid, nombre)
+                    flash(f"«{nombre}» rechazada.", "❌")
                     st.rerun()
                 except Exception as e:  # noqa: BLE001
                     st.error(friendly_error(e))
@@ -213,7 +217,7 @@ def render_proposal_queue():
                                            "no se puede deshacer."):
                         try:
                             merge(tabla, rid, pick, nombre)
-                            st.success("Fusionada: las faenas ahora apuntan a la entrada elegida.")
+                            flash("Fusionada: las faenas ahora apuntan a la entrada elegida.", "🔀")
                             st.rerun()
                         except Exception as e:  # noqa: BLE001
                             st.error(friendly_error(e))

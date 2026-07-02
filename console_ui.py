@@ -48,6 +48,19 @@ def confirm_button(label: str, key: str, help: str | None = None) -> bool:
                      help=None if ok else "Marca «Confirmar» primero.")
 
 
+def flash(msg: str, icon: str = "✅"):
+    """Queue a toast that survives the st.rerun() after a save. A plain
+    st.success() followed by st.rerun() never gets seen — use this instead."""
+    st.session_state["_flash"] = (msg, icon)
+
+
+def show_flash():
+    """Render the queued toast (called once at the top of every run, in main())."""
+    f = st.session_state.pop("_flash", None)
+    if f:
+        st.toast(f[0], icon=f[1])
+
+
 def empty_state(msg: str, icon: str = "✅"):
     """Friendly «no hay nada pendiente» block."""
     with st.container(border=True):

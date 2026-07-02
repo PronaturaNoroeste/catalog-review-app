@@ -1206,6 +1206,8 @@ def main():
     )
     from console_theme import apply_theme
     apply_theme()
+    from console_ui import show_flash
+    show_flash()
 
     # Login gate (ADMINISTRADOR → all modes, ANALISTA → export only).
     from console_auth import require_login, logout_button

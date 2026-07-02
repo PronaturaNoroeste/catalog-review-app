@@ -421,7 +421,7 @@ def _load_into_work(f: dict) -> dict:
 
 
 def render_form_builder():
-    from console_ui import page_header, friendly_error
+    from console_ui import page_header, friendly_error, flash
     page_header(
         "🛠️ Formularios",
         "Edita y publica las versiones del formulario que llena el técnico en la tableta.",
@@ -614,7 +614,7 @@ def render_form_builder():
                                 work["version"], definicion, work["constantes"])
             work["id"] = fid
             st.session_state["fb_loaded"] = None  # force reload list/state next run
-            st.success("Borrador guardado.")
+            flash("Borrador guardado.", "💾")
             st.rerun()
         except Exception as e:  # noqa: BLE001
             st.error(f"No se pudo guardar: {friendly_error(e)}")
@@ -625,7 +625,7 @@ def render_form_builder():
         try:
             publish(work["id"])
             st.session_state["fb_loaded"] = None
-            st.success("Formulario publicado (inmutable).")
+            flash("Formulario publicado (la versión queda inmutable).", "🚀")
             st.rerun()
         except Exception as e:  # noqa: BLE001
             st.error(f"No se pudo publicar: {friendly_error(e)}")
@@ -636,7 +636,7 @@ def render_form_builder():
                 nid = new_version_from(work["id"])
                 st.session_state["fb_loaded"] = None
                 st.session_state["fb_sel"] = nid
-                st.success("Nueva versión creada como borrador.")
+                flash("Nueva versión creada como borrador.", "🌱")
                 st.rerun()
             except Exception as e:  # noqa: BLE001
                 st.error(f"No se pudo crear la versión: {friendly_error(e)}")

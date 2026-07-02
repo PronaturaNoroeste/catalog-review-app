@@ -78,7 +78,7 @@ def _regiones():
 
 
 def render_users_admin():
-    from console_ui import page_header, friendly_error, empty_state
+    from console_ui import page_header, friendly_error, empty_state, flash
     page_header(
         "👤 Usuarios",
         "Crea cuentas y decide quién entra a la consola y a la tableta.",
@@ -120,7 +120,7 @@ def render_users_admin():
             try:
                 uid = create_auth_user(email.strip(), password)
                 create_usuario(uid, nombre.strip(), email.strip().lower(), rol, tecnico_id, region_id)
-                st.success(f"Cuenta creada: {nombre} ({rol}).")
+                flash(f"Cuenta creada: {nombre} ({rol}).")
                 st.rerun()
             except Exception as e:  # noqa: BLE001
                 st.error(f"No se pudo crear: {friendly_error(e)}")
@@ -140,8 +140,12 @@ def render_users_admin():
             with c[3]:
                 if u["activo"]:
                     if st.button("Desactivar", key=f"de_{u['id']}", use_container_width=True):
-                        set_activo(u["id"], False); st.rerun()
+                        set_activo(u["id"], False)
+                        flash(f"Cuenta de {u['nombre']} desactivada.", "🚫")
+                        st.rerun()
                 else:
                     st.caption("inactivo")
                     if st.button("Activar", key=f"ac_{u['id']}", use_container_width=True):
-                        set_activo(u["id"], True); st.rerun()
+                        set_activo(u["id"], True)
+                        flash(f"Cuenta de {u['nombre']} activada.")
+                        st.rerun()

@@ -184,7 +184,7 @@ def delete_row(tabla: str, rid: str, nombre: str):
 # UI
 # =====================================================================
 def render_catalog_admin():
-    from console_ui import page_header, friendly_error, confirm_button
+    from console_ui import page_header, friendly_error, confirm_button, flash
     page_header(
         "✏️ Catálogos",
         "Corrige o da de alta entradas de los catálogos (especies, pescadores, sitios…).",
@@ -297,7 +297,7 @@ def render_catalog_admin():
         else:
             try:
                 rid = save_row(tabla, meta, None if is_new else pick, values)
-                st.success(("Creado" if is_new else "Guardado") + f" ✓  ({rid[:8]})")
+                flash("Entrada creada." if is_new else "Cambios guardados.")
                 st.rerun()
             except Exception as e:  # noqa: BLE001
                 st.error(friendly_error(e))
@@ -316,7 +316,7 @@ def render_catalog_admin():
                               help="Elimina la entrada de forma definitiva."):
                 try:
                     delete_row(tabla, pick, rmap.get(pick) or pick)
-                    st.success("Eliminado.")
+                    flash("Entrada eliminada.", "🗑️")
                     st.rerun()
                 except Exception as e:  # noqa: BLE001
                     st.error(friendly_error(e))
