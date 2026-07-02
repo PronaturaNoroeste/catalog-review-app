@@ -11,12 +11,11 @@ Reuses the form_builder DB layer + proposals_review.referencing_columns.
 """
 from __future__ import annotations
 
-import json
 import uuid
 
 import streamlit as st
 
-from form_builder import get_conn, _q
+from form_builder import _q, _exec, _log
 from proposals_review import referencing_columns
 
 # Columns shown read-only (identity / audit plumbing).
@@ -26,18 +25,6 @@ NAME_COL = {"cat_especie": "nombre_comun", "cat_formato_origen": "codigo"}
 
 def _name_col(tabla: str) -> str:
     return NAME_COL.get(tabla, "nombre")
-
-
-def _exec(sql: str, args=()):
-    cur = get_conn().cursor()
-    cur.execute(sql, args)
-    cur.close()
-
-
-def _log(tabla: str, rid: str, accion: str, detalle: dict):
-    _exec("""INSERT INTO cambio_catalogo (tabla, registro_id, accion, detalle, usuario_id)
-             VALUES (%s,%s,%s,%s::jsonb,NULL)""",
-          (tabla, rid, accion, json.dumps(detalle, ensure_ascii=False, default=str)))
 
 
 @st.cache_data(ttl=300, show_spinner=False)

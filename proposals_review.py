@@ -14,20 +14,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from form_builder import get_conn, _q   # shared cached connection + query helper
-
-
-def _exec(sql: str, args=()):
-    cur = get_conn().cursor()
-    cur.execute(sql, args)
-    cur.close()
-
-
-def _log(tabla: str, registro_id: str, accion: str, detalle: dict):
-    import json
-    _exec("""INSERT INTO cambio_catalogo (tabla, registro_id, accion, detalle, usuario_id)
-             VALUES (%s, %s, %s, %s::jsonb, NULL)""",
-          (tabla, registro_id, accion, json.dumps(detalle, ensure_ascii=False)))
+from form_builder import _q, _exec, _log   # shared connection + query/write/audit helpers
 
 
 @st.cache_data(ttl=300, show_spinner=False)

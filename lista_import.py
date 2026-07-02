@@ -27,8 +27,7 @@ import uuid
 import pandas as pd
 import streamlit as st
 
-from form_builder import get_conn, _q, list_formatos
-from catalog_admin import _exec, _log
+from form_builder import _q, _exec, _log, list_formatos
 
 PRESETS = {
     "especies":   {"tabla": "cat_especie",  "carnada": False, "importancia": True,  "cooperativa": False},

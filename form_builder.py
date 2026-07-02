@@ -96,6 +96,20 @@ def _q(sql, args=None):
     return [dict(zip(cols, r)) for r in rows]
 
 
+def _exec(sql: str, args=()):
+    """Write statement on the shared (autocommit) connection."""
+    cur = get_conn().cursor()
+    cur.execute(sql, args)
+    cur.close()
+
+
+def _log(tabla: str, rid: str, accion: str, detalle: dict):
+    """cambio_catalogo audit row — every console write action records one."""
+    _exec("""INSERT INTO cambio_catalogo (tabla, registro_id, accion, detalle, usuario_id)
+             VALUES (%s,%s,%s,%s::jsonb,NULL)""",
+          (tabla, rid, accion, json.dumps(detalle, ensure_ascii=False, default=str)))
+
+
 @st.cache_data(ttl=300, show_spinner=False)
 def load_bindable_core() -> dict:
     """Introspect the fisheries tables → {"table.column": {label, tipo, catalogo?}}.
