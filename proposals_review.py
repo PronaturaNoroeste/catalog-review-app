@@ -17,6 +17,16 @@ import streamlit as st
 from form_builder import _q, _exec, _log   # shared connection + query/write/audit helpers
 
 
+# Name column per catalog (cat_especie proposals arrived with migration 0013 and
+# its name lives in nombre_comun, not nombre). Kept local: catalog_admin imports
+# from this module, so importing its map back would create a cycle.
+NAME_COL = {"cat_especie": "nombre_comun", "cat_formato_origen": "codigo"}
+
+
+def _name_col(tabla: str) -> str:
+    return NAME_COL.get(tabla, "nombre")
+
+
 @st.cache_data(ttl=300, show_spinner=False)
 def proposable_tables() -> list[str]:
     return [r["tabla"] for r in
@@ -56,7 +66,8 @@ def dependents(tabla: str, registro_id: str) -> int:
 def pending_proposals() -> list[dict]:
     out = []
     for t in proposable_tables():
-        for r in _q(f"""SELECT id::text AS id, nombre, propuesto_por::text AS por,
+        nc = _name_col(t)
+        for r in _q(f"""SELECT id::text AS id, {nc} AS nombre, propuesto_por::text AS por,
                                propuesto_at AS at
                         FROM public."{t}" WHERE estado='pendiente'
                         ORDER BY propuesto_at NULLS LAST"""):
@@ -66,9 +77,10 @@ def pending_proposals() -> list[dict]:
 
 
 def approved_candidates(tabla: str, q: str) -> list[dict]:
+    nc = _name_col(tabla)
     like = f"%{q.strip()}%"
-    return _q(f"""SELECT id::text AS id, nombre FROM public."{tabla}"
-                  WHERE es_aprobado AND nombre ILIKE %s ORDER BY nombre LIMIT 25""", (like,))
+    return _q(f"""SELECT id::text AS id, {nc} AS nombre FROM public."{tabla}"
+                  WHERE es_aprobado AND {nc} ILIKE %s ORDER BY {nc} LIMIT 25""", (like,))
 
 
 # Proposals that can join a curated form list on approval (doc 16 follow-up:
@@ -129,8 +141,9 @@ def render_proposal_queue():
     try:
         props = pending_proposals()
     except Exception as e:  # noqa: BLE001
-        st.error(f"No se pudo conectar a la base de datos: {e}")
-        st.info("Configura DATABASE_URL (env o .env). Ver Planning/supabase/TODO.md.")
+        st.error(f"No se pudieron cargar las propuestas: {e}")
+        st.info("Si el problema es de conexión, configura DATABASE_URL (env o .env). "
+                "Ver Planning/supabase/TODO.md.")
         return
 
     st.metric("Propuestas pendientes", len(props))
