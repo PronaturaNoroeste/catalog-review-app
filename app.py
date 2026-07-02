@@ -1214,15 +1214,13 @@ def main():
     logout_button()
     st.sidebar.divider()
 
-    # Top-level console mode (gated by role).
-    labels = {"catalogos": "📋 Revisión de catálogos", "formularios": "🛠️ Constructor de formularios",
-              "propuestas": "📥 Propuestas de catálogo", "editar": "✏️ Edición de catálogos",
-              "listas": "📑 Listas curadas por formato",
-              "usuarios": "👤 Usuarios", "exportar": "📤 Exportar datos (R)"}
-    options = (["catalogos", "formularios", "propuestas", "editar", "listas", "usuarios", "exportar"]
-               if rol == "ADMINISTRADOR" else ["exportar"])
-    mode = st.sidebar.radio("Modo", options, format_func=lambda m: labels[m], key="console_mode")
+    # Top-level console mode (gated by role) — grouped button nav + home screen.
+    from home import render_sidebar_nav, render_home
+    mode = render_sidebar_nav(rol)
     st.sidebar.divider()
+    if mode == "inicio":
+        render_home(rol)
+        return
     if mode == "formularios":
         from form_builder import render_form_builder
         render_form_builder()
@@ -1248,6 +1246,7 @@ def main():
         render_export()
         return
 
+    # mode == "catalogos" — catalog dedup review (the original app).
     table    = sidebar()
     df       = load_csv(table)
     if df is None or df.empty:
