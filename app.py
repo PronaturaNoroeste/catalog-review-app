@@ -1217,8 +1217,9 @@ def main():
     # Top-level console mode (gated by role).
     labels = {"catalogos": "📋 Revisión de catálogos", "formularios": "🛠️ Constructor de formularios",
               "propuestas": "📥 Propuestas de catálogo", "editar": "✏️ Edición de catálogos",
+              "listas": "📑 Listas curadas por formato",
               "usuarios": "👤 Usuarios", "exportar": "📤 Exportar datos (R)"}
-    options = (["catalogos", "formularios", "propuestas", "editar", "usuarios", "exportar"]
+    options = (["catalogos", "formularios", "propuestas", "editar", "listas", "usuarios", "exportar"]
                if rol == "ADMINISTRADOR" else ["exportar"])
     mode = st.sidebar.radio("Modo", options, format_func=lambda m: labels[m], key="console_mode")
     st.sidebar.divider()
@@ -1233,6 +1234,10 @@ def main():
     if mode == "editar":
         from catalog_admin import render_catalog_admin
         render_catalog_admin()
+        return
+    if mode == "listas":
+        from lista_import import render_lista_import
+        render_lista_import()
         return
     if mode == "usuarios":
         from users_admin import render_users_admin
