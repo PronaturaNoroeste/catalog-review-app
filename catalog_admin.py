@@ -139,12 +139,45 @@ def fk_search_options(ref_table: str, q: str, cur_val) -> list[dict]:
     return opts
 
 
-def search_rows(tabla: str, q: str) -> list[dict]:
+ROWS_CAP = 500
+
+
+def list_rows(tabla: str, q: str, limit: int = ROWS_CAP) -> tuple[list[dict], int]:
+    """Full rows for the table view (search filters on the name column) + total count."""
     nc = _name_col(tabla)
+    where, args = "", []
     if q.strip():
-        return _q(f'SELECT id::text AS id, {nc} AS nombre FROM public."{tabla}" '
-                  f'WHERE {nc} ILIKE %s ORDER BY {nc} LIMIT 200', (f"%{q.strip()}%",))
-    return _q(f'SELECT id::text AS id, {nc} AS nombre FROM public."{tabla}" ORDER BY {nc} LIMIT 200')
+        where, args = f" WHERE {nc} ILIKE %s", [f"%{q.strip()}%"]
+    total = _q(f'SELECT count(*) AS n FROM public."{tabla}"{where}', tuple(args) or None)[0]["n"]
+    rows = _q(f'SELECT * FROM public."{tabla}"{where} ORDER BY {nc} LIMIT %s',
+              tuple(args) + (limit,))
+    return rows, total
+
+
+def display_df(rows: list[dict], meta: list[dict]) -> "pd.DataFrame":
+    """Human view of the rows: Spanish column labels, FK ids resolved to names,
+    booleans as checkmarks, system columns hidden."""
+    import pandas as pd
+    fk_names = {m["name"]: {o["id"]: o["nombre"] for o in fk_options(m["fk"])}
+                for m in meta if m["kind"] == "fk"}
+    out = []
+    for r in rows:
+        d = {}
+        for m in meta:
+            n = m["name"]
+            if n in SYSTEM_RO:
+                continue
+            v = r.get(n)
+            if m["kind"] == "fk":
+                v = fk_names[n].get(str(v), "") if v is not None else ""
+            elif m["kind"] == "bool":
+                v = "✓" if v else ""
+            elif v is None:
+                v = ""
+            d[_col_label(n)] = v
+        out.append(d)
+    cols = [_col_label(m["name"]) for m in meta if m["name"] not in SYSTEM_RO]
+    return pd.DataFrame(out, columns=cols)
 
 
 def load_row(tabla: str, rid: str) -> dict:
@@ -210,32 +243,34 @@ def render_catalog_admin():
                          format_func=lambda t: TABLE_LABELS.get(
                              t, t.removeprefix("cat_").replace("_", " ").capitalize()))
     meta = column_meta(tabla)
-    q = st.text_input("Buscar", key="ca_q", placeholder="nombre…")
-    rows = search_rows(tabla, q)
-    rmap = {r["id"]: r["nombre"] for r in rows}
 
-    NEW = "__new__"
-    pick = st.selectbox(
-        f"Registro  ({len(rows)} encontrados)", [NEW] + [r["id"] for r in rows],
-        format_func=lambda i: "➕ Nueva entrada" if i == NEW else (rmap.get(i) or i), key="ca_row")
-    is_new = pick == NEW
-    current = {} if is_new else load_row(tabla, pick)
+    c1, c2 = st.columns([3, 1], vertical_alignment="bottom")
+    q = c1.text_input("Buscar", key="ca_q", placeholder="escribe para filtrar por nombre…")
+    nueva = c2.button("➕ Nueva entrada", key="ca_new", use_container_width=True)
 
-    st.divider()
+    rows, total = list_rows(tabla, q)
+    ids = [str(r["id"]) for r in rows]
+    names = {str(r["id"]): str(r.get(_name_col(tabla)) or r["id"]) for r in rows}
+    if len(rows) < total:
+        st.caption(f"Mostrando **{len(rows)}** de **{total}** registros — usa el buscador "
+                   "para encontrar el resto. Marca la casilla de una fila para editarla.")
+    else:
+        st.caption(f"**{total}** registro(s). Marca la casilla ☑️ de una fila para editarla.")
 
-    # Oversized FK catalogs can't ship every option to a selectbox: give those a
-    # live search box (outside the form so it filters while typing).
-    fk_query: dict[str, str] = {}
-    for m in meta:
-        if m["kind"] == "fk" and len(fk_options(m["fk"])) >= FK_CAP:
-            st.warning(f"El catálogo de «{_col_label(m['name'])}» es muy grande para "
-                       "mostrarlo completo — escribe para buscar la entrada.")
-            fk_query[m["name"]] = st.text_input(
-                f"Buscar {_col_label(m['name']).lower()}", key=f"ca_fkq_{tabla}_{m['name']}")
+    # The key carries a nonce: bumping it after save/delete clears the row
+    # selection so the dialog doesn't reopen on the refresh rerun.
+    nonce = st.session_state.setdefault("ca_nonce", 0)
+    ev = st.dataframe(
+        display_df(rows, meta), key=f"ca_tbl_{tabla}_{nonce}",
+        selection_mode="single-row", on_select="rerun",
+        hide_index=True, use_container_width=True, height=400)
 
-    values: dict = {}
-    with st.form(key=f"ca_form_{tabla}_{pick}"):
-        ro_meta = [m for m in meta if m["kind"] == "ro"]
+    @st.dialog(f"✏️ {TABLE_LABELS.get(tabla, tabla)}", width="large")
+    def edit_dialog(rid: str | None):
+        is_new = rid is None
+        current = {} if is_new else load_row(tabla, rid)
+        st.caption("➕ Nueva entrada" if is_new else f"Editando: **{names.get(rid, rid)}**")
+        values: dict = {}
         for m in meta:
             name, kind = m["name"], m["kind"]
             if kind == "ro":
@@ -243,29 +278,31 @@ def render_catalog_admin():
             cur_val = current.get(name)
             label = _col_label(name) + ("" if m.get("nullable", True) else " *")
             helptxt = _col_help(name, m.get("nullable", True))
+            wkey = f"cad_{tabla}_{rid}_{name}"
             if kind == "fk":
-                if name in fk_query:
-                    opts = fk_search_options(m["fk"], fk_query[name], cur_val)
-                else:
-                    opts = fk_options(m["fk"])
+                opts = fk_options(m["fk"])
+                if len(opts) >= FK_CAP:
+                    q2 = st.text_input(f"Buscar {_col_label(name).lower()}", key=f"{wkey}_q",
+                                       help="Este catálogo es muy grande; escribe para buscar.")
+                    opts = fk_search_options(m["fk"], q2, cur_val)
                 omap = {o["id"]: o["nombre"] for o in opts}
-                ids = [None] + [o["id"] for o in opts]
-                idx = ids.index(cur_val) if cur_val in ids else 0
+                opt_ids = [None] + [o["id"] for o in opts]
+                idx = opt_ids.index(cur_val) if cur_val in opt_ids else 0
                 values[name] = st.selectbox(
-                    label, ids, index=idx,
+                    label, opt_ids, index=idx,
                     format_func=lambda i, mm=omap: "— (vacío) —" if i is None else mm.get(i, i),
-                    key=f"ca_{name}", help=helptxt)
+                    key=wkey, help=helptxt)
             elif kind == "enum":
-                ids = ([None] if m["nullable"] else []) + m["enum"]
-                idx = ids.index(cur_val) if cur_val in ids else 0
-                values[name] = st.selectbox(label, ids, index=idx,
+                opt_ids = ([None] if m["nullable"] else []) + m["enum"]
+                idx = opt_ids.index(cur_val) if cur_val in opt_ids else 0
+                values[name] = st.selectbox(label, opt_ids, index=idx,
                                             format_func=lambda v: "— (vacío) —" if v is None else v,
-                                            key=f"ca_{name}", help=helptxt)
+                                            key=wkey, help=helptxt)
             elif kind == "bool":
-                values[name] = st.checkbox(label, value=bool(cur_val), key=f"ca_{name}", help=helptxt)
+                values[name] = st.checkbox(label, value=bool(cur_val), key=wkey, help=helptxt)
             elif kind == "num":
                 v = st.text_input(label, value="" if cur_val is None else str(cur_val),
-                                  key=f"ca_{name}", help=helptxt)
+                                  key=wkey, help=helptxt)
                 if v.strip() == "":
                     values[name] = None
                 else:
@@ -276,47 +313,66 @@ def render_catalog_admin():
                         st.caption(f"⚠️ «{v}» no es un número válido para {_col_label(name)}.")
             else:
                 v = st.text_input(label, value="" if cur_val is None else str(cur_val),
-                                  key=f"ca_{name}", help=helptxt)
+                                  key=wkey, help=helptxt)
                 values[name] = v if v.strip() != "" else None
-        if not is_new and ro_meta:
-            with st.expander("🔧 Datos del sistema (solo lectura)"):
-                for m in ro_meta:
-                    cur_val = current.get(m["name"])
-                    st.text_input(_col_label(m["name"]),
-                                  value=str(cur_val) if cur_val is not None else "",
-                                  disabled=True, key=f"ca_{m['name']}")
-        submitted = st.form_submit_button("💾 Guardar", use_container_width=True)
 
-    if submitted:
-        # required-field check (NOT NULL editable cols)
-        missing = [_col_label(m["name"]) for m in meta
-                   if m["kind"] not in ("ro",) and not m.get("nullable")
-                   and values.get(m["name"]) in (None, "")]
-        if missing:
-            st.error("Faltan campos obligatorios: " + ", ".join(missing))
-        else:
-            try:
-                rid = save_row(tabla, meta, None if is_new else pick, values)
-                flash("Entrada creada." if is_new else "Cambios guardados.")
-                st.rerun()
-            except Exception as e:  # noqa: BLE001
-                st.error(friendly_error(e))
+        if not is_new:
+            ro_meta = [m for m in meta if m["kind"] == "ro"]
+            if ro_meta:
+                with st.expander("🔧 Datos del sistema (solo lectura)"):
+                    for m in ro_meta:
+                        cur_val = current.get(m["name"])
+                        st.text_input(_col_label(m["name"]),
+                                      value=str(cur_val) if cur_val is not None else "",
+                                      disabled=True, key=f"cad_{tabla}_{rid}_{m['name']}")
 
-    if not is_new:
-        st.divider()
-        detail = dependents_detail(tabla, pick)
-        if detail:
-            dep = sum(n for _, n in detail)
-            st.info(f"🔒 Esta entrada está en uso por **{dep}** registro(s): " +
-                    " · ".join(f"{n} en `{t}`" for t, n in detail) +
-                    ". No se puede eliminar. Para consolidar dos entradas repetidas, usa "
-                    "**📥 Propuestas de campo → Fusionar**.")
-        else:
-            if confirm_button("🗑️ Eliminar", key=f"ca_del_{pick}",
-                              help="Elimina la entrada de forma definitiva."):
+        if st.button("💾 Guardar", key=f"cad_save_{rid}", type="primary", use_container_width=True):
+            missing = [_col_label(m["name"]) for m in meta
+                       if m["kind"] not in ("ro",) and not m.get("nullable")
+                       and values.get(m["name"]) in (None, "")]
+            if missing:
+                st.error("Faltan campos obligatorios: " + ", ".join(missing))
+            else:
                 try:
-                    delete_row(tabla, pick, rmap.get(pick) or pick)
-                    flash("Entrada eliminada.", "🗑️")
+                    save_row(tabla, meta, rid, values)
+                    st.session_state["ca_nonce"] += 1
+                    st.session_state["ca_open_rid"] = None
+                    flash("Entrada creada." if is_new else "Cambios guardados.")
                     st.rerun()
                 except Exception as e:  # noqa: BLE001
                     st.error(friendly_error(e))
+
+        if not is_new:
+            st.divider()
+            detail = dependents_detail(tabla, rid)
+            if detail:
+                dep = sum(n for _, n in detail)
+                st.info(f"🔒 Esta entrada está en uso por **{dep}** registro(s): " +
+                        " · ".join(f"{n} en `{t}`" for t, n in detail) +
+                        ". No se puede eliminar. Para consolidar dos entradas repetidas, usa "
+                        "**📥 Propuestas de campo → Fusionar**.")
+            else:
+                if confirm_button("🗑️ Eliminar", key=f"cad_del_{rid}",
+                                  help="Elimina la entrada de forma definitiva."):
+                    try:
+                        delete_row(tabla, rid, names.get(rid) or rid)
+                        st.session_state["ca_nonce"] += 1
+                        st.session_state["ca_open_rid"] = None
+                        flash("Entrada eliminada.", "🗑️")
+                        st.rerun()
+                    except Exception as e:  # noqa: BLE001
+                        st.error(friendly_error(e))
+
+    if nueva:
+        edit_dialog(None)
+    else:
+        sel = ev.selection.rows
+        if sel:
+            rid = ids[sel[0]]
+            # open only when the selection changes — otherwise closing the
+            # dialog with X would reopen it on the very next rerun
+            if st.session_state.get("ca_open_rid") != rid:
+                st.session_state["ca_open_rid"] = rid
+                edit_dialog(rid)
+        else:
+            st.session_state["ca_open_rid"] = None
