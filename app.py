@@ -771,14 +771,14 @@ def render_all(table: str, df: pd.DataFrame, name_col: str):
     # --- batch actions ---
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("✅ Aprobar todos los no eliminados", use_container_width=True):
+        if st.button("✅ Aprobar todos los no eliminados", width="stretch"):
             decisions["approved"] = sorted(
                 r[name_col] for _, r in df.iterrows() if r[name_col] not in deleted_set
             )
             save_decisions(table, decisions)
             st.rerun()
     with col2:
-        if st.button("↩️ Limpiar aprobaciones", use_container_width=True):
+        if st.button("↩️ Limpiar aprobaciones", width="stretch"):
             decisions["approved"] = []
             save_decisions(table, decisions)
             st.rerun()
@@ -824,7 +824,7 @@ def render_all(table: str, df: pd.DataFrame, name_col: str):
             "Estado":    st.column_config.TextColumn("Estado", width="small", disabled=True),
             name_col:    st.column_config.TextColumn("Nombre", help="Editable — corrige el texto directamente"),
         },
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
         disabled=read_only,
         key=f"editor_{table}",
@@ -894,7 +894,7 @@ def render_all(table: str, df: pd.DataFrame, name_col: str):
         with st.expander(f"📝 Renombres aplicados ({len(decisions['renames'])})"):
             st.dataframe(
                 pd.DataFrame(decisions["renames"]),
-                use_container_width=True,
+                width="stretch",
                 hide_index=True,
             )
 
@@ -919,7 +919,7 @@ def _edge_evidence(cluster: dict):
             "Tipo":        e["flag"].replace("_", " ").title(),
             "Puente":      "🌉 sí" if frozenset((e["a"], e["b"])) in cluster["bridges"] else "",
         } for e in cluster["edges"]]
-        st.dataframe(pd.DataFrame(erows), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(erows), width="stretch", hide_index=True)
 
 
 def render_clusters(table: str, df: pd.DataFrame, name_col: str):
@@ -1055,14 +1055,14 @@ def render_clusters(table: str, df: pd.DataFrame, name_col: str):
                 pd.DataFrame(rows),
                 column_config=colcfg,
                 hide_index=True,
-                use_container_width=True,
+                width="stretch",
                 key=f"act_{table}_{cid}",
             )
             actions = dict(zip(edited["Registro"], edited["Acción"]))
             keepers = [m for m, a in actions.items() if a == ACT_KEEP]
 
             c1, c2, _ = st.columns([2, 2, 3])
-            if c1.button("✅ Colapsar grupo", key=f"col_{table}_{cid}", use_container_width=True):
+            if c1.button("✅ Colapsar grupo", key=f"col_{table}_{cid}", width="stretch"):
                 if len(keepers) != 1:
                     st.warning("Marca **exactamente un** registro como 👑 Conservar.")
                 else:
@@ -1071,7 +1071,7 @@ def render_clusters(table: str, df: pd.DataFrame, name_col: str):
                                    {m: a for m, a in actions.items() if m != surv})
                     save_decisions(table, decisions)
                     st.rerun()
-            if c2.button("✂️ Separar todos", key=f"sep_{table}_{cid}", use_container_width=True,
+            if c2.button("✂️ Separar todos", key=f"sep_{table}_{cid}", width="stretch",
                          help="Marca todo el grupo como registros distintos (no duplicados)"):
                 apply_separate_all(decisions, cluster)
                 save_decisions(table, decisions)
@@ -1082,13 +1082,13 @@ def render_clusters(table: str, df: pd.DataFrame, name_col: str):
             panel_key = f"panel_{table}_{cid}"
             mode = st.session_state.get(panel_key, "")
             tb1, tb2, tb3 = st.columns(3)
-            if tb1.button("➕ Agregar existente", key=f"pbadd_{table}_{cid}", use_container_width=True):
+            if tb1.button("➕ Agregar existente", key=f"pbadd_{table}_{cid}", width="stretch"):
                 st.session_state[panel_key] = "" if mode == "add" else "add"
                 st.rerun()
-            if tb2.button("✨ Crear nuevo", key=f"pbnew_{table}_{cid}", use_container_width=True):
+            if tb2.button("✨ Crear nuevo", key=f"pbnew_{table}_{cid}", width="stretch"):
                 st.session_state[panel_key] = "" if mode == "new" else "new"
                 st.rerun()
-            if tb3.button("✏️ Renombrar", key=f"pbren_{table}_{cid}", use_container_width=True):
+            if tb3.button("✏️ Renombrar", key=f"pbren_{table}_{cid}", width="stretch"):
                 st.session_state[panel_key] = "" if mode == "rename" else "rename"
                 st.rerun()
 
@@ -1100,7 +1100,7 @@ def render_clusters(table: str, df: pd.DataFrame, name_col: str):
                     key=f"addsel_{table}_{cid}",
                 )
                 if st.button("➕ Agregar al grupo", key=f"addok_{table}_{cid}",
-                             use_container_width=True, disabled=not pick):
+                             width="stretch", disabled=not pick):
                     add_manual_link(decisions, survivor_default, pick)
                     save_decisions(table, decisions)
                     st.session_state[panel_key] = ""
@@ -1114,11 +1114,11 @@ def render_clusters(table: str, df: pd.DataFrame, name_col: str):
                     st.caption("Completa los demás campos del registro (opcional):")
                     ed = st.data_editor(
                         pd.DataFrame([{c: "" for c in field_cols}]),
-                        hide_index=True, use_container_width=True, key=f"nf_{table}_{cid}",
+                        hide_index=True, width="stretch", key=f"nf_{table}_{cid}",
                     )
                     fields = {c: str(ed.iloc[0][c]) for c in field_cols}
                 if st.button("✨ Crear y agregar", key=f"nok_{table}_{cid}",
-                             use_container_width=True, disabled=not newname):
+                             width="stretch", disabled=not newname):
                     if newname in set(all_names):
                         st.warning(f"'{newname}' ya existe — usa **Agregar existente**.")
                     elif create_new_record(table, newname, name_col, fields):
@@ -1138,7 +1138,7 @@ def render_clusters(table: str, df: pd.DataFrame, name_col: str):
                 )
                 corrected = st.text_input("Nombre correcto", key=f"rennew_{table}_{cid}").strip()
                 if st.button("✏️ Aplicar nombre", key=f"renok_{table}_{cid}",
-                             use_container_width=True, disabled=not (old and corrected)):
+                             width="stretch", disabled=not (old and corrected)):
                     err = rename_record(table, old, corrected, name_col, decisions)
                     if err:
                         st.warning(err)

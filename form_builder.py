@@ -581,7 +581,7 @@ def _sec_dialog(work: dict, idx: int | None):
                                  value=int(s.get("min") or 0), key=f"{k}_m")
         vis_raw = st.text_area("Visible solo si… (JSON)", _j(s.get("visible_si")), key=f"{k}_v",
                                help='Ej.: {"campo": "hubo_pesca", "valor": true}')
-    if st.button("💾 Guardar sección", key=f"{k}_save", type="primary", use_container_width=True):
+    if st.button("💾 Guardar sección", key=f"{k}_save", type="primary", width="stretch"):
         if not (titulo.strip() or key_in.strip()):
             st.error("Ponle un título a la sección.")
         else:
@@ -615,15 +615,15 @@ def _paso_secciones(work: dict, published: bool):
                                 "🔁 repetible" if s.get("repetible") else "") if b]
             c[0].markdown(f"**{s.get('titulo') or s.get('key')}**  \n{' · '.join(bits)}")
             if c[1].button("↑", key=f"fbs_up_{i}", disabled=published or i == 0,
-                           use_container_width=True):
+                           width="stretch"):
                 secs[i - 1], secs[i] = secs[i], secs[i - 1]
                 st.rerun()
             if c[2].button("↓", key=f"fbs_dn_{i}", disabled=published or i == len(secs) - 1,
-                           use_container_width=True):
+                           width="stretch"):
                 secs[i + 1], secs[i] = secs[i], secs[i + 1]
                 st.rerun()
             if c[3].button("✏️ Editar", key=f"fbs_ed_{i}", disabled=published,
-                           use_container_width=True):
+                           width="stretch"):
                 _dlg_nonce()
                 _sec_dialog(work, i)
     if st.button("➕ Agregar sección", key="fbs_add", disabled=published):
@@ -703,7 +703,7 @@ def _campo_dialog(work: dict, sec: dict, idx: int | None, bindable: dict):
             adv[prop_name] = st.text_area(f"{prop_name} (JSON)", _j(c.get(prop_name)),
                                           key=f"{k}_{prop_name}")
 
-    if st.button("💾 Guardar campo", key=f"{k}_save", type="primary", use_container_width=True):
+    if st.button("💾 Guardar campo", key=f"{k}_save", type="primary", width="stretch"):
         key_val = key_in.strip() or _slug(label)
         otros_keys = set()
         for s2 in work["secciones"]:
@@ -764,15 +764,15 @@ def _paso_campos(work: dict, published: bool, bindable: dict):
                 badges.append("👁️ condicional")
             cc[0].markdown(f"**{c.get('label') or c.get('key')}**  \n{' · '.join(badges)}")
             if cc[1].button("↑", key=f"fbc_{pick}_up_{i}", disabled=published or i == 0,
-                            use_container_width=True):
+                            width="stretch"):
                 campos[i - 1], campos[i] = campos[i], campos[i - 1]
                 st.rerun()
             if cc[2].button("↓", key=f"fbc_{pick}_dn_{i}",
-                            disabled=published or i == len(campos) - 1, use_container_width=True):
+                            disabled=published or i == len(campos) - 1, width="stretch"):
                 campos[i + 1], campos[i] = campos[i], campos[i + 1]
                 st.rerun()
             if cc[3].button("✏️ Editar", key=f"fbc_{pick}_ed_{i}", disabled=published,
-                            use_container_width=True):
+                            width="stretch"):
                 _dlg_nonce()
                 _campo_dialog(work, sec, i, bindable)
     if st.button("➕ Agregar campo", key=f"fbc_add_{pick}", disabled=published):
@@ -877,7 +877,7 @@ def render_form_builder():
     if published:
         w1, w2 = st.columns([3, 1], vertical_alignment="center")
         w1.warning("Esta versión está **publicada** (inmutable). Usa **Nueva versión** para editarla.")
-        if w2.button("🌱 Nueva versión", key="fb_newver", use_container_width=True):
+        if w2.button("🌱 Nueva versión", key="fb_newver", width="stretch"):
             try:
                 nid = new_version_from(work["id"])
                 st.session_state["fb_loaded"] = None
@@ -910,7 +910,7 @@ def render_form_builder():
                "📝 Borrador — guarda tus cambios antes de salir. Publica en el paso ④.")
     save_disabled = published or not work["nombre"].strip() or bool(cons_err)
     if f2.button("💾 Guardar borrador", key="fb_save", disabled=save_disabled,
-                 use_container_width=True):
+                 width="stretch"):
         try:
             fid = save_borrador(work["id"], work["nombre"], work["formato_id"],
                                 work["version"], {"secciones": work["secciones"]},

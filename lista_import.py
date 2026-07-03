@@ -248,8 +248,8 @@ def render_lista_import():
                    "enlaza uno; revísalas.")
         with st.expander("Ver filas ambiguas y el registro que se enlazará"):
             st.dataframe(pd.DataFrame([p for p in prev if p["acción"] == "ambiguo"]),
-                         use_container_width=True)
-    st.dataframe(pd.DataFrame(prev), use_container_width=True, height=300)
+                         width="stretch")
+    st.dataframe(pd.DataFrame(prev), width="stretch", height=300)
 
     st.divider()
     if st.button(f"✅ Aplicar {len(rows)} opciones a «{lista}»", type="primary", key="li_apply"):
@@ -277,4 +277,4 @@ def render_lista_import():
             st.info("Cooperativas creadas (no existían): " + ", ".join(sorted(set(coops_nuevas))))
         if fallidas:
             st.error(f"{len(fallidas)} fila(s) no se aplicaron:")
-            st.dataframe(pd.DataFrame(fallidas), use_container_width=True)
+            st.dataframe(pd.DataFrame(fallidas), width="stretch")

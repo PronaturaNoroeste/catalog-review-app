@@ -188,7 +188,7 @@ def render_proposal_queue():
                                          disabled=not add_l or len(listas) == 1)
 
             a, r = st.columns(2)
-            if a.button("✅ Aprobar", key=f"ap_{rid}", use_container_width=True):
+            if a.button("✅ Aprobar", key=f"ap_{rid}", width="stretch"):
                 try:
                     approve(tabla, rid, nombre)
                     if add_l and fsel and lsel:
@@ -199,7 +199,7 @@ def render_proposal_queue():
                     st.rerun()
                 except Exception as e:  # noqa: BLE001
                     st.error(friendly_error(e))
-            if r.button("❌ Rechazar", key=f"rj_{rid}", use_container_width=True,
+            if r.button("❌ Rechazar", key=f"rj_{rid}", width="stretch",
                         help="Marca como rechazada. Si hay faenas que la usan, considera fusionar."):
                 try:
                     reject(tabla, rid, nombre)

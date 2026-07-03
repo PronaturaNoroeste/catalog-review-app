@@ -246,7 +246,7 @@ def render_catalog_admin():
 
     c1, c2 = st.columns([3, 1], vertical_alignment="bottom")
     q = c1.text_input("Buscar", key="ca_q", placeholder="escribe para filtrar por nombre…")
-    nueva = c2.button("➕ Nueva entrada", key="ca_new", use_container_width=True)
+    nueva = c2.button("➕ Nueva entrada", key="ca_new", width="stretch")
 
     rows, total = list_rows(tabla, q)
     ids = [str(r["id"]) for r in rows]
@@ -263,7 +263,7 @@ def render_catalog_admin():
     ev = st.dataframe(
         display_df(rows, meta), key=f"ca_tbl_{tabla}_{nonce}",
         selection_mode="single-row", on_select="rerun",
-        hide_index=True, use_container_width=True, height=400)
+        hide_index=True, width="stretch", height=400)
 
     @st.dialog(f"✏️ {TABLE_LABELS.get(tabla, tabla)}", width="large")
     def edit_dialog(rid: str | None):
@@ -326,7 +326,7 @@ def render_catalog_admin():
                                       value=str(cur_val) if cur_val is not None else "",
                                       disabled=True, key=f"cad_{tabla}_{rid}_{m['name']}")
 
-        if st.button("💾 Guardar", key=f"cad_save_{rid}", type="primary", use_container_width=True):
+        if st.button("💾 Guardar", key=f"cad_save_{rid}", type="primary", width="stretch"):
             missing = [_col_label(m["name"]) for m in meta
                        if m["kind"] not in ("ro",) and not m.get("nullable")
                        and values.get(m["name"]) in (None, "")]

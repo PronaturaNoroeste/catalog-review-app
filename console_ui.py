@@ -15,7 +15,7 @@ def page_header(title: str, subtitle: str, help_md: str | None = None):
     if help_md:
         c1, c2 = st.columns([5, 1])
         c1.caption(subtitle)
-        with c2.popover("❓ ¿Qué es esto?", use_container_width=True):
+        with c2.popover("❓ ¿Qué es esto?", width="stretch"):
             st.markdown(help_md)
     else:
         st.caption(subtitle)

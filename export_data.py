@@ -290,7 +290,12 @@ def render_export():
     if st.button("🔍 Generar vista previa", key="exp_run", type="primary"):
         sql, params = _build(ds, f)
         try:
-            df = pd.read_sql(sql, get_conn(), params=params or None)
+            # straight from the DBAPI cursor: pd.read_sql wants SQLAlchemy and
+            # warns on raw psycopg2 connections
+            cur = get_conn().cursor()
+            cur.execute(sql, params or None)
+            df = pd.DataFrame(cur.fetchall(), columns=[c[0] for c in cur.description])
+            cur.close()
             st.session_state["exp_df"] = df
             st.session_state["exp_meta"] = {"ds": ds, "when": _dt.datetime.now()}
         except Exception as e:  # noqa: BLE001
@@ -328,13 +333,13 @@ def render_export():
         top = df["especie"].value_counts().head(8)
         st.caption("Top especies: " + " · ".join(f"{k} ({v:,})" for k, v in top.items()))
 
-    st.dataframe(df.head(100), use_container_width=True, height=300)
+    st.dataframe(df.head(100), width="stretch", height=300)
     st.caption(f"Mostrando 100 de {len(df):,} filas.")
 
     with st.expander("📖 Diccionario de columnas"):
         st.dataframe(pd.DataFrame(
             [{"columna": c, "significado": COL_DIC.get(c, "—")} for c in df.columns]),
-            use_container_width=True, hide_index=True)
+            width="stretch", hide_index=True)
 
     # ---- download ----
     st.divider()
@@ -342,14 +347,14 @@ def render_export():
     base = f"{ds}_{stamp}"
     d1, d2 = st.columns(2)
     d1.download_button("⬇️ CSV (Excel / R)", df.to_csv(index=False).encode("utf-8"),
-                       file_name=f"{base}.csv", mime="text/csv", use_container_width=True)
+                       file_name=f"{base}.csv", mime="text/csv", width="stretch")
     if HAS_PARQUET:
         buf = io.BytesIO(); df.to_parquet(buf, index=False)
         d2.download_button("⬇️ Parquet (R / Python)", buf.getvalue(),
                            file_name=f"{base}.parquet", mime="application/octet-stream",
-                           use_container_width=True)
+                           width="stretch")
     else:
-        d2.button("⬇️ Parquet", disabled=True, use_container_width=True)
+        d2.button("⬇️ Parquet", disabled=True, width="stretch")
         d2.caption("Parquet no disponible: falta el paquete `pyarrow` en el servidor "
                    "(`pip install pyarrow`). El CSV funciona igual.")
 

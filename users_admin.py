@@ -139,13 +139,13 @@ def render_users_admin():
             c[2].markdown(f"téc: {u['tecnico'] or '—'}")
             with c[3]:
                 if u["activo"]:
-                    if st.button("Desactivar", key=f"de_{u['id']}", use_container_width=True):
+                    if st.button("Desactivar", key=f"de_{u['id']}", width="stretch"):
                         set_activo(u["id"], False)
                         flash(f"Cuenta de {u['nombre']} desactivada.", "🚫")
                         st.rerun()
                 else:
                     st.caption("inactivo")
-                    if st.button("Activar", key=f"ac_{u['id']}", use_container_width=True):
+                    if st.button("Activar", key=f"ac_{u['id']}", width="stretch"):
                         set_activo(u["id"], True)
                         flash(f"Cuenta de {u['nombre']} activada.")
                         st.rerun()

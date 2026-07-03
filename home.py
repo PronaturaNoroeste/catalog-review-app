@@ -48,7 +48,7 @@ def render_sidebar_nav(rol: str) -> str:
         if group != last_group and group is not None:
             st.sidebar.caption(group)
         last_group = group
-        if st.sidebar.button(label, key=f"nav_{mode}", use_container_width=True,
+        if st.sidebar.button(label, key=f"nav_{mode}", width="stretch",
                              type="primary" if mode == cur else "secondary"):
             st.session_state["console_mode"] = mode
             st.rerun()
@@ -89,7 +89,7 @@ def _card(col, titulo: str, count, desc: str, boton: str, mode: str, icon: str):
         st.markdown(f"#### {icon} {titulo}")
         st.metric(titulo, "—" if count is None else count, label_visibility="collapsed")
         st.caption(desc)
-        if st.button(boton, key=f"home_go_{mode}", use_container_width=True,
+        if st.button(boton, key=f"home_go_{mode}", width="stretch",
                      type="primary" if isinstance(count, int) and count > 0 else "secondary"):
             st.session_state["console_mode"] = mode
             st.rerun()
