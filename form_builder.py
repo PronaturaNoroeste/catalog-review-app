@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import os
+import unicodedata
 from pathlib import Path
 
 import pandas as pd
@@ -325,7 +326,9 @@ def validate_definition(definicion: dict, constantes: dict, bindable: dict) -> t
 
 
 # =====================================================================
-# Editor <-> dataframe (de)serialization (pure)
+# Editor <-> dataframe (de)serialization (pure).
+# NOTE: no longer used by the UI (the wizard edits the campo dicts directly,
+# preserving unknown keys); kept because round-trip tests exercise them.
 # =====================================================================
 _FIELD_COLS = ["key", "label", "tipo", "requerido", "autocompletar",
                "bind_tipo", "bind_columna", "bind_catalogo",
@@ -403,19 +406,6 @@ def _pj(s):
         return s   # leave raw; validation will not crash, just won't match
 
 
-_SEC_COLS = ["key", "titulo", "entidad", "repetible", "min", "boton_agregar", "visible_si"]
-
-
-def _secs_to_df(secs: list[dict]) -> pd.DataFrame:
-    rows = [{
-        "key": s.get("key", ""), "titulo": s.get("titulo", ""),
-        "entidad": s.get("entidad", ""), "repetible": bool(s.get("repetible", False)),
-        "min": s.get("min", None), "boton_agregar": s.get("boton_agregar", ""),
-        "visible_si": _j(s.get("visible_si")),
-    } for s in secs]
-    return pd.DataFrame(rows, columns=_SEC_COLS)
-
-
 # =====================================================================
 # UI
 # =====================================================================
@@ -433,18 +423,419 @@ def _load_into_work(f: dict) -> dict:
             "secciones": defn.get("secciones", []), "constantes": f.get("constantes") or {}}
 
 
+# =====================================================================
+# Wizard (plan R2 Phase D): ① Datos → ② Secciones → ③ Campos → ④ Publicar.
+# Section/field dialogs edit the definition dicts DIRECTLY (no DataFrame
+# round-trip), so unknown keys are preserved by construction — the class of
+# bug that once dropped lista/permite_proponer cannot recur here.
+# =====================================================================
+PASOS = ["① Datos", "② Secciones", "③ Campos", "④ Revisar y publicar"]
+
+TIPO_LABELS = {
+    "texto": "Texto", "entero": "Número entero", "decimal": "Número decimal",
+    "fecha": "Fecha", "hora": "Hora", "catalogo": "Catálogo (lista de nombres)",
+    "seleccion_unica": "Selección única", "multiseleccion": "Selección múltiple",
+    "bool": "Sí / No", "geo": "Ubicación (GPS)", "foto": "Foto",
+}
+BIND_LABELS = {
+    "core": "Dato del sistema (se guarda en la base)",
+    "custom": "Personalizado (dato extra)",
+    "ui": "Solo interfaz (no se guarda)",
+}
+ENTIDAD_LABELS = {
+    "faena": "Faena (viaje)", "faena_especie_objetivo": "Especies objetivo",
+    "faena_arte": "Artes de pesca", "captura": "Capturas", "medicion": "Mediciones",
+    "carnada": "Carnada", "interaccion_etp": "Interacciones ETP", "gasto": "Gastos",
+}
+
+
+def _slug(s: str) -> str:
+    s = unicodedata.normalize("NFD", s or "")
+    s = "".join(ch for ch in s if unicodedata.category(ch) != "Mn").lower()
+    out = "".join(ch if ch.isalnum() else "_" for ch in s).strip("_")
+    while "__" in out:
+        out = out.replace("__", "_")
+    return out or "campo"
+
+
+def _set_or_pop(d: dict, k: str, v):
+    """Write a managed key only when it has a value — empty/False keys stay out
+    of the JSON, and keys we don't manage are never touched."""
+    if v in (None, "", False, [], {}):
+        d.pop(k, None)
+    else:
+        d[k] = v
+
+
+def _dlg_nonce() -> int:
+    """Fresh widget-key namespace per dialog opening (dialog widgets would
+    otherwise show stale values when reopening the same item)."""
+    st.session_state["fb_dlg"] = st.session_state.get("fb_dlg", 0) + 1
+    return st.session_state["fb_dlg"]
+
+
+# ---- pure builders (no Streamlit): what the dialogs write back ------
+def build_seccion(s: dict, v: dict) -> dict:
+    """New section dict from dialog values; unknown keys of `s` are preserved."""
+    out = dict(s)
+    out["key"] = (v.get("key") or "").strip() or _slug(v.get("titulo", ""))
+    _set_or_pop(out, "titulo", (v.get("titulo") or "").strip())
+    out.setdefault("campos", [])
+    _set_or_pop(out, "entidad", v.get("entidad"))
+    _set_or_pop(out, "repetible", bool(v.get("repetible")))
+    _set_or_pop(out, "boton_agregar",
+                (v.get("boton_agregar") or "").strip() if v.get("repetible") else "")
+    min_v = int(v.get("min") or 0)
+    if min_v or "min" in s:   # keep an explicit min:0 the definition already had
+        out["min"] = min_v
+    else:
+        out.pop("min", None)
+    _set_or_pop(out, "visible_si", _pj(v.get("visible_si_raw")))
+    return out
+
+
+def build_campo(c: dict, v: dict, bindable: dict) -> dict:
+    """New campo dict from dialog values; unknown keys of `c` (incl. `lista`)
+    are preserved — the curated-list wiring can't be dropped by construction."""
+    out = dict(c)
+    out["key"] = (v.get("key") or "").strip() or _slug(v.get("label", ""))
+    _set_or_pop(out, "label", (v.get("label") or "").strip())
+    out["tipo"] = v["tipo"]
+    _set_or_pop(out, "requerido", bool(v.get("requerido")))
+    _set_or_pop(out, "autocompletar", bool(v.get("autocompletar")))
+    _set_or_pop(out, "ayuda", (v.get("ayuda") or "").strip())
+    nb = dict(c.get("binding") or {})
+    nb["tipo"] = v["bind_tipo"]
+    col = (v.get("bind_columna") or "").strip()
+    _set_or_pop(nb, "columna", col if v["bind_tipo"] == "core" else "")
+    if v["bind_tipo"] == "core" and col in bindable and bindable[col].get("catalogo"):
+        nb["catalogo"] = nb.get("catalogo") or bindable[col]["catalogo"]
+    elif v["tipo"] == "catalogo":
+        _set_or_pop(nb, "catalogo", v.get("catalogo"))
+    out["binding"] = nb
+    if v.get("flags_managed"):
+        _set_or_pop(out, "permite_proponer", bool(v.get("permite_proponer")))
+        _set_or_pop(out, "permite_otro_texto", bool(v.get("permite_otro_texto")))
+    if v.get("opciones_simple") is not None:
+        _set_or_pop(out, "opciones", v["opciones_simple"])
+    for prop_name, raw in (v.get("adv") or {}).items():
+        _set_or_pop(out, prop_name, _pj(raw))
+    return out
+
+
+# ---- paso ① Datos ---------------------------------------------------
+def _paso_datos(work: dict, published: bool, formatos: list[dict]):
+    c1, c2, c3 = st.columns([3, 2, 1])
+    work["nombre"] = c1.text_input("Nombre del formulario", work["nombre"], key="fb_nombre",
+                                   disabled=published)
+    fmt_ids = [f["id"] for f in formatos]
+    fmt_label = {f["id"]: f"{f['codigo']} — {f['nombre']}" for f in formatos}
+    cur_fmt = work["formato_id"] if work["formato_id"] in fmt_ids else (fmt_ids[0] if fmt_ids else None)
+    if fmt_ids:
+        work["formato_id"] = c2.selectbox(
+            "Formato / región", fmt_ids, index=fmt_ids.index(cur_fmt) if cur_fmt else 0,
+            format_func=lambda i: fmt_label.get(i, i), key="fb_formato",
+            disabled=published or work["id"] is not None)
+    c2.checkbox("Mostrar formatos históricos", key="fb_hist",
+                help="Formatos de datos importados; solo si vas a crear un formulario nuevo "
+                     "para uno de ellos.")
+    c3.metric("Versión", work["version"])
+
+    with st.expander("⚙️ Avanzado: constantes del formulario (JSON)"):
+        st.caption("Valores fijos que la tableta llena sola (región, zona, tipo de registro…).")
+        cons_raw = st.text_area("Constantes (JSON)",
+                                json.dumps(work["constantes"], ensure_ascii=False, indent=2),
+                                height=120, key="fb_constantes", disabled=published,
+                                label_visibility="collapsed")
+        try:
+            work["constantes"] = json.loads(cons_raw) if cons_raw.strip() else {}
+            st.session_state["fb_cons_err"] = None
+        except ValueError as e:
+            st.session_state["fb_cons_err"] = str(e)
+            st.error(f"JSON inválido — {e}")
+
+
+# ---- paso ② Secciones -----------------------------------------------
+@st.dialog("Sección del formulario")
+def _sec_dialog(work: dict, idx: int | None):
+    from console_ui import confirm_button
+    s = {} if idx is None else work["secciones"][idx]
+    k = f"fbsd_{st.session_state.get('fb_dlg', 0)}"
+    titulo = st.text_input("Título (lo que ve el técnico)", s.get("titulo", ""), key=f"{k}_t")
+    ents = [""] + CORE_TABLES
+    entidad = st.selectbox(
+        "Dónde guarda sus datos", ents,
+        index=ents.index(s.get("entidad", "")) if s.get("entidad", "") in ents else 0,
+        format_func=lambda e: "— (solo interfaz) —" if e == "" else ENTIDAD_LABELS.get(e, e),
+        key=f"{k}_e")
+    repet = st.checkbox("Repetible — el técnico puede agregar varias (p. ej. una por especie)",
+                        value=bool(s.get("repetible")), key=f"{k}_r")
+    boton = s.get("boton_agregar", "")
+    if repet:
+        boton = st.text_input("Texto del botón para agregar otra", boton, key=f"{k}_b",
+                              placeholder="p. ej. + Agregar captura")
+    with st.expander("⚙️ Avanzado"):
+        key_in = st.text_input("Clave interna", s.get("key") or _slug(titulo), key=f"{k}_k",
+                               help="Identificador técnico; no lo cambies en un formulario en uso.")
+        min_in = st.number_input("Mínimo de registros (si es repetible)", min_value=0,
+                                 value=int(s.get("min") or 0), key=f"{k}_m")
+        vis_raw = st.text_area("Visible solo si… (JSON)", _j(s.get("visible_si")), key=f"{k}_v",
+                               help='Ej.: {"campo": "hubo_pesca", "valor": true}')
+    if st.button("💾 Guardar sección", key=f"{k}_save", type="primary", use_container_width=True):
+        if not (titulo.strip() or key_in.strip()):
+            st.error("Ponle un título a la sección.")
+        else:
+            out = build_seccion(s, {"key": key_in, "titulo": titulo, "entidad": entidad,
+                                    "repetible": repet, "boton_agregar": boton,
+                                    "min": min_in, "visible_si_raw": vis_raw})
+            if idx is None:
+                work["secciones"].append(out)
+            else:
+                work["secciones"][idx] = out
+            st.rerun()
+    if idx is not None:
+        st.divider()
+        ncamp = len(s.get("campos") or [])
+        if ncamp:
+            st.caption(f"⚠️ Esta sección tiene {ncamp} campo(s); se eliminan con ella.")
+        if confirm_button("🗑️ Eliminar sección", key=f"{k}_del"):
+            del work["secciones"][idx]
+            st.rerun()
+
+
+def _paso_secciones(work: dict, published: bool):
+    secs = work["secciones"]
+    if not secs:
+        st.info("Este formulario aún no tiene secciones — agrega la primera.")
+    for i, s in enumerate(secs):
+        with st.container(border=True):
+            c = st.columns([6, 0.7, 0.7, 1.2], vertical_alignment="center")
+            ent = ENTIDAD_LABELS.get(s.get("entidad", ""), s.get("entidad", ""))
+            bits = [b for b in (ent, f"{len(s.get('campos') or [])} campo(s)",
+                                "🔁 repetible" if s.get("repetible") else "") if b]
+            c[0].markdown(f"**{s.get('titulo') or s.get('key')}**  \n{' · '.join(bits)}")
+            if c[1].button("↑", key=f"fbs_up_{i}", disabled=published or i == 0,
+                           use_container_width=True):
+                secs[i - 1], secs[i] = secs[i], secs[i - 1]
+                st.rerun()
+            if c[2].button("↓", key=f"fbs_dn_{i}", disabled=published or i == len(secs) - 1,
+                           use_container_width=True):
+                secs[i + 1], secs[i] = secs[i], secs[i + 1]
+                st.rerun()
+            if c[3].button("✏️ Editar", key=f"fbs_ed_{i}", disabled=published,
+                           use_container_width=True):
+                _dlg_nonce()
+                _sec_dialog(work, i)
+    if st.button("➕ Agregar sección", key="fbs_add", disabled=published):
+        _dlg_nonce()
+        _sec_dialog(work, None)
+
+
+# ---- paso ③ Campos --------------------------------------------------
+@st.dialog("Campo del formulario", width="large")
+def _campo_dialog(work: dict, sec: dict, idx: int | None, bindable: dict):
+    from console_ui import confirm_button
+    c = {} if idx is None else sec["campos"][idx]
+    k = f"fbcd_{st.session_state.get('fb_dlg', 0)}"
+
+    label = st.text_input("Etiqueta (lo que ve el técnico)", c.get("label", ""), key=f"{k}_l")
+    tipo = st.selectbox("Tipo de dato", TIPOS,
+                        index=TIPOS.index(c.get("tipo", "texto")) if c.get("tipo", "texto") in TIPOS else 0,
+                        format_func=lambda t: TIPO_LABELS.get(t, t), key=f"{k}_tp")
+    cc = st.columns(2)
+    req = cc[0].checkbox("Obligatorio", value=bool(c.get("requerido")), key=f"{k}_rq")
+    auto = cc[1].checkbox("Autocompletar con el valor anterior",
+                          value=bool(c.get("autocompletar")), key=f"{k}_au")
+    ayuda = st.text_input("Texto de ayuda (opcional)", c.get("ayuda", ""), key=f"{k}_ay")
+
+    st.divider()
+    b = dict(c.get("binding") or {})
+    bt = st.radio("Origen del dato", BIND_TIPOS,
+                  index=BIND_TIPOS.index(b.get("tipo", "core")) if b.get("tipo", "core") in BIND_TIPOS else 0,
+                  format_func=lambda x: BIND_LABELS.get(x, x), horizontal=True, key=f"{k}_bt")
+    col = b.get("columna", "")
+    if bt == "core":
+        bind_cols = [""] + sorted(bindable.keys())
+        col = st.selectbox("Columna del sistema", bind_cols,
+                           index=bind_cols.index(col) if col in bind_cols else 0,
+                           key=f"{k}_bc",
+                           help="A qué dato real del monitoreo corresponde este campo.")
+        if col and bindable.get(col, {}).get("catalogo"):
+            st.caption(f"Catálogo asociado: `{bindable[col]['catalogo']}`")
+
+    cat_sel = b.get("catalogo", "")
+    if tipo == "catalogo" and not (bt == "core" and bindable.get(col, {}).get("catalogo")):
+        cat_tables = sorted({v["catalogo"] for v in bindable.values() if v.get("catalogo")})
+        cat_opts = [""] + cat_tables
+        cat_sel = st.selectbox("Catálogo de nombres", cat_opts,
+                               index=cat_opts.index(cat_sel) if cat_sel in cat_opts else 0,
+                               key=f"{k}_cat")
+
+    flags_managed = tipo in ("catalogo", "seleccion_unica", "multiseleccion")
+    prop = otro = None
+    if flags_managed:
+        if c.get("lista"):
+            st.info(f"📑 Este campo usa la lista curada **«{c['lista']}»**. Sus opciones se "
+                    "administran en **📑 Listas del formulario**, no aquí.")
+        fc = st.columns(2)
+        prop = fc[0].checkbox("El técnico puede proponer nombres nuevos",
+                              value=bool(c.get("permite_proponer")), key=f"{k}_pp")
+        otro = fc[1].checkbox("Permite escribir «otro» (texto libre)",
+                              value=bool(c.get("permite_otro_texto")), key=f"{k}_ot")
+
+    opciones_simple = None
+    if tipo in ("seleccion_unica", "multiseleccion"):
+        cur_opts = c.get("opciones") or []
+        if all(isinstance(o, str) for o in cur_opts):
+            txt = st.text_area("Opciones (una por línea)", "\n".join(cur_opts), key=f"{k}_op")
+            opciones_simple = [ln.strip() for ln in txt.splitlines() if ln.strip()]
+        else:
+            st.caption("Las opciones de este campo tienen formato avanzado — edítalas en ⚙️ Avanzado.")
+
+    with st.expander("⚙️ Avanzado"):
+        key_in = st.text_input("Clave interna", c.get("key") or _slug(label), key=f"{k}_k",
+                               help="Identificador técnico; no lo cambies en un formulario en uso.")
+        adv: dict = {}
+        adv_props = ["visible_si", "filtrado_por", "validacion", "opciones_prioritarias"]
+        if opciones_simple is None and tipo in ("seleccion_unica", "multiseleccion"):
+            adv_props = ["opciones"] + adv_props
+        for prop_name in adv_props:
+            adv[prop_name] = st.text_area(f"{prop_name} (JSON)", _j(c.get(prop_name)),
+                                          key=f"{k}_{prop_name}")
+
+    if st.button("💾 Guardar campo", key=f"{k}_save", type="primary", use_container_width=True):
+        key_val = key_in.strip() or _slug(label)
+        otros_keys = set()
+        for s2 in work["secciones"]:
+            for i2, c2 in enumerate(s2.get("campos") or []):
+                if s2 is sec and idx is not None and i2 == idx:
+                    continue
+                otros_keys.add(c2.get("key"))
+        if not label.strip():
+            st.error("Ponle una etiqueta al campo.")
+        elif key_val in otros_keys:
+            st.error(f"Ya existe otro campo con la clave «{key_val}» — cambia la clave en ⚙️ Avanzado.")
+        else:
+            out = build_campo(c, {"key": key_val, "label": label, "tipo": tipo,
+                                  "requerido": req, "autocompletar": auto, "ayuda": ayuda,
+                                  "bind_tipo": bt, "bind_columna": col, "catalogo": cat_sel,
+                                  "flags_managed": flags_managed, "permite_proponer": prop,
+                                  "permite_otro_texto": otro, "opciones_simple": opciones_simple,
+                                  "adv": adv}, bindable)
+            if idx is None:
+                sec["campos"].append(out)
+            else:
+                sec["campos"][idx] = out
+            st.rerun()
+
+    if idx is not None:
+        st.divider()
+        if confirm_button("🗑️ Eliminar campo", key=f"{k}_del"):
+            del sec["campos"][idx]
+            st.rerun()
+
+
+def _paso_campos(work: dict, published: bool, bindable: dict):
+    secs = work["secciones"]
+    if not secs:
+        st.info("Primero crea una sección en el paso ② Secciones.")
+        return
+    titles = [s.get("titulo") or s.get("key") for s in secs]
+    idxs = list(range(len(secs)))
+    pick = st.segmented_control("Sección", idxs, format_func=lambda i: titles[i],
+                                key="fb_sec_pick", default=0)
+    if pick is None or pick not in idxs:
+        pick = 0
+    sec = secs[pick]
+    campos = sec.setdefault("campos", [])
+    if not campos:
+        st.info("Esta sección aún no tiene campos — agrega el primero.")
+    for i, c in enumerate(campos):
+        with st.container(border=True):
+            cc = st.columns([6, 0.7, 0.7, 1.2], vertical_alignment="center")
+            badges = [TIPO_LABELS.get(c.get("tipo"), c.get("tipo"))]
+            if c.get("requerido"):
+                badges.append("✳️ obligatorio")
+            if c.get("lista"):
+                badges.append(f"📑 lista «{c['lista']}»")
+            if c.get("permite_proponer"):
+                badges.append("➕ proponer")
+            if c.get("visible_si"):
+                badges.append("👁️ condicional")
+            cc[0].markdown(f"**{c.get('label') or c.get('key')}**  \n{' · '.join(badges)}")
+            if cc[1].button("↑", key=f"fbc_{pick}_up_{i}", disabled=published or i == 0,
+                            use_container_width=True):
+                campos[i - 1], campos[i] = campos[i], campos[i - 1]
+                st.rerun()
+            if cc[2].button("↓", key=f"fbc_{pick}_dn_{i}",
+                            disabled=published or i == len(campos) - 1, use_container_width=True):
+                campos[i + 1], campos[i] = campos[i], campos[i + 1]
+                st.rerun()
+            if cc[3].button("✏️ Editar", key=f"fbc_{pick}_ed_{i}", disabled=published,
+                            use_container_width=True):
+                _dlg_nonce()
+                _campo_dialog(work, sec, i, bindable)
+    if st.button("➕ Agregar campo", key=f"fbc_add_{pick}", disabled=published):
+        _dlg_nonce()
+        _campo_dialog(work, sec, None, bindable)
+
+
+# ---- paso ④ Revisar y publicar --------------------------------------
+def _paso_revisar(work: dict, published: bool, bindable: dict):
+    from console_ui import friendly_error, flash
+    definicion = {"secciones": work["secciones"]}
+    errores, advert = validate_definition(definicion, work["constantes"], bindable)
+    cons_err = st.session_state.get("fb_cons_err")
+    if cons_err:
+        errores = [f"Constantes JSON inválido: {cons_err}"] + errores
+    a1, a2 = st.columns(2)
+    if errores:
+        a1.error(f"{len(errores)} error(es) — corrígelos antes de publicar")
+    else:
+        a1.success("Válido ✓")
+    if advert:
+        a2.warning(f"{len(advert)} advertencia(s)")
+    with st.expander("🔎 Detalle de la validación", expanded=bool(errores)):
+        for e in errores:
+            st.markdown(f"- ❌ {e}")
+        for w in advert:
+            st.markdown(f"- ⚠️ {w}")
+        if not errores and not advert:
+            st.caption("Sin problemas.")
+
+    st.divider()
+    st.markdown("##### 👁️ Vista previa (lo que verá el técnico)")
+    render_preview(definicion, work["constantes"])
+
+    st.divider()
+    if work["id"] is None and not published:
+        st.caption("Guarda el borrador (💾 abajo) antes de publicar.")
+    pub_disabled = published or bool(errores) or work["id"] is None
+    if st.button("🚀 Publicar esta versión", key="fb_publish", type="primary",
+                 disabled=pub_disabled,
+                 help="Publicar vuelve la versión inmutable; la tableta usa la última publicada."):
+        try:
+            publish(work["id"])
+            st.session_state["fb_loaded"] = None
+            flash("Formulario publicado (la versión queda inmutable).", "🚀")
+            st.rerun()
+        except Exception as e:  # noqa: BLE001
+            st.error(f"No se pudo publicar: {friendly_error(e)}")
+
+
 def render_form_builder():
     from console_ui import page_header, friendly_error, flash
     page_header(
         "🛠️ Formularios",
         "Edita y publica las versiones del formulario que llena el técnico en la tableta.",
         help_md=(
-            "1. Elige un formulario (o «➕ Nuevo») — cada uno tiene **versiones**.\n"
-            "2. Una versión **publicada** no se puede tocar: crea una **Nueva versión** "
-            "para editarla.\n"
-            "3. Edita secciones y campos, revisa la **validación** y la **vista previa**.\n"
-            "4. **💾 Guardar borrador** mientras trabajas; **🚀 Publicar** cuando esté listo "
-            "(la tableta usa la última versión publicada)."
+            "Trabaja en 4 pasos:\n\n"
+            "1. **① Datos** — nombre y formato del formulario.\n"
+            "2. **② Secciones** — las pantallas del formulario (Datos del viaje, Capturas…).\n"
+            "3. **③ Campos** — qué se captura en cada sección; edita cada campo con ✏️.\n"
+            "4. **④ Revisar y publicar** — validación, vista previa y 🚀 Publicar.\n\n"
+            "Una versión **publicada** no se puede tocar: crea una **🌱 Nueva versión**. "
+            "Guarda tu borrador con 💾 (siempre visible abajo)."
         ),
     )
 
@@ -484,171 +875,9 @@ def render_form_builder():
     published = work["estado"] == "publicado"
 
     if published:
-        st.warning("Esta versión está **publicada** (inmutable). Usa **Nueva versión** para editarla.")
-
-    # ---- metadata ---------------------------------------------------
-    c1, c2, c3 = st.columns([3, 2, 1])
-    work["nombre"] = c1.text_input("Nombre", work["nombre"], key="fb_nombre", disabled=published)
-    fmt_ids = [f["id"] for f in formatos]
-    fmt_label = {f["id"]: f"{f['codigo']} — {f['nombre']}" for f in formatos}
-    cur_fmt = work["formato_id"] if work["formato_id"] in fmt_ids else (fmt_ids[0] if fmt_ids else None)
-    work["formato_id"] = c2.selectbox(
-        "Formato / región", fmt_ids, index=fmt_ids.index(cur_fmt) if cur_fmt else 0,
-        format_func=lambda i: fmt_label.get(i, i), key="fb_formato",
-        disabled=published or work["id"] is not None)
-    c2.checkbox("Mostrar formatos históricos", key="fb_hist",
-                help="Formatos de datos importados; solo si vas a crear un formulario nuevo "
-                     "para uno de ellos.")
-    c3.metric("Versión", work["version"])
-
-    cons_raw = st.text_area("Constantes (JSON) — valores fijos del formulario (region/zona/tipo)",
-                            json.dumps(work["constantes"], ensure_ascii=False, indent=2),
-                            height=90, key="fb_constantes", disabled=published)
-    try:
-        work["constantes"] = json.loads(cons_raw) if cons_raw.strip() else {}
-        cons_err = None
-    except ValueError as e:
-        cons_err = str(e)
-        st.error(f"Constantes: JSON inválido — {e}")
-
-    # ---- sections (structure) --------------------------------------
-    st.subheader("Secciones")
-    sec_df = st.data_editor(
-        _secs_to_df(work["secciones"]), key="fb_secs",
-        num_rows="fixed" if published else "dynamic", use_container_width=True, hide_index=True,
-        disabled=published,
-        column_config={
-            "key": st.column_config.TextColumn("key", required=True),
-            "titulo": st.column_config.TextColumn("título"),
-            "entidad": st.column_config.SelectboxColumn("entidad (tabla)", options=[""] + CORE_TABLES),
-            "repetible": st.column_config.CheckboxColumn("repetible"),
-            "min": st.column_config.NumberColumn("min", min_value=0, step=1),
-            "boton_agregar": st.column_config.TextColumn("botón agregar"),
-            "visible_si": st.column_config.TextColumn("visible_si (JSON)"),
-        })
-
-    # rebuild section list from the editor, carrying campos over by key
-    prev_campos = {s.get("key"): s.get("campos", []) for s in work["secciones"]}
-    new_secs = []
-    for _, r in sec_df.iterrows():
-        k = (r.get("key") or "").strip()
-        if not k:
-            continue
-        s: dict = {"key": k, "titulo": (r.get("titulo") or "").strip(),
-                   "campos": prev_campos.get(k, [])}
-        if (r.get("entidad") or "").strip():
-            s["entidad"] = r["entidad"].strip()
-        if bool(r.get("repetible")):
-            s["repetible"] = True
-        if r.get("min") is not None and not pd.isna(r.get("min")):
-            s["min"] = int(r["min"])
-        if (r.get("boton_agregar") or "").strip():
-            s["boton_agregar"] = r["boton_agregar"].strip()
-        vs = _pj(r.get("visible_si"))
-        if vs:
-            s["visible_si"] = vs
-        new_secs.append(s)
-    work["secciones"] = new_secs
-
-    # ---- fields of one section -------------------------------------
-    if new_secs:
-        st.subheader("Campos de la sección")
-        sec_keys = [s["key"] for s in new_secs]
-        active = st.selectbox("Sección a editar", sec_keys, key="fb_active_sec")
-        sec = next(s for s in new_secs if s["key"] == active)
-        bind_cols = [""] + sorted(bindable.keys())
-        cat_tables = [""] + sorted({v["catalogo"] for v in bindable.values() if v.get("catalogo")})
-
-        f_df = st.data_editor(
-            fields_to_df(sec["campos"]), key=f"fb_fields_{active}",
-            num_rows="fixed" if published else "dynamic", use_container_width=True, hide_index=True,
-            disabled=published,
-            column_config={
-                "key": st.column_config.TextColumn("key", required=True),
-                "label": st.column_config.TextColumn("label", width="medium"),
-                "tipo": st.column_config.SelectboxColumn("tipo", options=TIPOS),
-                "requerido": st.column_config.CheckboxColumn("req."),
-                "autocompletar": st.column_config.CheckboxColumn("autocompl."),
-                "bind_tipo": st.column_config.SelectboxColumn("binding", options=BIND_TIPOS),
-                "bind_columna": st.column_config.SelectboxColumn("columna core", options=bind_cols, width="medium"),
-                "bind_catalogo": st.column_config.SelectboxColumn("catálogo", options=cat_tables),
-                "lista": st.column_config.TextColumn(
-                    "lista curada 🔒", disabled=True,
-                    help="Lista curada de opciones (se administra en 📑 Listas del formulario)."),
-                "permite_proponer": st.column_config.CheckboxColumn(
-                    "proponer", help="El técnico puede proponer nombres fuera de la lista."),
-                "permite_otro_texto": st.column_config.CheckboxColumn(
-                    "otro texto", help="Permite escribir un valor libre («otro»)."),
-                "opciones": st.column_config.TextColumn("opciones (JSON)"),
-                "visible_si": st.column_config.TextColumn("visible_si (JSON)"),
-                "filtrado_por": st.column_config.TextColumn("filtrado_por (JSON)"),
-                "validacion": st.column_config.TextColumn("validación (JSON)"),
-                "opciones_prioritarias": st.column_config.TextColumn("prioritarias (JSON)"),
-                "ayuda": st.column_config.TextColumn("ayuda"),
-            })
-        sec["campos"] = df_to_fields(f_df)
-        listados = [f"**{c.get('label') or c['key']}** → `{c['lista']}`"
-                    for c in sec["campos"] if c.get("lista")]
-        if listados:
-            st.caption("📑 Con lista curada: " + " · ".join(listados) +
-                       ". Las opciones de estas listas se administran en "
-                       "**📑 Listas del formulario** (no aquí).")
-        # auto-fill catalogo from the bindable registry when a core column is chosen
-        for c in sec["campos"]:
-            b = c.get("binding", {})
-            if b.get("tipo") == "core" and b.get("columna") in bindable:
-                meta = bindable[b["columna"]]
-                if meta["tipo"] == "catalogo" and not b.get("catalogo"):
-                    b["catalogo"] = meta["catalogo"]
-
-    definicion = {"secciones": work["secciones"]}
-    errores, advert = validate_definition(definicion, work["constantes"], bindable)
-    if cons_err:
-        errores = [f"Constantes JSON inválido: {cons_err}"] + errores
-
-    # ---- status + actions ------------------------------------------
-    st.divider()
-    a1, a2, a3, a4 = st.columns(4)
-    if errores:
-        a1.error(f"{len(errores)} error(es)")
-    else:
-        a1.success("Válido ✓")
-    if advert:
-        a2.warning(f"{len(advert)} advertencia(s)")
-
-    with st.expander("🔎 Validación", expanded=bool(errores)):
-        for e in errores:
-            st.markdown(f"- ❌ {e}")
-        for w in advert:
-            st.markdown(f"- ⚠️ {w}")
-        if not errores and not advert:
-            st.caption("Sin problemas.")
-
-    save_disabled = published or not work["nombre"].strip() or cons_err is not None
-    if a3.button("💾 Guardar borrador", key="fb_save", disabled=save_disabled, use_container_width=True):
-        try:
-            fid = save_borrador(work["id"], work["nombre"], work["formato_id"],
-                                work["version"], definicion, work["constantes"])
-            work["id"] = fid
-            st.session_state["fb_loaded"] = None  # force reload list/state next run
-            flash("Borrador guardado.", "💾")
-            st.rerun()
-        except Exception as e:  # noqa: BLE001
-            st.error(f"No se pudo guardar: {friendly_error(e)}")
-
-    pub_disabled = published or bool(errores) or work["id"] is None
-    if a4.button("🚀 Publicar", key="fb_publish", disabled=pub_disabled, use_container_width=True,
-                 help="Guarda primero. Publicar vuelve la versión inmutable."):
-        try:
-            publish(work["id"])
-            st.session_state["fb_loaded"] = None
-            flash("Formulario publicado (la versión queda inmutable).", "🚀")
-            st.rerun()
-        except Exception as e:  # noqa: BLE001
-            st.error(f"No se pudo publicar: {friendly_error(e)}")
-
-    if published:
-        if st.button("🌱 Nueva versión (editable)", key="fb_newver"):
+        w1, w2 = st.columns([3, 1], vertical_alignment="center")
+        w1.warning("Esta versión está **publicada** (inmutable). Usa **Nueva versión** para editarla.")
+        if w2.button("🌱 Nueva versión", key="fb_newver", use_container_width=True):
             try:
                 nid = new_version_from(work["id"])
                 st.session_state["fb_loaded"] = None
@@ -658,10 +887,41 @@ def render_form_builder():
             except Exception as e:  # noqa: BLE001
                 st.error(f"No se pudo crear la versión: {friendly_error(e)}")
 
-    # ---- preview ----------------------------------------------------
+    # ---- wizard -----------------------------------------------------
+    paso = st.segmented_control("Paso", PASOS, key="fb_step", default=PASOS[0],
+                                label_visibility="collapsed")
+    paso = paso if paso in PASOS else PASOS[0]
+
+    if paso == PASOS[0]:
+        _paso_datos(work, published, formatos)
+    elif paso == PASOS[1]:
+        _paso_secciones(work, published)
+    elif paso == PASOS[2]:
+        _paso_campos(work, published, bindable)
+    else:
+        _paso_revisar(work, published, bindable)
+
+    # ---- footer: save is always at hand -----------------------------
     st.divider()
-    with st.expander("👁️ Vista previa", expanded=False):
-        render_preview(definicion, work["constantes"])
+    cons_err = st.session_state.get("fb_cons_err")
+    f1, f2 = st.columns([3, 1], vertical_alignment="center")
+    f1.caption("✅ Versión publicada — solo lectura. Usa «Nueva versión» para editar."
+               if published else
+               "📝 Borrador — guarda tus cambios antes de salir. Publica en el paso ④.")
+    save_disabled = published or not work["nombre"].strip() or bool(cons_err)
+    if f2.button("💾 Guardar borrador", key="fb_save", disabled=save_disabled,
+                 use_container_width=True):
+        try:
+            fid = save_borrador(work["id"], work["nombre"], work["formato_id"],
+                                work["version"], {"secciones": work["secciones"]},
+                                work["constantes"])
+            work["id"] = fid
+            st.session_state["fb_loaded"] = None  # force reload list/state next run
+            flash("Borrador guardado.", "💾")
+            st.rerun()
+        except Exception as e:  # noqa: BLE001
+            st.error(f"No se pudo guardar: {friendly_error(e)}")
+
 
 
 def render_preview(definicion: dict, constantes: dict):
