@@ -171,8 +171,8 @@ def render_proposal_queue():
             add_l = False
             fsel = lsel = None
             if tabla in LISTABLE:
-                from form_builder import list_formatos
-                formatos = list_formatos()
+                from form_builder import formatos_en_uso
+                formatos = formatos_en_uso()
                 if formatos:
                     lc1, lc2, lc3 = st.columns([3, 2, 2])
                     add_l = lc1.checkbox(

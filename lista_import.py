@@ -27,7 +27,7 @@ import uuid
 import pandas as pd
 import streamlit as st
 
-from form_builder import _q, _exec, _log, list_formatos
+from form_builder import _q, _exec, _log, list_formatos, formatos_en_uso
 
 PRESETS = {
     "especies":   {"tabla": "cat_especie",  "carnada": False, "importancia": True,  "cooperativa": False},
@@ -167,7 +167,10 @@ def render_lista_import():
     )
 
     try:
-        formatos = list_formatos()
+        historicos = st.checkbox("Mostrar formatos históricos", value=False, key="li_hist",
+                                 help="Los formatos históricos son de datos importados; "
+                                      "normalmente las listas van al formato activo de la app.")
+        formatos = list_formatos() if historicos else formatos_en_uso()
     except Exception as e:  # noqa: BLE001
         st.error(f"No se pudo conectar a la base de datos: {e}"); return
 

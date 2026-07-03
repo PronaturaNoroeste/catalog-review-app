@@ -172,6 +172,19 @@ def list_formatos() -> list[dict]:
     return _q("SELECT id::text, codigo, nombre FROM cat_formato_origen ORDER BY codigo")
 
 
+@st.cache_data(ttl=300, show_spinner=False)
+def formatos_en_uso() -> list[dict]:
+    """Formats the app actually uses (they have forms or curated lists) — the
+    other cat_formato_origen rows are historical imports and only clutter pickers."""
+    return _q("""
+        SELECT fo.id::text, fo.codigo, fo.nombre
+        FROM cat_formato_origen fo
+        WHERE EXISTS (SELECT 1 FROM formulario f WHERE f.formato_origen_id = fo.id)
+           OR EXISTS (SELECT 1 FROM lista_opcion lo WHERE lo.formato_origen_id = fo.id)
+        ORDER BY fo.codigo
+    """)
+
+
 def list_formularios() -> list[dict]:
     return _q("""
         SELECT f.id::text, f.nombre, f.version, f.estado, fo.codigo AS formato,
@@ -437,7 +450,8 @@ def render_form_builder():
 
     try:
         bindable = load_bindable_core()
-        formatos = list_formatos()
+        # live formats by default; the toggle (rendered below) exposes historical ones
+        formatos = list_formatos() if st.session_state.get("fb_hist") else formatos_en_uso()
         formularios = list_formularios()
     except Exception as e:  # noqa: BLE001
         st.error(f"No se pudo conectar a la base de datos: {e}")
@@ -482,6 +496,9 @@ def render_form_builder():
         "Formato / región", fmt_ids, index=fmt_ids.index(cur_fmt) if cur_fmt else 0,
         format_func=lambda i: fmt_label.get(i, i), key="fb_formato",
         disabled=published or work["id"] is not None)
+    c2.checkbox("Mostrar formatos históricos", key="fb_hist",
+                help="Formatos de datos importados; solo si vas a crear un formulario nuevo "
+                     "para uno de ellos.")
     c3.metric("Versión", work["version"])
 
     cons_raw = st.text_area("Constantes (JSON) — valores fijos del formulario (region/zona/tipo)",
