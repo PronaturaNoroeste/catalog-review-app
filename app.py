@@ -619,45 +619,6 @@ def rename_record(table: str, old: str, new: str, name_col: str, decisions: dict
 # Sidebar
 # ---------------------------------------------------------------------------
 
-def sidebar() -> str:
-    st.sidebar.title("🐟 Revisión de Catálogos")
-    st.sidebar.caption("Monitoreo Pesquero — Pronatura Noroeste")
-    st.sidebar.divider()
-
-    available = [t for t in NAME_COLS if (EXPORT_DIR / f"{t}.csv").exists()]
-    if not available:
-        st.sidebar.error(f"No se encontraron CSVs en:\n{EXPORT_DIR}")
-        st.stop()
-
-    # The radio options/labels MUST stay static. Previously each label embedded a live
-    # progress badge (e.g. "[138/535]"); when a decision changed that badge during the
-    # st.rerun(), the browser radio lost its checked state and the next click fell back
-    # to index 0 — jumping the user to the first catalog. Options are now the table ids
-    # with fixed names; progress is rendered separately below as plain markdown.
-    selected = st.sidebar.radio(
-        "Catálogo",
-        available,
-        format_func=lambda t: TABLE_LABELS.get(t, t),
-        key="sidebar_catalog",
-    )
-
-    st.sidebar.divider()
-    st.sidebar.caption("**Progreso**")
-    rows = []
-    for t in available:
-        done, total = progress(table_pairs(t), load_decisions(t))
-        badge = "✅" if (total > 0 and done == total) else (f"{done}/{total}" if total > 0 else "—")
-        mark  = "**▶**" if t == selected else "•"
-        rows.append(f"- {mark} {TABLE_LABELS.get(t, t)} — `{badge}`")
-    st.sidebar.markdown("\n".join(rows))
-
-    st.sidebar.divider()
-    st.sidebar.caption("**Leyenda**")
-    st.sidebar.markdown("🔴 Duplicado exacto\n🟠 Probable (≥92%)\n🟡 Posible (≥78%)")
-
-    return selected
-
-
 # ---------------------------------------------------------------------------
 # Pairs tab
 # ---------------------------------------------------------------------------
@@ -1249,9 +1210,41 @@ def main():
         render_export()
         return
 
-    # mode == "catalogos" — catalog dedup review (the original app).
-    table    = sidebar()
-    df       = load_csv(table)
+    # mode == "catalogos" — catalog dedup review (the original app). One entry
+    # point: the catalog is picked here in the main area, not in the sidebar.
+    available = [t for t in NAME_COLS if (EXPORT_DIR / f"{t}.csv").exists()]
+    if not available:
+        st.error(f"No se encontraron CSVs en:\n{EXPORT_DIR}")
+        return
+
+    from console_ui import page_header
+    page_header(
+        "🔎 Duplicados",
+        "Limpia el catálogo: decide si dos nombres parecidos son el mismo registro.",
+        help_md=(
+            "El sistema marcó pares de nombres que se parecen. Para cada par decide:\n\n"
+            "1. **Mantener uno** — son lo mismo; se conserva el bien escrito.\n"
+            "2. **Ambos son válidos** — son registros distintos.\n"
+            "3. **Decidir después** — lo dejas pendiente.\n\n"
+            "En **🧬 Grupos** puedes revisar familias de nombres parecidos y fusionarlas "
+            "de una vez. Las decisiones se guardan solas; puedes salir y continuar luego.\n\n"
+            "**Colores:** 🔴 duplicado exacto · 🟠 probable (≥92 %) · 🟡 posible (≥78 %)."
+        ),
+    )
+
+    # Label stays static (names only) — live badges in widget labels desync the
+    # frontend across reruns (see the old sidebar() note in git history).
+    table = st.selectbox("Catálogo", available,
+                         format_func=lambda t: TABLE_LABELS.get(t, t), key="dup_catalog")
+    g_done = g_total = 0
+    for t in available:
+        d, tt = progress(table_pairs(t), load_decisions(t))
+        g_done += d
+        g_total += tt
+    st.caption(f"Progreso global: **{g_done} de {g_total}** pares revisados "
+               "en todos los catálogos.")
+
+    df = load_csv(table)
     if df is None or df.empty:
         st.error(f"No se pudo cargar {table}.csv")
         return
@@ -1262,19 +1255,6 @@ def main():
     done, total = progress(pairs, decisions)
     clusters    = table_clusters(table, cut_keys_of(decisions), manual_links_of(decisions))
 
-    from console_ui import page_header
-    page_header(
-        f"🔎 Duplicados — {TABLE_LABELS.get(table, table)}",
-        "Limpia el catálogo: decide si dos nombres parecidos son el mismo registro.",
-        help_md=(
-            "El sistema marcó pares de nombres que se parecen. Para cada par decide:\n\n"
-            "1. **Mantener uno** — son lo mismo; se conserva el bien escrito.\n"
-            "2. **Ambos son válidos** — son registros distintos.\n"
-            "3. **Decidir después** — lo dejas pendiente.\n\n"
-            "En **🧬 Grupos** puedes revisar familias de nombres parecidos y fusionarlas "
-            "de una vez. Las decisiones se guardan solas; puedes salir y continuar luego."
-        ),
-    )
     m1, m2, m3, m4, m5, m6 = st.columns(6)
     m1.metric("Total entradas",   len(df))
     m2.metric("Pares flaggeados", total)

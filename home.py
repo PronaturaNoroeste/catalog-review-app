@@ -7,7 +7,7 @@ formulario) and quick-action buttons that jump to the right mode.
 
 The sidebar nav replaces the old single radio with grouped buttons
 (REVISAR / CONFIGURAR / DATOS). Labels stay static — no live badges — so the
-widgets never desync across reruns (see the sidebar() note in app.py).
+widgets never desync across reruns (see the dup_catalog note in app.py).
 """
 from __future__ import annotations
 
