@@ -185,18 +185,20 @@ def _build(dataset: str, f: dict) -> tuple[str, list]:
     cfg = DATASETS[dataset]
     where, params = [], []
     cols = cfg["filters"]
+    # psycopg2 sends Python lists as text[]: cast explicitly, or Postgres
+    # refuses to compare uuid/enum columns against them.
     if f.get("especie") and "especie" in cols:
-        where.append(f"{cols['especie']} = ANY(%s)"); params.append(f["especie"])
+        where.append(f"{cols['especie']} = ANY(%s::uuid[])"); params.append(f["especie"])
     if f.get("region") and "region" in cols:
-        where.append(f"{cols['region']} = ANY(%s)"); params.append(f["region"])
+        where.append(f"{cols['region']} = ANY(%s::uuid[])"); params.append(f["region"])
     if f.get("formato") and "formato" in cols:
-        where.append(f"{cols['formato']} = ANY(%s)"); params.append(f["formato"])
+        where.append(f"{cols['formato']} = ANY(%s::uuid[])"); params.append(f["formato"])
     if f.get("tipo") and f["tipo"] != "Todos" and "tipo" in cols:
         where.append(f"{cols['tipo']} = %s"); params.append(f["tipo"])
     if f.get("sexo") and "sexo" in cols:
-        where.append(f"{cols['sexo']} = ANY(%s)"); params.append(f["sexo"])
+        where.append(f"{cols['sexo']}::text = ANY(%s)"); params.append(f["sexo"])
     if f.get("procesado") and "procesado" in cols:
-        where.append(f"{cols['procesado']} = ANY(%s)"); params.append(f["procesado"])
+        where.append(f"{cols['procesado']}::text = ANY(%s)"); params.append(f["procesado"])
     if f.get("years") and "year" in cols:
         where.append(f"EXTRACT(YEAR FROM {cols['year']}) BETWEEN %s AND %s")
         params += [f["years"][0], f["years"][1]]
