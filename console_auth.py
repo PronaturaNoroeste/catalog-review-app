@@ -75,10 +75,9 @@ def require_login() -> tuple[str, str]:
 
 
 def logout_button():
-    # Confirm inside a popover so a stray click doesn't drop the session.
-    with st.sidebar.popover("Salir", use_container_width=True):
-        st.caption("¿Cerrar la sesión?")
-        if st.button("Sí, salir", key="console_logout"):
-            for k in ("auth_rol", "auth_nombre"):
-                st.session_state.pop(k, None)
-            st.rerun()
+    # Plain button, no confirm: a stray click only costs a re-login, and the
+    # popover confirm rendered unreadably on the Tide sidebar.
+    if st.sidebar.button("🚪 Salir", key="console_logout", use_container_width=True):
+        for k in ("auth_rol", "auth_nombre"):
+            st.session_state.pop(k, None)
+        st.rerun()

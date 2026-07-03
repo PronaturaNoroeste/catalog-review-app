@@ -1212,14 +1212,15 @@ def main():
     # Login gate (ADMINISTRADOR → all modes, ANALISTA → export only).
     from console_auth import require_login, logout_button
     rol, nombre = require_login()
-    st.sidebar.caption(f"👤 {nombre} · {rol}")
-    logout_button()
-    st.sidebar.divider()
 
-    # Top-level console mode (gated by role) — grouped button nav + home screen.
+    # Sidebar: brand header → grouped nav → (bottom) user + salir.
+    st.sidebar.markdown('<div class="console-brand">🐟 Consola de monitoreo</div>',
+                        unsafe_allow_html=True)
     from home import render_sidebar_nav, render_home
     mode = render_sidebar_nav(rol)
     st.sidebar.divider()
+    st.sidebar.caption(f"👤 {nombre} · {rol}")
+    logout_button()
     if mode == "inicio":
         render_home(rol)
         return

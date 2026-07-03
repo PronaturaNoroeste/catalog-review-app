@@ -40,14 +40,50 @@ html, body, [class*="css"], button, input, textarea, select,
 .stApp h1 { font-family: var(--font-display); font-weight: 600; color: var(--color-tide); letter-spacing: -0.005em; }
 .stApp h2, .stApp h3 { font-weight: 600; color: var(--color-ink); }
 
-/* Sidebar — Tide surface, white nav (the one place brand color dominates) */
+/* Sidebar — Tide surface, white nav (the one place brand color dominates).
+   Color only the elements that sit on the Tide surface — a blanket
+   `[data-testid="stSidebar"] *` rule bled white text into popover panels
+   (light background) and made them unreadable. */
 [data-testid="stSidebar"] { background-color: var(--surface-sidebar); }
-[data-testid="stSidebar"] * { color: #ffffff !important; }
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"],
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] li,
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"],
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"] *,
+[data-testid="stSidebar"] [data-testid="stWidgetLabel"] *,
+[data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3,
+[data-testid="stSidebar"] .stRadio label p, [data-testid="stSidebar"] .stRadio label span,
+[data-testid="stSidebar"] .stButton > button { color: #ffffff; }
+/* anything rendered on a light panel inside the sidebar stays dark */
+[data-testid="stSidebar"] [data-testid="stPopoverBody"],
+[data-testid="stSidebar"] [data-testid="stPopoverBody"] * { color: var(--color-ink) !important; }
+
+/* App name — Fraunces, per the design system (the one place it appears in the sidebar).
+   A plain div, not a markdown h3: Streamlit's element container under-sizes an h3
+   in the sidebar and the next block overlaps it. */
+.console-brand {
+  font-family: var(--font-display); font-weight: 600; font-size: 1.15rem;
+  color: #ffffff; padding: 0 0 8px 4px;
+}
+/* keep the brand header clear of the sidebar's collapse-control strip */
+[data-testid="stSidebarUserContent"] { padding-top: 4rem; }
+
+/* Tighter nav rhythm: Streamlit's default 1rem block gap reads as scattered buttons */
+[data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0.3rem; }
+
+/* Group captions as section labels (11px, tracked, dimmed — DESIGN-pronatura sidebar spec) */
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"] {
+  font-size: 11px; letter-spacing: 0.08em; opacity: 0.6; margin-top: 8px;
+}
 
 /* Sidebar nav buttons: quiet by default, active = darker fill + amber edge
    (the only warm element on the cool surface, per the design system). */
 [data-testid="stSidebar"] .stButton > button {
   justify-content: flex-start; text-align: left; font-weight: 500;
+}
+/* the button's inner wrapper centers content by default — left-align it */
+[data-testid="stSidebar"] .stButton > button > div {
+  justify-content: flex-start; width: 100%;
 }
 [data-testid="stSidebar"] .stButton > button[kind="secondary"] {
   background-color: transparent; border: 1px solid transparent; opacity: 0.85;
