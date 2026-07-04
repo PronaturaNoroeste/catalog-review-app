@@ -512,9 +512,24 @@ def _blank_work() -> dict:
 
 def _load_into_work(f: dict) -> dict:
     defn = f.get("definicion") or {}
+    if isinstance(defn, str):
+        defn = json.loads(defn or "{}")
     return {"id": f["id"], "nombre": f["nombre"], "formato_id": f["formato_origen_id"],
             "version": f["version"], "estado": f["estado"],
             "secciones": defn.get("secciones", []), "constantes": f.get("constantes") or {}}
+
+
+def _template_work(src_id: str) -> dict:
+    """A fresh borrador seeded with another form's structure (deep-copied), so the
+    source is never mutated. Version recomputed for the source's formato."""
+    f = load_formulario(src_id)
+    defn = f.get("definicion") or {}
+    if isinstance(defn, str):
+        defn = json.loads(defn or "{}")
+    return {"id": None, "nombre": f"{f['nombre']} (copia)",
+            "formato_id": f["formato_origen_id"], "version": next_version(f["formato_origen_id"]),
+            "estado": "borrador", "secciones": copy.deepcopy(defn.get("secciones", [])),
+            "constantes": copy.deepcopy(f.get("constantes") or {})}
 
 
 # =====================================================================
@@ -1079,13 +1094,33 @@ def render_form_builder():
 
     sel = st.selectbox("Formulario", opts, format_func=_label, key="fb_sel")
 
-    # load the chosen form into the working copy once per selection change
-    if st.session_state.get("fb_loaded") != sel:
+    # a new form can start blank or be seeded from an existing one (plantilla)
+    tpl = "__blank__"
+    if sel == "__new__" and formularios:
+        tpl_opts = ["__blank__"] + [f["id"] for f in formularios]
+
+        def _tpl_label(o):
+            if o == "__blank__":
+                return "En blanco"
+            f = by_id.get(o)
+            return f"Copiar de: [{f['formato']}] {f['nombre']} · v{f['version']}" if f else str(o)
+
+        tpl = st.selectbox("Basar en", tpl_opts, format_func=_tpl_label, key="fb_tpl",
+                           help="Empieza desde cero o copia todas las secciones y campos de "
+                                "otro formulario para no armarlo de nuevo.")
+
+    # load the chosen form into the working copy once per selection/template change
+    marker = (sel, tpl)
+    if st.session_state.get("fb_loaded") != marker:
         if sel == "__new__":
-            st.session_state["fb_work"] = _blank_work()
+            st.session_state["fb_work"] = _blank_work() if tpl == "__blank__" else _template_work(tpl)
         else:
             st.session_state["fb_work"] = _load_into_work(load_formulario(sel))
-        st.session_state["fb_loaded"] = sel
+        st.session_state["fb_loaded"] = marker
+        # drop Paso ① widget state so the boxes re-init from the new work (else a
+        # keyed text_input keeps its old value and overwrites the seeded one)
+        for _wk in ("fb_nombre", "fb_formato", "fb_constantes"):
+            st.session_state.pop(_wk, None)
     work = st.session_state["fb_work"]
     published = work["estado"] == "publicado"
 
@@ -1131,6 +1166,8 @@ def render_form_builder():
                                 work["version"], {"secciones": work["secciones"]},
                                 work["constantes"])
             work["id"] = fid
+            # land on the saved form (so a new/plantilla draft doesn't reset to blank)
+            st.session_state["fb_sel"] = fid
             st.session_state["fb_loaded"] = None  # force reload list/state next run
             flash("Borrador guardado.", "💾")
             st.rerun()
