@@ -604,6 +604,35 @@ def build_campo(c: dict, v: dict, bindable: dict) -> dict:
     return out
 
 
+def _all_field_keys(work: dict, skip: dict | None = None) -> set:
+    """Every campo `key` in the form (optionally excluding one campo object)."""
+    return {c.get("key") for s in work["secciones"] for c in (s.get("campos") or [])
+            if c is not skip}
+
+
+def _unique_key(base: str, taken: set) -> str:
+    """`base`, else base_2/base_3… until it isn't already in `taken`."""
+    base = base or "campo"
+    if base not in taken:
+        return base
+    i = 2
+    while f"{base}_{i}" in taken:
+        i += 1
+    return f"{base}_{i}"
+
+
+def _add_core_field(work: dict, sec: dict, key: str, bindable: dict):
+    """Append a core-bound campo for schema column `key` with friendly defaults."""
+    entry = bindable[key]
+    kv = _unique_key(_slug(entry["friendly"]), _all_field_keys(work))
+    v = {"key": kv, "label": entry["friendly"], "tipo": entry["tipo"],
+         "requerido": False, "autocompletar": False, "ayuda": "",
+         "bind_tipo": "core", "bind_columna": key, "catalogo": entry.get("catalogo", ""),
+         "flags_managed": False, "permite_proponer": None, "permite_otro_texto": None,
+         "opciones_simple": None, "adv": {}}
+    sec.setdefault("campos", []).append(build_campo({}, v, bindable))
+
+
 # ---- paso ① Datos ---------------------------------------------------
 def _paso_datos(work: dict, published: bool, formatos: list[dict]):
     c1, c2, c3 = st.columns([3, 2, 1])
@@ -819,6 +848,7 @@ def _campo_dialog(work: dict, sec: dict, idx: int | None, bindable: dict):
 
 
 def _paso_campos(work: dict, published: bool, bindable: dict):
+    from console_ui import flash
     secs = work["secciones"]
     if not secs:
         st.info("Primero crea una sección en el paso ② Secciones.")
@@ -830,9 +860,49 @@ def _paso_campos(work: dict, published: bool, bindable: dict):
     if pick is None or pick not in idxs:
         pick = 0
     sec = secs[pick]
+    ent = sec.get("entidad", "")
     campos = sec.setdefault("campos", [])
+
+    # ---- biblioteca de datos: pick a known data point to add ---------
+    if not published:
+        used = {(c.get("binding") or {}).get("columna") for s in secs
+                for c in (s.get("campos") or [])
+                if (c.get("binding") or {}).get("tipo") == "core"}
+        with st.container(border=True):
+            st.markdown("**➕ Agregar un dato del monitoreo**")
+            if not ent:
+                st.caption("Esta sección no guarda datos del sistema (solo interfaz). "
+                           "Usa «dato personalizado» más abajo.")
+            else:
+                q = st.text_input("🔎 Buscar dato", key=f"fb_lib_q_{pick}",
+                                  placeholder="p. ej. peso, longitud, especie…",
+                                  label_visibility="collapsed")
+                ql = q.strip().lower()
+                avail = [k for k in sorted(bindable, key=lambda x: bindable[x]["friendly"])
+                         if k.split(".")[0] == ent and k not in used
+                         and (ql in bindable[k]["friendly"].lower() if ql else True)]
+                if avail:
+                    st.caption("Toca un dato para agregarlo al formulario:")
+                    ncol = 3
+                    cols = st.columns(ncol)
+                    for i, k in enumerate(avail):
+                        if cols[i % ncol].button(f"＋ {bindable[k]['friendly']}",
+                                                 key=f"fbadd_{pick}_{k}", width="stretch"):
+                            _add_core_field(work, sec, k, bindable)
+                            flash(f"Agregado: {bindable[k]['friendly']}")
+                            st.rerun()
+                else:
+                    st.caption("No hay más datos disponibles para esta búsqueda."
+                               if ql else "Ya agregaste todos los datos de esta sección.")
+            if st.button("➕ Agregar dato personalizado (avanzado)",
+                         key=f"fbc_add_{pick}", width="stretch"):
+                _dlg_nonce()
+                _campo_dialog(work, sec, None, bindable)
+
+    # ---- campos ya en el formulario ---------------------------------
+    st.markdown("**En el formulario:**")
     if not campos:
-        st.info("Esta sección aún no tiene campos — agrega el primero.")
+        st.info("Esta sección aún no tiene campos — agrega el primero arriba.")
     for i, c in enumerate(campos):
         with st.container(border=True):
             cc = st.columns([6, 0.7, 0.7, 1.2], vertical_alignment="center")
@@ -858,9 +928,11 @@ def _paso_campos(work: dict, published: bool, bindable: dict):
                             width="stretch"):
                 _dlg_nonce()
                 _campo_dialog(work, sec, i, bindable)
-    if st.button("➕ Agregar campo", key=f"fbc_add_{pick}", disabled=published):
-        _dlg_nonce()
-        _campo_dialog(work, sec, None, bindable)
+
+    # ---- vista previa en vivo de esta sección -----------------------
+    st.divider()
+    st.markdown("##### 👁️ Así lo verá el técnico")
+    render_preview({"secciones": [sec]}, {})
 
 
 # ---- paso ④ Revisar y publicar --------------------------------------
