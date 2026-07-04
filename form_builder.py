@@ -16,6 +16,7 @@ candidate paths in `_dsn`). The dev project is the same one the supabase repo ta
 """
 from __future__ import annotations
 
+import copy
 import json
 import os
 import unicodedata
@@ -388,6 +389,18 @@ def validate_definition(definicion: dict, constantes: dict, bindable: dict) -> t
             if tipo in ("seleccion_unica", "multiseleccion") and not c.get("opciones"):
                 advert.append(f"{floc}: {tipo} sin 'opciones'.")
 
+    # a core column is a unique sink — two fields writing it corrupt the data
+    seen_cols: dict = {}
+    for ck, c in all_fields.items():
+        b = c.get("binding") or {}
+        if b.get("tipo") == "core" and b.get("columna"):
+            col = b["columna"]
+            if col in seen_cols:
+                errores.append(f"campo «{ck}»: el dato del sistema '{col}' ya lo usa el "
+                               f"campo «{seen_cols[col]}» (no se puede repetir).")
+            else:
+                seen_cols[col] = ck
+
     # cross-references resolve to real field keys
     for ck, c in all_fields.items():
         for prop in ("visible_si", "filtrado_por"):
@@ -633,6 +646,39 @@ def _add_core_field(work: dict, sec: dict, key: str, bindable: dict):
     sec.setdefault("campos", []).append(build_campo({}, v, bindable))
 
 
+def _unbind_core(c: dict):
+    """A copy can't reuse a core column (unique sink) → make it a custom field."""
+    b = c.get("binding") or {}
+    if b.get("tipo") == "core" and b.get("columna"):
+        c["binding"] = {"tipo": "custom"}
+
+
+def _dup_campo(work: dict, campos: list, i: int) -> bool:
+    """Insert a deep copy of campo i right after it; return True if it was unbound."""
+    new = copy.deepcopy(campos[i])
+    new["key"] = _unique_key(_slug(new.get("label") or new.get("key")), _all_field_keys(work))
+    new["label"] = f"{new.get('label') or new.get('key') or 'Campo'} (copia)"
+    was_core = (new.get("binding") or {}).get("tipo") == "core" and (new.get("binding") or {}).get("columna")
+    _unbind_core(new)
+    campos.insert(i + 1, new)
+    return bool(was_core)
+
+
+def _dup_seccion(work: dict, i: int):
+    """Insert a deep copy of section i right after it (fresh keys; core fields unbound)."""
+    secs = work["secciones"]
+    new = copy.deepcopy(secs[i])
+    sec_keys = {s.get("key") for s in secs}
+    new["key"] = _unique_key(_slug(new.get("titulo") or new.get("key")), sec_keys)
+    new["titulo"] = f"{new.get('titulo') or new.get('key') or 'Sección'} (copia)"
+    taken = _all_field_keys(work)
+    for c in new.get("campos") or []:
+        c["key"] = _unique_key(_slug(c.get("label") or c.get("key")), taken)
+        taken.add(c["key"])
+        _unbind_core(c)
+    secs.insert(i + 1, new)
+
+
 # ---- paso ① Datos ---------------------------------------------------
 def _paso_datos(work: dict, published: bool, formatos: list[dict]):
     c1, c2, c3 = st.columns([3, 2, 1])
@@ -719,20 +765,26 @@ def _paso_secciones(work: dict, published: bool):
         st.info("Este formulario aún no tiene secciones — agrega la primera.")
     for i, s in enumerate(secs):
         with st.container(border=True):
-            c = st.columns([6, 0.7, 0.7, 1.2], vertical_alignment="center")
+            c = st.columns([5, 0.7, 0.7, 0.7, 1.1], vertical_alignment="center")
             ent = ENTIDAD_LABELS.get(s.get("entidad", ""), s.get("entidad", ""))
             bits = [b for b in (ent, f"{len(s.get('campos') or [])} campo(s)",
                                 "🔁 repetible" if s.get("repetible") else "") if b]
             c[0].markdown(f"**{s.get('titulo') or s.get('key')}**  \n{' · '.join(bits)}")
-            if c[1].button("↑", key=f"fbs_up_{i}", disabled=published or i == 0,
+            if c[1].button("⧉", key=f"fbs_dup_{i}", disabled=published,
+                           help="Duplicar esta sección con sus campos", width="stretch"):
+                from console_ui import flash
+                _dup_seccion(work, i)
+                flash("Sección duplicada (los datos del sistema quedan sin vincular).", "⧉")
+                st.rerun()
+            if c[2].button("↑", key=f"fbs_up_{i}", disabled=published or i == 0,
                            width="stretch"):
                 secs[i - 1], secs[i] = secs[i], secs[i - 1]
                 st.rerun()
-            if c[2].button("↓", key=f"fbs_dn_{i}", disabled=published or i == len(secs) - 1,
+            if c[3].button("↓", key=f"fbs_dn_{i}", disabled=published or i == len(secs) - 1,
                            width="stretch"):
                 secs[i + 1], secs[i] = secs[i], secs[i + 1]
                 st.rerun()
-            if c[3].button("✏️ Editar", key=f"fbs_ed_{i}", disabled=published,
+            if c[4].button("✏️ Editar", key=f"fbs_ed_{i}", disabled=published,
                            width="stretch"):
                 _dlg_nonce()
                 _sec_dialog(work, i)
@@ -905,7 +957,7 @@ def _paso_campos(work: dict, published: bool, bindable: dict):
         st.info("Esta sección aún no tiene campos — agrega el primero arriba.")
     for i, c in enumerate(campos):
         with st.container(border=True):
-            cc = st.columns([6, 0.7, 0.7, 1.2], vertical_alignment="center")
+            cc = st.columns([5, 0.7, 0.7, 0.7, 1.1], vertical_alignment="center")
             badges = [TIPO_LABELS.get(c.get("tipo"), c.get("tipo"))]
             if c.get("requerido"):
                 badges.append("✳️ obligatorio")
@@ -916,15 +968,23 @@ def _paso_campos(work: dict, published: bool, bindable: dict):
             if c.get("visible_si"):
                 badges.append("👁️ condicional")
             cc[0].markdown(f"**{c.get('label') or c.get('key')}**  \n{' · '.join(badges)}")
-            if cc[1].button("↑", key=f"fbc_{pick}_up_{i}", disabled=published or i == 0,
+            if cc[1].button("⧉", key=f"fbc_{pick}_dup_{i}", disabled=published,
+                            help="Duplicar este campo", width="stretch"):
+                if _dup_campo(work, campos, i):
+                    flash("Copia creada como dato personalizado (un dato del sistema no se "
+                          "puede repetir).", "⧉")
+                else:
+                    flash("Campo duplicado.", "⧉")
+                st.rerun()
+            if cc[2].button("↑", key=f"fbc_{pick}_up_{i}", disabled=published or i == 0,
                             width="stretch"):
                 campos[i - 1], campos[i] = campos[i], campos[i - 1]
                 st.rerun()
-            if cc[2].button("↓", key=f"fbc_{pick}_dn_{i}",
+            if cc[3].button("↓", key=f"fbc_{pick}_dn_{i}",
                             disabled=published or i == len(campos) - 1, width="stretch"):
                 campos[i + 1], campos[i] = campos[i], campos[i + 1]
                 st.rerun()
-            if cc[3].button("✏️ Editar", key=f"fbc_{pick}_ed_{i}", disabled=published,
+            if cc[4].button("✏️ Editar", key=f"fbc_{pick}_ed_{i}", disabled=published,
                             width="stretch"):
                 _dlg_nonce()
                 _campo_dialog(work, sec, i, bindable)
