@@ -51,6 +51,86 @@ TIPOS = [
 ]
 BIND_TIPOS = ["core", "custom", "ui"]
 
+# Friendly Spanish names for the core (schema) columns, so the admin never sees a
+# raw `medicion.peso_gr`. Curated once (readability is the point); `_core_label`
+# derives a clean name for any column not listed (e.g. a future schema addition).
+CORE_LABELS = {
+    # captura
+    "captura.captura_kg": "Kg capturados", "captura.categoria_tamano": "Categoría de tamaño",
+    "captura.especie_id": "Especie", "captura.num_organismos": "Número de organismos",
+    "captura.observaciones": "Observaciones", "captura.precio_kg": "Precio por kg",
+    "captura.presentacion": "Presentación", "captura.tipo_captura": "Tipo de captura",
+    # carnada
+    "carnada.arte_pesca_id": "Arte de pesca de la carnada", "carnada.especie_id": "Especie de carnada",
+    "carnada.kg_aprox": "Kg aproximados", "carnada.nombre_libre": "Nombre de la carnada (libre)",
+    "carnada.origen": "Origen de la carnada", "carnada.sitio_libre": "Lugar (libre)",
+    "carnada.sitio_pesca_carnada_id": "Sitio de pesca de la carnada",
+    # faena
+    "faena.area_pesca_id": "Área de pesca", "faena.capitan_id": "Capitán",
+    "faena.comunidad_id": "Comunidad", "faena.cooperativa_id": "Cooperativa",
+    "faena.corriente": "Corriente", "faena.dias_efectivos_pesca": "Días efectivos de pesca",
+    "faena.dias_jornada": "Días de jornada", "faena.embarcacion_id": "Embarcación",
+    "faena.encargado_lugar": "Encargado del lugar", "faena.estado_tiempo": "Estado del tiempo",
+    "faena.fecha": "Fecha", "faena.gasolina_lts": "Gasolina (litros)",
+    "faena.hora_llegada": "Hora de llegada", "faena.hora_salida": "Hora de salida",
+    "faena.luna_id": "Luna", "faena.marca_motor": "Marca del motor", "faena.marea_id": "Marea",
+    "faena.motor_hp": "Motor (HP)", "faena.num_pescadores": "Número de pescadores",
+    "faena.observaciones": "Observaciones", "faena.profundidad_max_brazas": "Profundidad máxima (brazas)",
+    "faena.profundidad_min_brazas": "Profundidad mínima (brazas)", "faena.region_id": "Región",
+    "faena.sitio_pesca_id": "Sitio de pesca", "faena.tecnico_id": "Técnico",
+    "faena.tiempo_efectivo_pesca_h": "Tiempo efectivo de pesca (horas)",
+    "faena.tipo_fondo_id": "Tipo de fondo", "faena.tipo_registro": "Tipo de registro",
+    "faena.viento_id": "Viento", "faena.zona_pesca_id": "Zona de pesca",
+    # faena_arte
+    "faena_arte.ancho_anzuelo": "Ancho del anzuelo", "faena_arte.ancho_boca_pulg": "Ancho de boca (pulgadas)",
+    "faena_arte.anzuelos_trabajando": "Anzuelos trabajando", "faena_arte.caida_m": "Caída (m)",
+    "faena_arte.calibre_piola": "Calibre de piola", "faena_arte.largo_anzuelo": "Largo del anzuelo",
+    "faena_arte.longitud_m": "Longitud (m)", "faena_arte.luz_malla_pulg": "Luz de malla (pulgadas)",
+    "faena_arte.material": "Material", "faena_arte.metodo": "Método",
+    "faena_arte.num_artes": "Número de artes", "faena_arte.num_lances": "Número de lances",
+    "faena_arte.numero_anzuelo": "Número de anzuelo", "faena_arte.observaciones": "Observaciones",
+    "faena_arte.tiempo_remojo_h": "Tiempo de remojo (horas)", "faena_arte.tipo_anzuelo_id": "Tipo de anzuelo",
+    "faena_arte.tipo_arte_id": "Arte de pesca", "faena_arte.tipo_operacion_id": "Tipo de operación",
+    # faena_especie_objetivo
+    "faena_especie_objetivo.especie_id": "Especie objetivo",
+    # gasto
+    "gasto.cantidad": "Cantidad", "gasto.descripcion": "Descripción",
+    "gasto.monto_total": "Monto total", "gasto.precio_unitario": "Precio unitario",
+    "gasto.tipo_gasto_id": "Concepto (tipo de gasto)",
+    # interaccion_etp
+    "interaccion_etp.cantidad": "Cantidad", "interaccion_etp.especie_id": "Especie (PAP)",
+    "interaccion_etp.observaciones": "Observaciones", "interaccion_etp.tipo_interaccion_id": "Tipo de interacción",
+    # medicion
+    "medicion.ancho_anzuelo": "Ancho del anzuelo", "medicion.captura_id": "Captura asociada",
+    "medicion.especie_id": "Especie", "medicion.largo_anzuelo": "Largo del anzuelo",
+    "medicion.longitud_furcal_cm": "Longitud furcal (cm)", "medicion.longitud_sospechosa": "Longitud sospechosa",
+    "medicion.longitud_total_cm": "Longitud total (cm)", "medicion.madurez_nikolsky": "Madurez (Nikolsky)",
+    "medicion.numero_anzuelo": "Número de anzuelo", "medicion.observaciones": "Observaciones",
+    "medicion.peso_gonada_gr": "Peso de gónada (g)", "medicion.peso_gr": "Peso (g)",
+    "medicion.procesado": "Procesado", "medicion.sexo": "Sexo",
+    "medicion.tipo_anzuelo_id": "Tipo de anzuelo",
+}
+
+_UNIT_SUFFIX = {"cm": "(cm)", "gr": "(g)", "kg": "(kg)", "lts": "(litros)", "h": "(horas)",
+                "m": "(m)", "pulg": "(pulgadas)", "hp": "(HP)", "brazas": "(brazas)"}
+
+
+def _core_label(key: str) -> str:
+    """Friendly Spanish name for a `table.column` core key (curated, else derived)."""
+    if key in CORE_LABELS:
+        return CORE_LABELS[key]
+    col = key.split(".", 1)[-1]
+    if col.endswith("_id"):
+        col = col[:-3]
+    parts = [p for p in col.split("_") if p]
+    unit = ""
+    if parts and parts[-1] in _UNIT_SUFFIX:
+        unit = " " + _UNIT_SUFFIX[parts[-1]]
+        parts = parts[:-1]
+    text = " ".join(parts).strip()
+    text = (text[:1].upper() + text[1:]) if text else col
+    return (text + unit).strip()
+
 
 # =====================================================================
 # DB layer
@@ -161,10 +241,11 @@ def load_bindable_core() -> dict:
                 tipo = "seleccion_unica"
             else:
                 tipo = "texto"
-        entry = {"label": f"{t}.{col}", "tipo": tipo}
+        key = f"{t}.{col}"
+        entry = {"label": key, "friendly": _core_label(key), "tipo": tipo}
         if catalogo:
             entry["catalogo"] = catalogo
-        reg[f"{t}.{col}"] = entry
+        reg[key] = entry
     return reg
 
 
@@ -655,9 +736,11 @@ def _campo_dialog(work: dict, sec: dict, idx: int | None, bindable: dict):
                   format_func=lambda x: BIND_LABELS.get(x, x), horizontal=True, key=f"{k}_bt")
     col = b.get("columna", "")
     if bt == "core":
-        bind_cols = [""] + sorted(bindable.keys())
-        col = st.selectbox("Columna del sistema", bind_cols,
+        bind_cols = [""] + sorted(bindable.keys(), key=lambda x: bindable[x]["friendly"])
+        col = st.selectbox("Dato del sistema", bind_cols,
                            index=bind_cols.index(col) if col in bind_cols else 0,
+                           format_func=lambda x: "— elige un dato —" if x == ""
+                           else bindable.get(x, {}).get("friendly", x),
                            key=f"{k}_bc",
                            help="A qué dato real del monitoreo corresponde este campo.")
         if col and bindable.get(col, {}).get("catalogo"):
