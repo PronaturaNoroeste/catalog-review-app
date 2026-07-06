@@ -677,7 +677,10 @@ def build_seccion(s: dict, v: dict) -> dict:
         out["min"] = min_v
     else:
         out.pop("min", None)
-    _set_or_pop(out, "visible_si", _pj(v.get("visible_si_raw")))
+    if v.get("visible_si_managed"):     # structured editor handled it
+        _set_or_pop(out, "visible_si", v.get("visible_si_val"))
+    else:                               # exotic value left as raw JSON
+        _set_or_pop(out, "visible_si", _pj(v.get("visible_si_raw")))
     return out
 
 
@@ -809,7 +812,7 @@ def _paso_datos(work: dict, published: bool, formatos: list[dict]):
 
 # ---- paso ② Secciones -----------------------------------------------
 @st.dialog("Sección del formulario")
-def _sec_dialog(work: dict, idx: int | None):
+def _sec_dialog(work: dict, idx: int | None, bindable: dict):
     from console_ui import confirm_button
     s = {} if idx is None else work["secciones"][idx]
     k = f"fbsd_{st.session_state.get('fb_dlg', 0)}"
@@ -826,20 +829,27 @@ def _sec_dialog(work: dict, idx: int | None):
     if repet:
         boton = st.text_input("Texto del botón para agregar otra", boton, key=f"{k}_b",
                               placeholder="p. ej. + Agregar captura")
+    st.markdown("**¿Cuándo se muestra esta sección?**")
+    all_fields = [cc for s2 in work["secciones"] for cc in (s2.get("campos") or [])]
+    vis_val, vis_ok = _condition_editor(s.get("visible_si"), all_fields, bindable, f"{k}_vis")
+
     with st.expander("⚙️ Avanzado"):
         key_in = st.text_input("Clave interna", s.get("key") or _slug(titulo), key=f"{k}_k",
                                help="Identificador técnico; no lo cambies en un formulario en uso.")
         min_in = st.number_input("Mínimo de registros (si es repetible)", min_value=0,
                                  value=int(s.get("min") or 0), key=f"{k}_m")
-        vis_raw = st.text_area("Visible solo si… (JSON)", _j(s.get("visible_si")), key=f"{k}_v",
-                               help='Ej.: {"campo": "hubo_pesca", "valor": true}')
+        vis_raw = _j(s.get("visible_si"))
+        if not vis_ok:   # exotic condition — keep it editable as JSON
+            vis_raw = st.text_area("Visible solo si… (JSON)", vis_raw, key=f"{k}_v",
+                                   help='Ej.: {"campo": "hubo_pesca", "valor": true}')
     if st.button("💾 Guardar sección", key=f"{k}_save", type="primary", width="stretch"):
         if not (titulo.strip() or key_in.strip()):
             st.error("Ponle un título a la sección.")
         else:
             out = build_seccion(s, {"key": key_in, "titulo": titulo, "entidad": entidad,
-                                    "repetible": repet, "boton_agregar": boton,
-                                    "min": min_in, "visible_si_raw": vis_raw})
+                                    "repetible": repet, "boton_agregar": boton, "min": min_in,
+                                    "visible_si_managed": vis_ok, "visible_si_val": vis_val,
+                                    "visible_si_raw": vis_raw})
             if idx is None:
                 work["secciones"].append(out)
             else:
@@ -855,7 +865,7 @@ def _sec_dialog(work: dict, idx: int | None):
             st.rerun()
 
 
-def _paso_secciones(work: dict, published: bool):
+def _paso_secciones(work: dict, published: bool, bindable: dict):
     secs = work["secciones"]
     if not secs:
         st.info("Este formulario aún no tiene secciones — agrega la primera.")
@@ -883,10 +893,81 @@ def _paso_secciones(work: dict, published: bool):
             if c[4].button("✏️ Editar", key=f"fbs_ed_{i}", disabled=published,
                            width="stretch"):
                 _dlg_nonce()
-                _sec_dialog(work, i)
+                _sec_dialog(work, i, bindable)
     if st.button("➕ Agregar sección", key="fbs_add", disabled=published):
         _dlg_nonce()
-        _sec_dialog(work, None)
+        _sec_dialog(work, None, bindable)
+
+
+# ---- shared: structured "visible_si" condition editor --------------
+def _num_collapse(x, is_int: bool):
+    if is_int:
+        return int(x)
+    fx = float(x)
+    return int(fx) if fx == int(fx) else fx
+
+
+def _condition_editor(current, candidates: list, bindable: dict, kp: str):
+    """Render a 'show only if…' builder. Returns (value_or_None, handled).
+
+    handled=False → the current value is too exotic to represent; the caller
+    should fall back to a raw-JSON field so nothing is lost."""
+    cand = {cc.get("key"): cc for cc in candidates if cc.get("key")}
+    if current and (not isinstance(current, dict) or (set(current) - {"op", "campo", "valor"})
+                    or current.get("campo") not in cand
+                    or current.get("op", "==") not in OP_LABELS):
+        return None, False
+
+    on = st.checkbox("Se muestra sólo si se cumple una condición",
+                     value=bool(current), key=f"{kp}_on")
+    if not on:
+        return None, True
+    if not cand:
+        st.caption("No hay otros campos que usar como condición.")
+        return None, True
+
+    keys = list(cand)
+    cur_field = current.get("campo") if current else None
+    field_key = st.selectbox(
+        "Cuando el campo", keys, index=keys.index(cur_field) if cur_field in keys else 0,
+        format_func=lambda kk: cand[kk].get("label") or kk, key=f"{kp}_field")
+    ref = cand[field_key]
+
+    ops = _ops_for(ref, bindable)
+    op_codes = [oc for oc, _ in ops]
+    cur_op = current.get("op", "==") if current else "=="
+    op = st.selectbox("cumple que", op_codes,
+                      index=op_codes.index(cur_op) if cur_op in op_codes else 0,
+                      format_func=lambda oc: dict(ops)[oc], key=f"{kp}_op")
+
+    cur_val = current.get("valor") if current else None
+    choices = _field_choices(ref, bindable)
+    if choices is not None:
+        if ref.get("permite_otro_texto") or cur_val == "__OTRO__":
+            choices = list(choices) + [("__OTRO__", "— eligió «Otro» —")]
+        vals = [v for v, _ in choices]
+        lab = dict(choices)
+        if op == "in":
+            default = [v for v in cur_val if v in vals] if isinstance(cur_val, list) else []
+            valor = st.multiselect("los valores", vals, default=default,
+                                   format_func=lambda v: lab.get(v, str(v)), key=f"{kp}_vin")
+        else:
+            valor = st.selectbox("el valor", vals,
+                                 index=vals.index(cur_val) if cur_val in vals else 0,
+                                 format_func=lambda v: lab.get(v, str(v)), key=f"{kp}_v")
+    elif _field_is_numeric(ref):
+        n = st.number_input("el valor", value=float(cur_val) if isinstance(cur_val, (int, float))
+                            else 0.0, step=0.01, format="%g", key=f"{kp}_vn")
+        valor = _num_collapse(n, ref.get("tipo") == "entero")
+    elif op == "in":
+        raw = st.text_area("los valores (uno por línea)",
+                           "\n".join(map(str, cur_val)) if isinstance(cur_val, list) else "",
+                           key=f"{kp}_vtl")
+        valor = [ln.strip() for ln in raw.splitlines() if ln.strip()]
+    else:
+        valor = st.text_input("el valor", value="" if cur_val is None else str(cur_val),
+                              key=f"{kp}_vt")
+    return {"op": op, "campo": field_key, "valor": valor}, True
 
 
 # ---- paso ③ Campos --------------------------------------------------
@@ -981,11 +1062,22 @@ def _campo_dialog(work: dict, sec: dict, idx: int | None, bindable: dict):
             st.warning("El máximo es menor que el mínimo.")
         managed["validacion"] = newval  # {} → _set_or_pop removes the key
 
+    # ---- ¿cuándo se muestra? (visible_si) ------------------------------
+    st.divider()
+    st.markdown("**¿Cuándo se muestra este campo?**")
+    other_fields = [cc for s2 in work["secciones"] for cc in (s2.get("campos") or [])
+                    if cc is not c]
+    vis_val, vis_ok = _condition_editor(c.get("visible_si"), other_fields, bindable, f"{k}_vis")
+    if vis_ok:
+        managed["visible_si"] = vis_val
+
     with st.expander("⚙️ Avanzado"):
         key_in = st.text_input("Clave interna", c.get("key") or _slug(label), key=f"{k}_k",
                                help="Identificador técnico; no lo cambies en un formulario en uso.")
         adv: dict = {}
-        adv_props = ["visible_si", "filtrado_por", "opciones_prioritarias"]
+        adv_props = ["filtrado_por", "opciones_prioritarias"]
+        if not vis_ok:           # exotic condition stays editable as JSON
+            adv_props.insert(0, "visible_si")
         if not val_structured:   # exotic/non-numeric validación stays editable as JSON
             adv_props.append("validacion")
         if opciones_simple is None and tipo in ("seleccion_unica", "multiseleccion"):
@@ -1257,7 +1349,7 @@ def render_form_builder():
     if paso == PASOS[0]:
         _paso_datos(work, published, formatos)
     elif paso == PASOS[1]:
-        _paso_secciones(work, published)
+        _paso_secciones(work, published, bindable)
     elif paso == PASOS[2]:
         _paso_campos(work, published, bindable)
     else:
