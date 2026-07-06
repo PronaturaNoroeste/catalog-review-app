@@ -1,15 +1,27 @@
 FROM python:3.12-slim
 
+# curl for the container healthcheck; no build toolchain needed (psycopg2-binary is a wheel)
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app.py .
+# Runtime modules (the full Supabase-backed console, not the old CSV-only tool).
+COPY app.py home.py console_ui.py console_theme.py console_config.py console_auth.py \
+     form_builder.py catalog_admin.py proposals_review.py lista_import.py \
+     users_admin.py export_data.py ./
+COPY .streamlit/ ./.streamlit/
+# Static CSV snapshots the Duplicados (dedup) screen reads.
 COPY catalogos_export/ ./catalogos_export/
 
-# decisions/ is mounted as a volume at runtime — do not COPY it
+# decisions/ (dedup decisions) is written at runtime — mount it as a volume, don't COPY it.
 RUN mkdir -p decisions
+
+# NOTE: no secrets are baked in. DATABASE_URL / SUPABASE_URL / SUPABASE_ANON_KEY /
+# SUPABASE_SERVICE_ROLE_KEY are injected at runtime (compose env_file or -e). See DEPLOY.md.
 
 EXPOSE 8501
 

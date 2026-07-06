@@ -1,4 +1,15 @@
 # Pronatura Noroeste — console theme (Dashboard Extension). See Planning/DESIGN-pronatura.md.
+
+# Server posture for a proxied (Caddy/nginx + TLS) deployment. Safe locally too.
+[server]
+headless = true
+enableXsrfProtection = true
+enableCORS = false            # same-origin behind the reverse proxy
+# baseUrlPath = "consola"     # uncomment ONLY if served on a subpath (tld/consola)
+
+[browser]
+gatherUsageStats = false
+
 [theme]
 base = "light"
 primaryColor = "#1b5c5a"              # Tide — primary action, active states

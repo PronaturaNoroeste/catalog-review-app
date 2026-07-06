@@ -1,0 +1,14 @@
+# Keep secrets and local state out of the build context (defense in depth — the
+# Dockerfile also COPYs only named files, never `.` ).
+.env
+.env.*
+decisions/
+__pycache__/
+*.pyc
+*.pyo
+.git/
+.gitignore
+.streamlit/secrets.toml
+*.md
+tests/
+test_*.py

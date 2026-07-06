@@ -1,0 +1,13 @@
+# Reverse proxy with automatic HTTPS. CONSOLE_DOMAIN is set by docker-compose.
+# Streamlit uses websockets; Caddy proxies them transparently.
+{$CONSOLE_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy console:8501
+
+	# Optional defense-in-depth: uncomment to gate the whole site behind HTTP Basic
+	# Auth in addition to the app's own login. Generate the hash with:
+	#   docker run --rm caddy:2 caddy hash-password --plaintext 'YOUR-PASSWORD'
+	# basic_auth {
+	#	admin JHASHED_PASSWORD_HERE
+	# }
+}

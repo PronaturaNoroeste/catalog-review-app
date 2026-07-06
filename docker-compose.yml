@@ -1,9 +1,44 @@
+# Console + Caddy (automatic HTTPS via Let's Encrypt). Run on the VPS with:
+#   cp .env.example .env   # fill PROD secrets (gitignored)
+#   CONSOLE_DOMAIN=consola.tu-dominio.org docker compose up -d --build
+#
+# Point an A record for CONSOLE_DOMAIN at the VPS first; Caddy provisions the cert on boot.
+# For a quick local run without TLS, `docker compose up console` and hit http://localhost:8501
+# (uncomment the console `ports:` mapping below).
 services:
-  app:
+  console:
     build: .
-    ports:
-      - "8501:8501"
-    volumes:
-      # decisions persists on the host — survives container restarts
-      - ./decisions:/app/decisions
+    image: pronatura-console:latest
     restart: unless-stopped
+    env_file: .env            # DATABASE_URL / SUPABASE_* — never baked into the image
+    volumes:
+      - decisions:/app/decisions   # persist dedup decisions across restarts
+    expose:
+      - "8501"                # internal only; Caddy is the public entrypoint
+    # ports:                  # uncomment for a direct local run (no TLS)
+    #   - "8501:8501"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - console
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      CONSOLE_DOMAIN: ${CONSOLE_DOMAIN:?set CONSOLE_DOMAIN to your console hostname}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data       # cert + ACME account (persist to avoid rate limits)
+      - caddy_config:/config
+
+volumes:
+  decisions:
+  caddy_data:
+  caddy_config:
