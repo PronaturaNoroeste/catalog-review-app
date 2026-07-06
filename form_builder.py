@@ -218,6 +218,18 @@ def load_bindable_core() -> dict:
           AND tc.table_name = ANY(%s)
     """, (CORE_TABLES,))
     fkmap = {(f["table_name"], f["column_name"]): f["ref_table"] for f in fks}
+    # enum labels per (table,column) — so a core seleccion field knows its choices
+    enums = _q("""
+        SELECT c.table_name, c.column_name, e.enumlabel AS lbl
+        FROM information_schema.columns c
+        JOIN pg_type t ON t.typname = c.udt_name
+        JOIN pg_enum e ON e.enumtypid = t.oid
+        WHERE c.table_schema='public' AND c.table_name = ANY(%s)
+        ORDER BY e.enumsortorder
+    """, (CORE_TABLES,))
+    enummap: dict = {}
+    for e in enums:
+        enummap.setdefault((e["table_name"], e["column_name"]), []).append(e["lbl"])
 
     reg: dict = {}
     for c in cols:
@@ -246,6 +258,8 @@ def load_bindable_core() -> dict:
         entry = {"label": key, "friendly": _core_label(key), "tipo": tipo}
         if catalogo:
             entry["catalogo"] = catalogo
+        if tipo == "seleccion_unica" and enummap.get((t, col)):
+            entry["opciones"] = enummap[(t, col)]
         reg[key] = entry
     return reg
 
@@ -266,6 +280,25 @@ def formatos_en_uso() -> list[dict]:
            OR EXISTS (SELECT 1 FROM lista_opcion lo WHERE lo.formato_origen_id = fo.id)
         ORDER BY fo.codigo
     """)
+
+
+_CAT_NAME_COL = {"cat_especie": "nombre_comun", "cat_formato_origen": "codigo"}
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def _cat_options(tabla: str) -> list[dict]:
+    """[{id, nombre}] for a cat_* table — resolves UUIDs to names in the wizard.
+    Kept local so form_builder stays a dependency-free base module."""
+    nc = _CAT_NAME_COL.get(tabla, "nombre")
+    try:
+        return _q(f'SELECT id::text AS id, {nc} AS nombre FROM public."{tabla}" '
+                  f'ORDER BY {nc} LIMIT 1000')
+    except Exception:  # noqa: BLE001 — unknown/edge catalog: fall back to no names
+        return []
+
+
+def _cat_label_map(tabla: str) -> dict:
+    return {o["id"]: o["nombre"] for o in _cat_options(tabla)}
 
 
 def list_formularios() -> list[dict]:
@@ -556,6 +589,51 @@ ENTIDAD_LABELS = {
     "faena_arte": "Artes de pesca", "captura": "Capturas", "medicion": "Mediciones",
     "carnada": "Carnada", "interaccion_etp": "Interacciones ETP", "gasto": "Gastos",
 }
+
+# Condition operators (visible_si), Spanish labels. "in" and >/< are offered only
+# when the referenced field supports them (a value list / a numeric field).
+OP_LABELS = {"==": "es igual a", "!=": "no es igual a", "es uno de": "es uno de",
+             ">": "mayor que", "<": "menor que", "in": "es uno de"}
+
+
+def _field_is_numeric(campo: dict) -> bool:
+    return campo.get("tipo") in ("entero", "decimal")
+
+
+def _field_choices(campo: dict, bindable: dict) -> list | None:
+    """A referenced field's possible (valor, etiqueta) values, or None for free input.
+
+    Priority: explicit opciones on the campo → catalog names → core-enum labels →
+    Sí/No for bool. Numeric/text/date fields return None (free value input)."""
+    ops = campo.get("opciones")
+    if ops:
+        out = []
+        for o in ops:
+            if isinstance(o, dict):
+                out.append((o.get("valor"), o.get("label") or str(o.get("valor"))))
+            else:
+                out.append((o, str(o)))
+        return out
+    b = campo.get("binding") or {}
+    if campo.get("tipo") == "catalogo":
+        cat = b.get("catalogo") or bindable.get(b.get("columna") or "", {}).get("catalogo")
+        if cat:
+            return [(o["id"], o["nombre"]) for o in _cat_options(cat)]
+    if b.get("tipo") == "core" and bindable.get(b.get("columna") or "", {}).get("opciones"):
+        return [(v, str(v)) for v in bindable[b["columna"]]["opciones"]]
+    if campo.get("tipo") == "bool":
+        return [(True, "Sí"), (False, "No")]
+    return None
+
+
+def _ops_for(campo: dict, bindable: dict) -> list[tuple[str, str]]:
+    """(op_code, label) comparisons valid against the referenced field."""
+    out = [("==", OP_LABELS["=="]), ("!=", OP_LABELS["!="])]
+    if _field_choices(campo, bindable) is not None:
+        out.append(("in", OP_LABELS["in"]))
+    if _field_is_numeric(campo):
+        out += [(">", OP_LABELS[">"]), ("<", OP_LABELS["<"])]
+    return out
 
 
 def _slug(s: str) -> str:
