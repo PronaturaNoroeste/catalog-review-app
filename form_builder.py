@@ -970,6 +970,53 @@ def _condition_editor(current, candidates: list, bindable: dict, kp: str):
     return {"op": op, "campo": field_key, "valor": valor}, True
 
 
+_MODO_LABELS = {"filtrar": "Filtrar: sólo mostrar las que coinciden",
+                "priorizar": "Priorizar: mostrar primero las que coinciden"}
+
+
+def _dependency_editor(current, candidates: list, kp: str):
+    """'Las opciones dependen de otro campo' (filtrado_por). Returns (value, handled)."""
+    cand = {cc.get("key"): cc for cc in candidates if cc.get("key")}
+    if current and (not isinstance(current, dict) or (set(current) - {"modo", "campo"})
+                    or current.get("campo") not in cand
+                    or current.get("modo") not in _MODO_LABELS):
+        return None, False
+
+    on = st.checkbox("Las opciones dependen de otro campo", value=bool(current), key=f"{kp}_on")
+    if not on:
+        return None, True
+    if not cand:
+        st.caption("No hay otros campos de los que depender.")
+        return None, True
+    keys = list(cand)
+    cur_f = current.get("campo") if current else None
+    field = st.selectbox("Depende del campo", keys,
+                         index=keys.index(cur_f) if cur_f in keys else 0,
+                         format_func=lambda kk: cand[kk].get("label") or kk, key=f"{kp}_f")
+    codes = list(_MODO_LABELS)
+    cur_m = current.get("modo") if current else "filtrar"
+    modo = st.radio("Cómo", codes, index=codes.index(cur_m) if cur_m in codes else 0,
+                    format_func=lambda m: _MODO_LABELS[m], key=f"{kp}_m")
+    return {"modo": modo, "campo": field}, True
+
+
+def _priority_editor(current, choices: list, kp: str):
+    """'Opciones que aparecen primero' (opciones_prioritarias). Returns (value, handled).
+
+    Falls back to JSON when a stored id isn't among the current choices (stale /
+    beyond the catalog cap), so nothing is silently dropped."""
+    vals = [v for v, _ in choices]
+    if current is not None and (not isinstance(current, list)
+                                or any(v not in vals for v in current)):
+        return None, False
+    lab = dict(choices)
+    default = [v for v in (current or []) if v in vals]
+    sel = st.multiselect("Opciones que aparecen primero", vals, default=default,
+                         format_func=lambda v: lab.get(v, str(v)), key=kp,
+                         help="Se muestran arriba de la lista, en este orden.")
+    return sel, True
+
+
 # ---- paso ③ Campos --------------------------------------------------
 @st.dialog("Campo del formulario", width="large")
 def _campo_dialog(work: dict, sec: dict, idx: int | None, bindable: dict):
@@ -1071,13 +1118,34 @@ def _campo_dialog(work: dict, sec: dict, idx: int | None, bindable: dict):
     if vis_ok:
         managed["visible_si"] = vis_val
 
+    # ---- opciones de la lista (filtrado_por + opciones_prioritarias) ----
+    dep_ok = pri_ok = False
+    if tipo in ("catalogo", "seleccion_unica", "multiseleccion"):
+        st.divider()
+        st.markdown("**Opciones de la lista** (opcional)")
+        dep_val, dep_ok = _dependency_editor(c.get("filtrado_por"), other_fields, f"{k}_dep")
+        if dep_ok:
+            managed["filtrado_por"] = dep_val
+        tmp = {"tipo": tipo, "binding": {"tipo": bt, "columna": col, "catalogo": cat_sel},
+               "opciones": c.get("opciones")}
+        pchoices = _field_choices(tmp, bindable)
+        if pchoices is not None:
+            pri_val, pri_ok = _priority_editor(c.get("opciones_prioritarias"), pchoices,
+                                               f"{k}_pri")
+            if pri_ok:
+                managed["opciones_prioritarias"] = pri_val
+
     with st.expander("⚙️ Avanzado"):
         key_in = st.text_input("Clave interna", c.get("key") or _slug(label), key=f"{k}_k",
                                help="Identificador técnico; no lo cambies en un formulario en uso.")
         adv: dict = {}
-        adv_props = ["filtrado_por", "opciones_prioritarias"]
+        adv_props = []
         if not vis_ok:           # exotic condition stays editable as JSON
-            adv_props.insert(0, "visible_si")
+            adv_props.append("visible_si")
+        if not dep_ok:           # exotic/non-option dependency stays editable as JSON
+            adv_props.append("filtrado_por")
+        if not pri_ok:           # exotic/non-option priorities stay editable as JSON
+            adv_props.append("opciones_prioritarias")
         if not val_structured:   # exotic/non-numeric validación stays editable as JSON
             adv_props.append("validacion")
         if opciones_simple is None and tipo in ("seleccion_unica", "multiseleccion"):
