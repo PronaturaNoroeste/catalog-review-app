@@ -779,9 +779,33 @@ def _dup_seccion(work: dict, i: int):
 
 
 # ---- paso ① Datos ---------------------------------------------------
-def _paso_datos(work: dict, published: bool, formatos: list[dict]):
+def _const_value_widget(colobj, key: str, val, bindable: dict, wkey: str, disabled: bool):
+    """Value picker for one fixed value — catalog dropdown / enum dropdown / text."""
+    entry = bindable.get(key, {})
+    cat = entry.get("catalogo")
+    if cat:
+        opts = _cat_options(cat)
+        ids = [o["id"] for o in opts]
+        lab = {o["id"]: o["nombre"] for o in opts}
+        if val not in ids and val is not None:   # stored id not in catalog → keep it visible
+            ids = [val] + ids
+            lab[val] = f"(desconocido) {val}"
+        return colobj.selectbox("valor", ids, index=ids.index(val) if val in ids else 0,
+                                format_func=lambda i: lab.get(i, i), key=wkey,
+                                label_visibility="collapsed", disabled=disabled)
+    if entry.get("opciones"):
+        o = entry["opciones"]
+        o2 = o if val in o or val is None else [val] + o
+        return colobj.selectbox("valor", o2, index=o2.index(val) if val in o2 else 0, key=wkey,
+                                label_visibility="collapsed", disabled=disabled)
+    return colobj.text_input("valor", value="" if val is None else str(val), key=wkey,
+                             label_visibility="collapsed", disabled=disabled)
+
+
+def _paso_datos(work: dict, published: bool, formatos: list[dict], bindable: dict):
+    ld = st.session_state.get("fb_loadn", 0)   # namespaces widget keys per form load
     c1, c2, c3 = st.columns([3, 2, 1])
-    work["nombre"] = c1.text_input("Nombre del formulario", work["nombre"], key="fb_nombre",
+    work["nombre"] = c1.text_input("Nombre del formulario", work["nombre"], key=f"fb_nombre_{ld}",
                                    disabled=published)
     fmt_ids = [f["id"] for f in formatos]
     fmt_label = {f["id"]: f"{f['codigo']} — {f['nombre']}" for f in formatos}
@@ -789,25 +813,48 @@ def _paso_datos(work: dict, published: bool, formatos: list[dict]):
     if fmt_ids:
         work["formato_id"] = c2.selectbox(
             "Formato / región", fmt_ids, index=fmt_ids.index(cur_fmt) if cur_fmt else 0,
-            format_func=lambda i: fmt_label.get(i, i), key="fb_formato",
+            format_func=lambda i: fmt_label.get(i, i), key=f"fb_formato_{ld}",
             disabled=published or work["id"] is not None)
     c2.checkbox("Mostrar formatos históricos", key="fb_hist",
                 help="Formatos de datos importados; solo si vas a crear un formulario nuevo "
                      "para uno de ellos.")
     c3.metric("Versión", work["version"])
 
-    with st.expander("⚙️ Avanzado: constantes del formulario (JSON)"):
-        st.caption("Valores fijos que la tableta llena sola (región, zona, tipo de registro…).")
-        cons_raw = st.text_area("Constantes (JSON)",
-                                json.dumps(work["constantes"], ensure_ascii=False, indent=2),
-                                height=120, key="fb_constantes", disabled=published,
-                                label_visibility="collapsed")
-        try:
-            work["constantes"] = json.loads(cons_raw) if cons_raw.strip() else {}
-            st.session_state["fb_cons_err"] = None
-        except ValueError as e:
-            st.session_state["fb_cons_err"] = str(e)
-            st.error(f"JSON inválido — {e}")
+    st.session_state["fb_cons_err"] = None   # structured editor can't produce bad JSON
+    with st.expander("📌 Valores fijos (la tableta los llena sola)",
+                     expanded=bool(work["constantes"])):
+        st.caption("Datos que no cambian entre viajes: región, zona, tipo de registro…")
+        cons = work["constantes"]
+        if not cons:
+            st.caption("Sin valores fijos.")
+        for key in list(cons):
+            rc = st.columns([4, 4, 1], vertical_alignment="center")
+            rc[0].markdown(f"**{bindable.get(key, {}).get('friendly', key)}**")
+            cons[key] = _const_value_widget(rc[1], key, cons[key], bindable,
+                                            f"con_v_{ld}_{key}", published)
+            if not published and rc[2].button("🗑️", key=f"con_del_{ld}_{key}",
+                                              help="Quitar este valor fijo"):
+                del cons[key]
+                st.rerun()
+        if not published:
+            avail = [kk for kk in sorted(bindable, key=lambda x: bindable[x]["friendly"])
+                     if kk not in cons]
+            ac = st.columns([8, 2], vertical_alignment="bottom")
+            add = ac[0].selectbox(
+                "Agregar un valor fijo", [""] + avail, key=f"con_add_{ld}",
+                format_func=lambda x: "— elegir dato —" if x == ""
+                else bindable.get(x, {}).get("friendly", x))
+            if ac[1].button("➕ Agregar", key=f"con_addbtn_{ld}", disabled=not add,
+                            width="stretch"):
+                e = bindable[add]
+                if e.get("catalogo"):
+                    o = _cat_options(e["catalogo"])
+                    cons[add] = o[0]["id"] if o else ""
+                elif e.get("opciones"):
+                    cons[add] = e["opciones"][0]
+                else:
+                    cons[add] = ""
+                st.rerun()
 
 
 # ---- paso ② Secciones -----------------------------------------------
@@ -1389,10 +1436,11 @@ def render_form_builder():
         else:
             st.session_state["fb_work"] = _load_into_work(load_formulario(sel))
         st.session_state["fb_loaded"] = marker
-        # drop Paso ① widget state so the boxes re-init from the new work (else a
-        # keyed text_input keeps its old value and overwrites the seeded one)
-        for _wk in ("fb_nombre", "fb_formato", "fb_constantes"):
-            st.session_state.pop(_wk, None)
+        # Bump a load nonce that namespaces every Paso ① widget key. Popping the
+        # session_state key alone does NOT reset the *frontend* widget when its key
+        # is unchanged (the value box keeps the old text and overwrites the seeded
+        # one) — only a fresh key gives a fresh widget. Verified in a real browser.
+        st.session_state["fb_loadn"] = st.session_state.get("fb_loadn", 0) + 1
     work = st.session_state["fb_work"]
     published = work["estado"] == "publicado"
 
@@ -1415,7 +1463,7 @@ def render_form_builder():
     paso = paso if paso in PASOS else PASOS[0]
 
     if paso == PASOS[0]:
-        _paso_datos(work, published, formatos)
+        _paso_datos(work, published, formatos, bindable)
     elif paso == PASOS[1]:
         _paso_secciones(work, published, bindable)
     elif paso == PASOS[2]:
