@@ -705,6 +705,9 @@ def build_campo(c: dict, v: dict, bindable: dict) -> dict:
         _set_or_pop(out, "permite_otro_texto", bool(v.get("permite_otro_texto")))
     if v.get("opciones_simple") is not None:
         _set_or_pop(out, "opciones", v["opciones_simple"])
+    # structured editors pass already-parsed values (visible_si, validacion…)
+    for prop_name, val in (v.get("managed") or {}).items():
+        _set_or_pop(out, prop_name, val)
     for prop_name, raw in (v.get("adv") or {}).items():
         _set_or_pop(out, prop_name, _pj(raw))
     return out
@@ -949,11 +952,42 @@ def _campo_dialog(work: dict, sec: dict, idx: int | None, bindable: dict):
         else:
             st.caption("Las opciones de este campo tienen formato avanzado — edítalas en ⚙️ Avanzado.")
 
+    # ---- reglas del valor (validación mín/máx) — sólo números ----------
+    managed: dict = {}
+    val_cur = c.get("validacion") or {}
+    val_structured = tipo in ("entero", "decimal") and isinstance(val_cur, dict) \
+        and set(val_cur) <= {"min", "max"}
+    if val_structured:
+        st.divider()
+        st.markdown("**Reglas del valor** (opcional)")
+        is_int = tipo == "entero"
+
+        def _numbox(colobj, label, curv, kk):
+            if is_int:
+                return int(colobj.number_input(label, value=int(curv), step=1, key=kk))
+            fx = float(colobj.number_input(label, value=float(curv), step=0.01,
+                                           format="%g", key=kk))
+            return int(fx) if fx == int(fx) else fx  # keep whole decimals as ints (v8 parity)
+
+        vc = st.columns(2)
+        use_min = vc[0].checkbox("Poner un mínimo", value="min" in val_cur, key=f"{k}_vmin_on")
+        use_max = vc[1].checkbox("Poner un máximo", value="max" in val_cur, key=f"{k}_vmax_on")
+        newval: dict = {}
+        if use_min:
+            newval["min"] = _numbox(vc[0], "Valor mínimo", val_cur.get("min", 0), f"{k}_vmin")
+        if use_max:
+            newval["max"] = _numbox(vc[1], "Valor máximo", val_cur.get("max", 0), f"{k}_vmax")
+        if use_min and use_max and newval["max"] < newval["min"]:
+            st.warning("El máximo es menor que el mínimo.")
+        managed["validacion"] = newval  # {} → _set_or_pop removes the key
+
     with st.expander("⚙️ Avanzado"):
         key_in = st.text_input("Clave interna", c.get("key") or _slug(label), key=f"{k}_k",
                                help="Identificador técnico; no lo cambies en un formulario en uso.")
         adv: dict = {}
-        adv_props = ["visible_si", "filtrado_por", "validacion", "opciones_prioritarias"]
+        adv_props = ["visible_si", "filtrado_por", "opciones_prioritarias"]
+        if not val_structured:   # exotic/non-numeric validación stays editable as JSON
+            adv_props.append("validacion")
         if opciones_simple is None and tipo in ("seleccion_unica", "multiseleccion"):
             adv_props = ["opciones"] + adv_props
         for prop_name in adv_props:
@@ -978,7 +1012,7 @@ def _campo_dialog(work: dict, sec: dict, idx: int | None, bindable: dict):
                                   "bind_tipo": bt, "bind_columna": col, "catalogo": cat_sel,
                                   "flags_managed": flags_managed, "permite_proponer": prop,
                                   "permite_otro_texto": otro, "opciones_simple": opciones_simple,
-                                  "adv": adv}, bindable)
+                                  "managed": managed, "adv": adv}, bindable)
             if idx is None:
                 sec["campos"].append(out)
             else:
