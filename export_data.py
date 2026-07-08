@@ -229,9 +229,18 @@ def render_export():
             "1. Elige el **conjunto de datos** (mediciones, capturas, faenas o ETP).\n"
             "2. Ajusta los **filtros** (especie, región, años…).\n"
             "3. Pulsa **🔍 Generar vista previa** y revisa el resumen.\n"
-            "4. Descarga con **⬇️ CSV** (Excel/R) o **⬇️ Parquet** (R/Python)."
+            "4. Descarga con **⬇️ CSV** (Excel/R) o **⬇️ Parquet** (R/Python).\n\n"
+            "¿Necesitas combinar tablas (p. ej. faenas con sus capturas)? Usa el "
+            "**Constructor**."
         ),
     )
+
+    modo = st.radio("Modo", ["Conjuntos rápidos", "🔧 Constructor (combinar tablas)"],
+                    horizontal=True, key="exp_modo", label_visibility="collapsed")
+    if modo.startswith("🔧"):
+        from export_builder import render_builder
+        render_builder(render_results)
+        return
 
     try:
         esp, reg, fmt, sexos, proc = _opts()
@@ -319,21 +328,25 @@ def render_export():
     if df is None or st.session_state.get("exp_meta", {}).get("ds") != ds:
         st.info("Ajusta los filtros y genera la vista previa.")
         return
+    render_results(df, f"{ds}_{_dt.date.today().isoformat()}", cfg)
 
-    # ---- heads-up ----
+
+def render_results(df, base_name: str, cfg: dict | None = None):
+    """Shared results view (summary metrics + preview + dictionary + downloads).
+    Used by the quick-datasets flow and the join builder (cfg=None for the builder)."""
     st.divider()
     st.subheader("Resumen")
     m = st.columns(4)
     m[0].metric("Filas", f"{len(df):,}")
     m[1].metric("Columnas", df.shape[1])
-    if cfg["orphans"] and "faena_id" in df:
+    if cfg and cfg.get("orphans") and "faena_id" in df:
         n_orf = int(df["faena_id"].isna().sum())
         m[2].metric("Huérfanas incluidas", f"{n_orf:,}")
     if "tipo_registro" in df:
         vc = df["tipo_registro"].value_counts(dropna=False)
         m[3].metric("MASIVO / BITÁCORA", f"{int(vc.get('MASIVO',0)):,} / {int(vc.get('BITACORA',0)):,}")
 
-    if cfg["lengths"] and "longitud_total_cm" in df and len(df):
+    if cfg and cfg.get("lengths") and "longitud_total_cm" in df and len(df):
         s = pd.to_numeric(df["longitud_total_cm"], errors="coerce").dropna()
         if len(s):
             st.markdown(f"**Longitud total (cm)** — n={len(s):,} · "
@@ -347,7 +360,7 @@ def render_export():
         st.caption("Top especies: " + " · ".join(f"{k} ({v:,})" for k, v in top.items()))
 
     st.dataframe(df.head(100), width="stretch", height=300)
-    st.caption(f"Mostrando 100 de {len(df):,} filas.")
+    st.caption(f"Mostrando {min(100, len(df))} de {len(df):,} filas.")
 
     with st.expander("📖 Diccionario de columnas"):
         st.dataframe(pd.DataFrame(
@@ -356,15 +369,13 @@ def render_export():
 
     # ---- download ----
     st.divider()
-    stamp = _dt.date.today().isoformat()
-    base = f"{ds}_{stamp}"
     d1, d2 = st.columns(2)
     d1.download_button("⬇️ CSV (Excel / R)", df.to_csv(index=False).encode("utf-8"),
-                       file_name=f"{base}.csv", mime="text/csv", width="stretch")
+                       file_name=f"{base_name}.csv", mime="text/csv", width="stretch")
     if HAS_PARQUET:
         buf = io.BytesIO(); df.to_parquet(buf, index=False)
         d2.download_button("⬇️ Parquet (R / Python)", buf.getvalue(),
-                           file_name=f"{base}.parquet", mime="application/octet-stream",
+                           file_name=f"{base_name}.parquet", mime="application/octet-stream",
                            width="stretch")
     else:
         d2.button("⬇️ Parquet", disabled=True, width="stretch")
@@ -372,10 +383,10 @@ def render_export():
                    "(`pip install pyarrow`). El CSV funciona igual.")
 
     with st.expander("💻 Cómo cargar el archivo en R o Python"):
-        st.code(f'datos <- read.csv("{base}.csv", fileEncoding = "UTF-8")\n'
-                f'# o con Parquet:  datos <- arrow::read_parquet("{base}.parquet")',
+        st.code(f'datos <- read.csv("{base_name}.csv", fileEncoding = "UTF-8")\n'
+                f'# o con Parquet:  datos <- arrow::read_parquet("{base_name}.parquet")',
                 language="r")
         st.code(f'import pandas as pd\n'
-                f'datos = pd.read_csv("{base}.csv")\n'
-                f'# o con Parquet:  datos = pd.read_parquet("{base}.parquet")',
+                f'datos = pd.read_csv("{base_name}.csv")\n'
+                f'# o con Parquet:  datos = pd.read_parquet("{base_name}.parquet")',
                 language="python")
