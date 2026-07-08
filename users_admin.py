@@ -173,6 +173,16 @@ def render_users_admin():
         tecnico_id, new_tec = None, None
         if rol == "TECNICO":
             tecnico_id, new_tec = _tec_picker(tmap, key=f"ua_tec_{n}")
+        formato_id = None
+        if rol == "TECNICO":
+            fmap = {f["id"]: f["nombre"] for f in _formatos()}
+            formato_id = st.selectbox(
+                "Formulario asignado (tableta)", [None] + list(fmap),
+                format_func=lambda i: "— sin asignar —" if i is None else fmap.get(i, i),
+                key=f"ua_fmt_{n}",
+                help="El técnico solo podrá capturar el formulario de este formato en la tableta.")
+            if not formato_id:
+                st.caption("Un técnico sin formulario asignado no podrá capturar en la tableta.")
         region_id = st.selectbox("Región (opcional)", [None] + list(rmap),
                                  format_func=lambda i: "Todas" if i is None else rmap.get(i, i),
                                  key=f"ua_reg_{n}")
@@ -186,7 +196,8 @@ def render_users_admin():
                 if rol == "TECNICO" and new_tec and new_tec.strip():
                     tid = create_tecnico(new_tec)
                 uid = create_auth_user(email.strip(), password)
-                create_usuario(uid, nombre.strip(), email.strip().lower(), rol, tid, region_id)
+                create_usuario(uid, nombre.strip(), email.strip().lower(), rol, tid, region_id,
+                               formato_origen_id=formato_id)
                 st.session_state["ua_nonce"] = n + 1   # clear the form
                 flash(f"Cuenta creada: {nombre} ({rol}).")
                 st.rerun()
@@ -205,7 +216,8 @@ def render_users_admin():
             estado = "" if u["activo"] else "  ·  🚫 inactivo"
             c[0].markdown(f"**{u['nombre']}**{estado}  \n`{u['email'] or '—'}`")
             c[1].markdown(u["rol"])
-            c[2].markdown(f"téc: {u['tecnico'] or '—'}")
+            _form = f"  \nform: {u['formato']}" if u["rol"] == "TECNICO" and u.get("formato") else ""
+            c[2].markdown(f"téc: {u['tecnico'] or '—'}{_form}")
             with c[3]:
                 with st.popover("⚙️ Gestionar", width="stretch"):
                     _manage_account(u, tmap, friendly_error, flash)
@@ -227,8 +239,19 @@ def _manage_account(u, tmap, friendly_error, flash):
     newrol = st.selectbox("Rol", ROLES, index=ROLES.index(u["rol"]) if u["rol"] in ROLES else 0,
                           key=f"rol_{uid}", label_visibility="collapsed")
     newtec, newtec_name = u.get("tecnico_id"), None
+    newfmt = u.get("formato_origen_id")
     if newrol == "TECNICO":
         newtec, newtec_name = _tec_picker(tmap, key=f"roltec_{uid}", current=u.get("tecnico_id"))
+        fmap = {f["id"]: f["nombre"] for f in _formatos()}
+        fopts = [None] + list(fmap)
+        cur = u.get("formato_origen_id")
+        newfmt = st.selectbox(
+            "Formulario asignado (tableta)", fopts,
+            index=fopts.index(cur) if cur in fopts else 0,
+            format_func=lambda i: "— sin asignar —" if i is None else fmap.get(i, i),
+            key=f"rolfmt_{uid}")
+        if not newfmt:
+            st.caption("Sin formulario asignado, el técnico no podrá capturar en la tableta.")
     if st.button("Guardar rol", key=f"chr_{uid}", width="stretch"):
         try:
             tid = newtec
@@ -237,7 +260,7 @@ def _manage_account(u, tmap, friendly_error, flash):
             if newrol == "TECNICO" and not tid:
                 st.error("Un técnico debe vincularse a un cat_tecnico.")
             else:
-                set_rol(uid, newrol, tid)
+                set_rol(uid, newrol, tid, formato_origen_id=newfmt if newrol == "TECNICO" else None)
                 flash(f"Rol de {u['nombre']} cambiado a {newrol}."); st.rerun()
         except Exception as e:  # noqa: BLE001
             st.error(friendly_error(e))
