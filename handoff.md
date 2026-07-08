@@ -29,8 +29,8 @@ points at **prod**, so tests override `DATABASE_URL`/`SUPABASE_*` to dev + use t
 unique(usuario_id,nombre) + 2 RLS policies, `_migrations`=14). Saved queries now work on the live
 console. `usuario`-scoped saved queries need `auth_uid` (captured at login in `console_auth.py`).
 
-**Roadmap remaining:** R5 Excel bulk import (own deep plan) · R6
-automated + on-demand backups. (R3 lists in the Form Builder shipped 2026-07-07: view/edit/attach
+**Roadmap remaining:** post-pilot backlog (R-A…R-F, details at the end of this file) · R5 Excel bulk
+import (own deep plan) · R6 automated + on-demand backups. (R3 lists in the Form Builder shipped 2026-07-07: view/edit/attach
 curated lists from the field dialog — `lista_editor.py`; CSV bulk stays in 📑 Listas. Add-to-list
 search shows the matches as clickable buttons — one click adds; verified in a live dev browser.)
 (R4 per-user form assignment shipped 2026-07-07: `usuario.formato_origen_id` + console assign UI in
@@ -181,3 +181,32 @@ Same purge is also in the **console**: ADMINISTRADOR → sidebar **DATOS → �
 (`maintenance.py`) — preview + two-step-confirm delete of the PRUEBAS técnico's faenas, plus
 delete-one-by-id. It targets only the test técnico (resolved by name), so it can't touch real data;
 it acts on whatever DB the console points at (prod).
+
+## Post-pilot backlog (planned 2026-07-08)
+Requested improvements; decisions already made with the user. Full design in the session plan file.
+Suggested order: R-A, R-B (quick) → R-C, R-D, R-E → R-F (own deep plan). Each ships with an AppTest
+smoke / dev-DSN round-trip test; tablet items need `tsc` + a device check and a new APK.
+
+- **R-A · Clearer login messages** (`console_auth.py`) — split branches so a user knows their password
+  was right: valid-but-not-a-console-role → "correo y contraseña correctos, pero esta cuenta (rol X)
+  no tiene acceso…"; deactivated → distinct message; bad creds → "correo o contraseña incorrectos".
+- **R-B · Show only current formatos** — assignment (`users_admin._formatos`) offers only formatos
+  with a **published** form (`EXISTS … formulario … estado='publicado'`); creation
+  (`form_builder.py`) keeps the in-use default (`formatos_en_uso`) and **drops** the "Mostrar formatos
+  históricos" toggle so legacy/`*_LEGACY`/`DEPRECADO` don't show.
+- **R-C · Analista region lock** — load `region_id` at login (`_rol_of` + `auth_region` session key);
+  in `export_data.render_export`, for ANALISTA force the region to their own (locked caption, no
+  multiselect) and **hide the 🔧 Constructor**; `set_rol` must preserve/set `region_id`. Region lives
+  only on `faena`. Files: `console_auth.py`, `export_data.py`, `users_admin.py`.
+- **R-D · Constructor value filters** — add per-base catalog-FK filters (comunidad, región,
+  cooperativa…) to `export_builder.render_builder` via `catalog_parents(base)`; `build_query` returns
+  `(sql, params)` and emits `WHERE b."fk" = ANY(%s::uuid[])`; persist in the saved-query config.
+- **R-E · Self-service password reset (console + tablet)** — Supabase **recovery OTP code** (a reset
+  *link* can't complete in Streamlit). Prereq: enable the code token `{{ .Token }}` in the Supabase
+  "Reset Password" email template. Console: `/auth/v1/recover` → `/auth/v1/verify` (type=recovery) →
+  `PUT /auth/v1/user`. Tablet: `resetPasswordForEmail` → `verifyOtp` → `updateUser`.
+- **R-F · Decimal form versions (own deep plan)** — versions become `NUMERIC` and **admin-entered**;
+  migration `0016` converts `formulario.version` + `faena.formulario_version` INT→NUMERIC and
+  **renumbers /10** (v8→0.8; app-captured faenas updated, legacy NULL untouched). Console: admin
+  version input replaces auto-increment. Tablet: `formulario_cache.version` → REAL; new APK. Cross-repo
+  + touches captured prod data — give it its own spec before building.
