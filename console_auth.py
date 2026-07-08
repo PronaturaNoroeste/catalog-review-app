@@ -68,6 +68,7 @@ def require_login() -> tuple[str, str]:
             else:
                 st.session_state["auth_rol"] = rol
                 st.session_state["auth_nombre"] = nombre
+                st.session_state["auth_uid"] = data["user"]["id"]   # scope per-user saved queries
                 st.rerun()
         except Exception as e:  # noqa: BLE001
             st.error(f"No se pudo iniciar sesión: {e}")
@@ -78,6 +79,6 @@ def logout_button():
     # Plain button, no confirm: a stray click only costs a re-login, and the
     # popover confirm rendered unreadably on the Tide sidebar.
     if st.sidebar.button("🚪 Salir", key="console_logout", width="stretch"):
-        for k in ("auth_rol", "auth_nombre"):
+        for k in ("auth_rol", "auth_nombre", "auth_uid"):
             st.session_state.pop(k, None)
         st.rerun()

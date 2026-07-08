@@ -235,6 +235,8 @@ def render_export():
         ),
     )
 
+    _consultas_guardadas_ui()
+
     modo = st.radio("Modo", ["Conjuntos rápidos", "🔧 Constructor (combinar tablas)"],
                     horizontal=True, key="exp_modo", label_visibility="collapsed")
     if modo.startswith("🔧"):
@@ -333,6 +335,93 @@ def render_export():
         st.info("Ajusta los filtros y genera la vista previa.")
         return
     render_results(df, f"{ds}_{_dt.date.today().isoformat()}", cfg)
+
+
+def _apply_config(config: dict):
+    """Preload the export widgets from a saved query config (set session_state keys, then the
+    caller reruns so the widgets read them)."""
+    ss = st.session_state
+    if config.get("mode") == "builder":
+        ss["exp_modo"] = "🔧 Constructor (combinar tablas)"
+        base = config.get("base")
+        ss["jb_base"] = base
+        ss["jb_showids"] = bool(config.get("show_ids", False))
+        ss["jb_limit"] = int(config.get("limit", 5000))
+        for ch in config.get("children", []):
+            t = ch["table"]
+            ss[f"jb_c_{base}_{t}"] = True
+            ss[f"jb_m_{base}_{t}"] = ch.get("mode", "resumen")
+            if ch.get("mode") == "resumen":
+                ss[f"jb_s_{base}_{t}"] = ch.get("sum_col")
+            else:
+                ss[f"jb_dc_{base}_{t}"] = ch.get("columns", [])
+    else:
+        ss["exp_modo"] = "Conjuntos rápidos"
+        ss["exp_ds"] = config.get("dataset")
+        ss["exp_allf"] = bool(config.get("all_fields", False))
+        f = config.get("filters", {}) or {}
+        for k, wk in {"especie": "exp_esp", "region": "exp_reg", "formato": "exp_fmt",
+                      "tipo": "exp_tipo", "sexo": "exp_sexo", "procesado": "exp_proc",
+                      "incluir_huerfanas": "exp_orph", "excluir_sospechosas": "exp_susp"}.items():
+            if k in f:
+                ss[wk] = f[k]
+        if f.get("years"):
+            ss["exp_years"] = tuple(f["years"])
+    ss["exp_colcfg_load"] = config.get("colconfig") or {}
+    ss.pop("exp_col_sig", None)   # force the column editor to re-init from the loaded config
+
+
+def _consultas_guardadas_ui():
+    from console_ui import flash, friendly_error
+    import export_saved as es
+    uid = st.session_state.get("auth_uid")
+    with st.expander("💾 Consultas guardadas"):
+        if not uid:
+            st.caption("Inicia sesión para guardar y reutilizar consultas.")
+            return
+        try:
+            saved = es.list_consultas(uid)
+        except Exception as e:  # noqa: BLE001
+            st.error(f"No se pudieron cargar las consultas: {e}")
+            return
+        if saved:
+            ids = [s["id"] for s in saved]
+            lab = {s["id"]: (s["nombre"] + ("" if s["propia"] else f"  · de {s['autor']}")
+                             + (" 🔗" if s["compartida"] else "")) for s in saved}
+            lc = st.columns([5, 2, 2], vertical_alignment="bottom")
+            sel = lc[0].selectbox("Cargar una consulta", ids, format_func=lambda i: lab[i], key="cq_sel")
+            if lc[1].button("📂 Cargar", key="cq_load", width="stretch"):
+                cfg = es.load_consulta(sel)
+                if cfg:
+                    _apply_config(cfg)
+                    flash("Consulta cargada.")
+                    st.rerun()
+            cur = next((s for s in saved if s["id"] == sel), None)
+            if cur and cur["propia"] and lc[2].button("🗑️ Eliminar", key="cq_del", width="stretch"):
+                es.delete_consulta(sel, uid)
+                flash("Consulta eliminada.", "🗑️")
+                st.rerun()
+        else:
+            st.caption("Aún no tienes consultas guardadas. Configura una descarga y guárdala abajo.")
+
+        st.divider()
+        current = st.session_state.get("exp_current")
+        sc = st.columns([5, 3, 2], vertical_alignment="bottom")
+        nombre = sc[0].text_input("Guardar la configuración actual como", key="cq_name",
+                                  placeholder="p. ej. Capturas por faena")
+        compartir = sc[1].checkbox("Compartir con administradores", key="cq_share")
+        if sc[2].button("💾 Guardar", key="cq_save", width="stretch",
+                        disabled=not (nombre.strip() and current)):
+            try:
+                config = dict(current)
+                config["colconfig"] = st.session_state.get("exp_colcfg") or {}
+                es.save_consulta(uid, nombre, config, compartir)
+                flash(f"Consulta «{nombre}» guardada.")
+                st.rerun()
+            except Exception as e:  # noqa: BLE001
+                st.error(friendly_error(e))
+        if not current:
+            sc[0].caption("Genera una vista previa para poder guardarla.")
 
 
 def _column_editor(df):
