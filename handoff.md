@@ -176,3 +176,8 @@ them would have deleted history.) Cleanup tool: `Planning/supabase/scripts/purge
 (preview-by-default, prod-guarded, never prints the DSN, `--max` guard). Purge test data with
 `--tecnico-id 95ab1dd0-…`; delete a single faena with `--faena-id <uuid>`. See `capture-app/DEVICE_TESTING.md`.
 The first APK test faena (`8d61a9c6`, técnico "Miguel Angel Alvarez Hernandez") was deleted 2026-07-08.
+
+Same purge is also in the **console**: ADMINISTRADOR → sidebar **DATOS → 🧹 Datos de prueba**
+(`maintenance.py`) — preview + two-step-confirm delete of the PRUEBAS técnico's faenas, plus
+delete-one-by-id. It targets only the test técnico (resolved by name), so it can't touch real data;
+it acts on whatever DB the console points at (prod).

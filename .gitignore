@@ -4,3 +4,7 @@ __pycache__/
 .env
 .streamlit/secrets.toml
 decisions/
+
+# scratch / planning (not part of the app)
+plan.md
+.superpowers/
