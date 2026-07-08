@@ -1326,7 +1326,7 @@ def _paso_campos(work: dict, published: bool, bindable: dict):
     # ---- vista previa en vivo de esta sección -----------------------
     st.divider()
     st.markdown("##### 👁️ Así lo verá el técnico")
-    render_preview({"secciones": [sec]}, {})
+    render_preview({"secciones": [sec]}, {}, bindable)
 
 
 # ---- paso ④ Revisar y publicar --------------------------------------
@@ -1354,7 +1354,7 @@ def _paso_revisar(work: dict, published: bool, bindable: dict):
 
     st.divider()
     st.markdown("##### 👁️ Vista previa (lo que verá el técnico)")
-    render_preview(definicion, work["constantes"])
+    render_preview(definicion, work["constantes"], bindable)
 
     st.divider()
     if work["id"] is None and not published:
@@ -1496,7 +1496,36 @@ def render_form_builder():
 
 
 
-def render_preview(definicion: dict, constantes: dict):
+_OP_SYMBOL = {"==": "=", "!=": "≠", "in": "∈", ">": ">", "<": "<"}
+
+
+def _condition_text(v: dict, fields_by_key: dict, bindable: dict | None) -> str:
+    """Readable 'si «Campo» = «Valor»' — resolves the field key to its label and the
+    value (a catalog UUID / enum code) to its option name, instead of raw ids."""
+    campo_key = v.get("campo")
+    ref = fields_by_key.get(campo_key)
+    campo_label = (ref.get("label") if ref else None) or campo_key
+    op_txt = _OP_SYMBOL.get(v.get("op", "=="), v.get("op", "=="))
+
+    def _val(val):
+        if val == "__OTRO__":
+            return "Otro"
+        if ref is not None and bindable is not None:
+            choices = _field_choices(ref, bindable)
+            if choices:
+                m = dict(choices)
+                if val in m:
+                    return m[val]
+        return str(val)
+
+    raw = v.get("valor")
+    vt = ", ".join(_val(x) for x in raw) if isinstance(raw, list) else _val(raw)
+    return f"si «{campo_label}» {op_txt} «{vt}»"
+
+
+def render_preview(definicion: dict, constantes: dict, bindable: dict | None = None):
+    fields_by_key = {c.get("key"): c for s in definicion.get("secciones", [])
+                     for c in (s.get("campos") or [])}
     if constantes:
         st.caption("Constantes (prellenadas): " +
                    ", ".join(f"`{k}`" for k in constantes))
@@ -1505,8 +1534,7 @@ def render_preview(definicion: dict, constantes: dict):
         if s.get("repetible"):
             flags.append("🔁 repetible")
         if s.get("visible_si"):
-            v = s["visible_si"]
-            flags.append(f"👁️ si {v.get('campo')} {v.get('op','==')} {v.get('valor')}")
+            flags.append("👁️ " + _condition_text(s["visible_si"], fields_by_key, bindable))
         st.markdown(f"#### {s.get('titulo', s.get('key'))}  " +
                     (f"<span style='color:#888;font-size:0.8em'>{' · '.join(flags)}</span>"
                      if flags else ""), unsafe_allow_html=True)
@@ -1517,8 +1545,7 @@ def render_preview(definicion: dict, constantes: dict):
             dest = b.get("columna") or (b.get("catalogo") and f"cat→{b['catalogo']}") or tag
             cond = ""
             if c.get("visible_si"):
-                v = c["visible_si"]
-                cond = f"  · 👁️ si {v.get('campo')} {v.get('op','==')} {v.get('valor')}"
+                cond = "  · 👁️ " + _condition_text(c["visible_si"], fields_by_key, bindable)
             st.markdown(f"- **{c.get('label') or c.get('key')}**{req}  "
                         f"`{c.get('tipo')}`  <span style='color:#aaa'>→ {dest}</span>{cond}",
                         unsafe_allow_html=True)
