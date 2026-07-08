@@ -87,14 +87,30 @@ def columns_of(table: str, numeric_only: bool = False) -> list[str]:
     return [r["column_name"] for r in _q(q + " ORDER BY ordinal_position", args)]
 
 
-def build_query(base: str, parents: list[dict], children: list[dict], limit: int) -> str:
-    """Assemble the SQL. All identifiers come from schema discovery (safe to quote)."""
-    sel = ['b.*']
-    frm = [f'public."{base}" b']
-    for i, p in enumerate(parents):
-        a = f"p{i}"
-        frm.append(f'LEFT JOIN public."{p["ref"]}" {a} ON {a}.id = b."{p["fk_col"]}"')
-        sel.append(f'{a}."{p["namecol"]}" AS "{p["label"]}"')
+def _table_columns(table: str, alias: str, prefix: str, show_ids: bool, ai: int):
+    """(select_exprs, join_clauses, next_alias_idx) for a table's columns, resolving its
+    catalog FKs to names. prefix='' for the base (natural names); '{child}_' for a child."""
+    pmap = {p["fk_col"]: p for p in catalog_parents(table)}
+    sel, joins = [], []
+    for col in columns_of(table):
+        if col in pmap:
+            p = pmap[col]; a = f"j{ai}"; ai += 1
+            joins.append(f'LEFT JOIN public."{p["ref"]}" {a} ON {a}.id = {alias}."{col}"')
+            sel.append(f'{a}."{p["namecol"]}" AS "{prefix}{p["label"]}"')
+            if show_ids:
+                sel.append(f'{alias}."{col}" AS "{prefix}{col}"')
+        elif prefix:
+            sel.append(f'{alias}."{col}" AS "{prefix}{col}"')
+        else:
+            sel.append(f'{alias}."{col}"')   # base column keeps its natural name
+    return sel, joins, ai
+
+
+def build_query(base: str, children: list[dict], show_ids: bool, limit: int) -> str:
+    """Assemble the SQL. Catalog FK ids resolve to names by default (raw ids only when
+    show_ids). All identifiers come from schema discovery (safe to quote)."""
+    sel, bjoins, ai = _table_columns(base, "b", "", show_ids, 0)
+    frm = [f'public."{base}" b'] + bjoins
     si = 0
     for ch in children:
         if ch["mode"] == "resumen":
@@ -109,8 +125,16 @@ def build_query(base: str, parents: list[dict], children: list[dict], limit: int
                 sel.append(f'{a}.s AS "{ch["label"]}_{ch["sum_col"]}"')
         else:  # detalle (expands rows) — at most one, enforced in the UI
             frm.append(f'LEFT JOIN public."{ch["table"]}" d ON d."{ch["fk_col"]}" = b.id')
+            cmap = {p["fk_col"]: p for p in catalog_parents(ch["table"])}
             for col in ch.get("columns", []):
-                sel.append(f'd."{col}" AS "{ch["label"]}_{col}"')
+                if col in cmap:
+                    p = cmap[col]; a = f"j{ai}"; ai += 1
+                    frm.append(f'LEFT JOIN public."{p["ref"]}" {a} ON {a}.id = d."{col}"')
+                    sel.append(f'{a}."{p["namecol"]}" AS "{ch["label"]}_{p["label"]}"')
+                    if show_ids:
+                        sel.append(f'd."{col}" AS "{ch["label"]}_{col}"')
+                else:
+                    sel.append(f'd."{col}" AS "{ch["label"]}_{col}"')
     sql = f'SELECT {", ".join(sel)} FROM ' + " ".join(frm)
     if limit and limit > 0:
         sql += f" LIMIT {int(limit)}"
@@ -121,17 +145,11 @@ def render_builder(render_results):
     st.caption("Arma tu propia descarga combinando una tabla principal con sus datos "
                "relacionados. El sistema conoce las relaciones — tú solo eliges qué incluir.")
     base = st.selectbox("Tabla principal", BASE_ENTITIES, format_func=_label, key="jb_base")
-
-    parents = catalog_parents(base)
     children = child_relations(base)
 
-    chosen_parents = []
-    if parents:
-        st.markdown("**➕ Columnas de catálogos relacionados** (se añaden como nombres)")
-        cols = st.columns(3)
-        for i, p in enumerate(parents):
-            if cols[i % 3].checkbox(p["label"], key=f"jb_p_{base}_{p['fk_col']}"):
-                chosen_parents.append(p)
+    st.caption("Los catálogos (embarcación, especie, región…) se muestran como **nombres** "
+               "automáticamente.")
+    show_ids = st.checkbox("Mostrar también los ids (UUID)", value=False, key="jb_showids")
 
     chosen_children = []
     if children:
@@ -166,11 +184,14 @@ def render_builder(render_results):
     if n_det > 1:
         st.error("Solo puedes usar **Detalle** en una tabla hija a la vez (evita multiplicar "
                  "las filas). Deja las demás en **Resumen**.")
-    st.caption("La tabla principal se descarga con todas sus columnas; los catálogos añaden "
-               "nombres y las tablas hijas su conteo/suma (o el detalle).")
+
+    # record the current query spec (used by 'Consultas guardadas')
+    st.session_state["exp_current"] = {"mode": "builder", "base": base,
+                                       "children": chosen_children, "show_ids": show_ids,
+                                       "limit": int(limit)}
 
     if st.button("🔍 Generar vista previa", key="jb_run", type="primary", disabled=n_det > 1):
-        sql = build_query(base, chosen_parents, chosen_children, int(limit))
+        sql = build_query(base, chosen_children, show_ids, int(limit))
         try:
             cur = get_conn().cursor()
             cur.execute(sql)
