@@ -25,9 +25,9 @@ points at **prod**, so tests override `DATABASE_URL`/`SUPABASE_*` to dev + use t
   **choose + rename columns** (both modes, `export_data._column_editor`); **save custom queries per
   user** (private + "compartir") via `export_saved.py` + migration **`0014_consulta_export`**.
 
-⚠️ **Pending for prod:** migration **`0014_consulta_export`** is applied to **dev only** — apply it
-to **prod** via `scripts/apply.py` (additive, no data touched) before saved queries work on the live
-console. `usuario`-scoped saved queries need `auth_uid` (now captured at login in `console_auth.py`).
+✅ **`0014_consulta_export` applied to prod** (2026-07-07 via `scripts/apply.py`; verified: table +
+unique(usuario_id,nombre) + 2 RLS policies, `_migrations`=14). Saved queries now work on the live
+console. `usuario`-scoped saved queries need `auth_uid` (captured at login in `console_auth.py`).
 
 **Roadmap remaining:** R3 lists in the Form Builder (drop CSV) · R4 per-user form assignment · R5
 Excel bulk import (own deep plan) · R6 automated + on-demand backups.
@@ -41,6 +41,10 @@ Excel bulk import (own deep plan) · R6 automated + on-demand backups.
 ## Key facts (projects, secrets, accounts)
 - **Supabase projects:** PROD ref `boeysdpistpvdvcwzddm` (`aws-1-us-west-1`); DEV ref
   `pxxqumcvkoltbjubyvod` (`aws-1-us-east-1`). Prod URL: `https://boeysdpistpvdvcwzddm.supabase.co`.
+- **New WSL checkout (2026-07-07):** repos now also live at `~/bitacora/` (`catalog-review-app`,
+  `capture-app`, `supabase-backend`) on Linux/WSL2. The console secrets arrived there as `env`
+  (no dot — not loaded, not gitignored); renamed to `.env`. `supabase-backend` has no `.env` on this
+  machine — the prod DSN lives in `catalog-review-app/.env` (`DATABASE_URL`).
 - **Secrets live in gitignored `.env` files (never commit / never print):**
   - `Planning/supabase/.env` → `DATABASE_URL` (**dev** DSN) + `PROD_DATABASE_URL` (**prod** DSN).
   - `catalog-review-app/.env` → now **all prod** (`DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`,
