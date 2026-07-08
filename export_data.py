@@ -309,6 +309,10 @@ def render_export():
         help="Incluye todas las columnas de la tabla principal (con sus ids), en vez de solo la "
              "selección curada con nombres. Útil para análisis avanzado.")
 
+    # record the current query spec (used by 'Consultas guardadas')
+    st.session_state["exp_current"] = {"mode": "preset", "dataset": ds, "filters": f,
+                                       "all_fields": all_fields}
+
     if st.button("🔍 Generar vista previa", key="exp_run", type="primary"):
         sql, params = _build(ds, f, all_fields)
         try:
@@ -329,6 +333,43 @@ def render_export():
         st.info("Ajusta los filtros y genera la vista previa.")
         return
     render_results(df, f"{ds}_{_dt.date.today().isoformat()}", cfg)
+
+
+def _column_editor(df):
+    """Let the user pick which columns to download and rename their headers. Returns the
+    export DataFrame (trimmed + renamed). Config persists in session (exp_colcfg) so
+    'Consultas guardadas' can save/restore it; a saved-query load sets exp_colcfg_load."""
+    sig = str(list(df.columns))
+    if st.session_state.get("exp_col_sig") != sig:
+        load = st.session_state.pop("exp_colcfg_load", None) or {}
+        st.session_state["exp_colcfg"] = {
+            c: {"incluir": bool(load.get(c, {}).get("incluir", True)),
+                "nombre": str(load.get(c, {}).get("nombre", c))} for c in df.columns}
+        st.session_state["exp_col_sig"] = sig
+        st.session_state["exp_col_nonce"] = st.session_state.get("exp_col_nonce", 0) + 1
+
+    cfg = st.session_state["exp_colcfg"]
+    with st.expander("🎚️ Elegir y renombrar columnas"):
+        st.caption("Desmarca las columnas que no quieras y edita el nombre con el que se "
+                   "descargarán.")
+        edf = pd.DataFrame([{"incluir": cfg[c]["incluir"], "columna": c, "nombre": cfg[c]["nombre"]}
+                            for c in df.columns])
+        edited = st.data_editor(
+            edf, key=f"exp_coled_{st.session_state['exp_col_nonce']}", hide_index=True,
+            width="stretch", disabled=["columna"],
+            column_config={"incluir": st.column_config.CheckboxColumn("Incluir"),
+                           "columna": "Columna", "nombre": "Nombre para descargar"})
+    st.session_state["exp_colcfg"] = {
+        r["columna"]: {"incluir": bool(r["incluir"]), "nombre": str(r["nombre"] or r["columna"])}
+        for _, r in edited.iterrows()}
+
+    inc = [(r["columna"], str(r["nombre"] or r["columna"]))
+           for _, r in edited.iterrows() if r["incluir"]]
+    if not inc:   # everything deselected → fall back to the full frame
+        return df
+    out = df[[c for c, _ in inc]].copy()
+    out.columns = [n for _, n in inc]
+    return out
 
 
 def render_results(df, base_name: str, cfg: dict | None = None):
@@ -367,13 +408,17 @@ def render_results(df, base_name: str, cfg: dict | None = None):
             [{"columna": c, "significado": COL_DIC.get(c, "—")} for c in df.columns]),
             width="stretch", hide_index=True)
 
+    # ---- choose + rename columns (both modes) ----
+    export_df = _column_editor(df)
+
     # ---- download ----
     st.divider()
+    st.caption(f"Descargarás **{export_df.shape[1]} de {df.shape[1]}** columnas.")
     d1, d2 = st.columns(2)
-    d1.download_button("⬇️ CSV (Excel / R)", df.to_csv(index=False).encode("utf-8"),
+    d1.download_button("⬇️ CSV (Excel / R)", export_df.to_csv(index=False).encode("utf-8"),
                        file_name=f"{base_name}.csv", mime="text/csv", width="stretch")
     if HAS_PARQUET:
-        buf = io.BytesIO(); df.to_parquet(buf, index=False)
+        buf = io.BytesIO(); export_df.to_parquet(buf, index=False)
         d2.download_button("⬇️ Parquet (R / Python)", buf.getvalue(),
                            file_name=f"{base_name}.parquet", mime="application/octet-stream",
                            width="stretch")
