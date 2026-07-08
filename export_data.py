@@ -214,6 +214,10 @@ def _build(dataset: str, f: dict, all_fields: bool = False) -> tuple[str, list]:
     sql = f"SELECT {select} {cfg['from']}"
     if where:
         sql += " WHERE " + " AND ".join(where)
+    sort_dir = {"Más recientes primero": "DESC", "Más antiguas primero": "ASC"}.get(f.get("sort"))
+    if sort_dir and "year" in cols:
+        # orphan mediciones have no faena date → keep NULLs out of the way
+        sql += f" ORDER BY {cols['year']} {sort_dir} NULLS LAST"
     return sql, params
 
 
@@ -279,6 +283,11 @@ def render_export():
     if "year" in cols:
         f["years"] = st.slider("Años (por fecha de faena)", 2005, _dt.date.today().year,
                                (2005, _dt.date.today().year), key="exp_years")
+        f["sort"] = st.radio(
+            "Ordenar por fecha de faena",
+            ["Más recientes primero", "Más antiguas primero", "Sin ordenar"],
+            horizontal=True, key="exp_sort",
+            help="Ordena las filas descargadas (vista previa y archivo) por la fecha de la faena.")
 
     if cfg["orphans"]:
         st.info("Las mediciones **huérfanas** son tallas biológicamente válidas pero sin viaje "
@@ -362,6 +371,7 @@ def _apply_config(config: dict):
         f = config.get("filters", {}) or {}
         for k, wk in {"especie": "exp_esp", "region": "exp_reg", "formato": "exp_fmt",
                       "tipo": "exp_tipo", "sexo": "exp_sexo", "procesado": "exp_proc",
+                      "sort": "exp_sort",
                       "incluir_huerfanas": "exp_orph", "excluir_sospechosas": "exp_susp"}.items():
             if k in f:
                 ss[wk] = f[k]
