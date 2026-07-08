@@ -166,3 +166,13 @@ Console reachable over HTTPS on the VPS (admins log in, all modes work); a signe
 Huawei tablet where a técnico logs in, captures offline, and syncs a faena that appears in the console —
 kg→gr correct. Watch prod DB size vs the 500 MB free-tier ceiling (currently 226 MB); move to Pro only if
 approached.
+
+## Prod test-data hygiene (2026-07-08)
+Prod device tests must be captured under the **`Test` / `Test_07072026`** logins, which are now
+linked to a dedicated `cat_tecnico` **"PRUEBAS — no usar en campo"**
+(`95ab1dd0-0661-4961-b7bc-ff0a1b640875`) — so test faenas are separable from real data. (Before this,
+those logins were wired to real técnicos — `Test_07072026`→MBOV with 748 real faenas — so purging by
+them would have deleted history.) Cleanup tool: `Planning/supabase/scripts/purge_test_faenas.py`
+(preview-by-default, prod-guarded, never prints the DSN, `--max` guard). Purge test data with
+`--tecnico-id 95ab1dd0-…`; delete a single faena with `--faena-id <uuid>`. See `capture-app/DEVICE_TESTING.md`.
+The first APK test faena (`8d61a9c6`, técnico "Miguel Angel Alvarez Hernandez") was deleted 2026-07-08.
