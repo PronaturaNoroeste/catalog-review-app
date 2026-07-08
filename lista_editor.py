@@ -105,3 +105,117 @@ def create_and_add(formato_id: str, lista: str, tabla: str, nombre: str,
     _log(tabla, rid, "crear", {"nombre": nombre.strip(), "origen": "constructor"})
     add_opcion(formato_id, lista, tabla, rid, importancia)
     return rid
+
+
+# =====================================================================
+# UI — rendered inside the Form Builder's field dialog
+# =====================================================================
+_SIN = "— sin lista —"
+_NUEVA = "➕ Nueva lista…"
+
+
+def render_lista_editor(formato_id: str | None, tabla: str | None,
+                        lista_actual: str, default_name: str, key: str) -> str:
+    """Attach control + options editor for one field. Returns the lista name
+    the field should keep ('' = sin lista); the caller saves it on Guardar.
+    Option edits (add/remove/importancia) write to lista_opcion immediately."""
+    from console_ui import friendly_error
+    if not tabla:
+        return lista_actual                     # no catalog → nothing to curate
+    if not formato_id:
+        st.caption("Elige primero el **formato** del formulario (Paso 1) para "
+                   "poder usar listas curadas.")
+        return lista_actual
+
+    existentes = sorted(l for l, t in form_listas(formato_id).items() if t == tabla)
+    if lista_actual and lista_actual not in existentes:
+        existentes.append(lista_actual)         # just-attached, still-empty list
+    opts = [_SIN] + existentes + [_NUEVA]
+    cur = lista_actual if lista_actual in existentes else _SIN
+    sel = st.selectbox(
+        "Lista curada (las opciones que ve el técnico)", opts,
+        index=opts.index(cur), key=f"{key}_sel",
+        help="Con una lista curada, el técnico ve solo este subconjunto del "
+             "catálogo, ordenado por importancia — no el catálogo completo.")
+    if sel == _NUEVA:
+        from form_builder import _slug
+        lista = _slug(st.text_input("Nombre de la lista nueva", default_name,
+                                    key=f"{key}_nm"))
+    else:
+        lista = "" if sel == _SIN else sel
+    st.caption("Adjuntar o quitar la lista es parte del formulario: llega a la "
+               "tableta al **publicar**. Las opciones de la lista, en cambio, "
+               "cambian al instante.")
+    if not lista:
+        return ""
+
+    ops = get_opciones(formato_id, lista, tabla)
+    es_especie = tabla == "cat_especie"
+    with st.expander(f"📑 Opciones de la lista «{lista}» ({len(ops)})",
+                     expanded=not ops):
+        st.caption("Los cambios de aquí abajo son **inmediatos** en la tableta "
+                   "(tras sincronizar). Para subir una lista completa desde un "
+                   "CSV usa **📑 Listas del formulario**.")
+        if not ops:
+            st.warning("La lista está vacía — el técnico no verá opciones en "
+                       "este campo hasta que añadas algunas.")
+        else:
+            import pandas as pd
+            df = pd.DataFrame(ops).set_index("registro_id")
+            df["quitar"] = False
+            show = (["nombre", "cientifico"] if es_especie else ["nombre"]) \
+                + ["importancia", "quitar"]
+            edited = st.data_editor(
+                df[show], key=f"{key}_ed", hide_index=True, width="stretch",
+                disabled=["nombre"] + (["cientifico"] if es_especie else []),
+                column_config={
+                    "nombre": st.column_config.TextColumn("Nombre"),
+                    "cientifico": st.column_config.TextColumn("Científico"),
+                    "importancia": st.column_config.NumberColumn(
+                        "Importancia", step=1,
+                        help="Más alto = más arriba en la lista de la tableta."),
+                    "quitar": st.column_config.CheckboxColumn("Quitar"),
+                })
+            if st.button("💾 Guardar cambios en la lista", key=f"{key}_apply"):
+                try:
+                    orig = {o["registro_id"]: o for o in ops}
+                    for rid, row in edited.iterrows():
+                        if row["quitar"]:
+                            remove_opcion(formato_id, lista, rid)
+                        elif int(row["importancia"]) != orig[rid]["importancia"]:
+                            set_importancia(formato_id, lista, rid,
+                                            int(row["importancia"]))
+                    st.rerun()
+                except Exception as e:  # noqa: BLE001
+                    st.error(friendly_error(e))
+
+        st.markdown("**Añadir opción**")
+        q = st.text_input("Buscar en el catálogo", key=f"{key}_q",
+                          placeholder="Escribe parte del nombre…")
+        if q.strip():
+            res = search_catalogo(tabla, q,
+                                  exclude_ids={o["registro_id"] for o in ops})
+            if res:
+                fmt = ((lambda r: f"{r['nombre']} ({r.get('cientifico') or 'sin científico'})")
+                       if es_especie else (lambda r: r["nombre"]))
+                pick = st.selectbox("Coincidencias en el catálogo", res,
+                                    format_func=fmt, key=f"{key}_pick")
+                if st.button("➕ Añadir a la lista", key=f"{key}_add"):
+                    try:
+                        add_opcion(formato_id, lista, tabla, pick["id"])
+                        st.rerun()
+                    except Exception as e:  # noqa: BLE001
+                        st.error(friendly_error(e))
+            else:
+                st.caption("Sin coincidencias en el catálogo.")
+            sci_in = (st.text_input("Nombre científico (opcional, para crear)",
+                                    key=f"{key}_sci") if es_especie else None)
+            if st.button(f"🆕 Crear «{q.strip()}» y añadir", key=f"{key}_new",
+                         help="Crea un registro nuevo aprobado en el catálogo — "
+                              "nunca fusiona con los existentes."):
+                try:
+                    create_and_add(formato_id, lista, tabla, q.strip(), sci_in)
+                    st.rerun()
+                except Exception as e:  # noqa: BLE001
+                    st.error(friendly_error(e))
+    return lista
