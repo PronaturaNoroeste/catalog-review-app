@@ -210,20 +210,23 @@ def render_lista_editor(formato_id: str | None, tabla: str | None,
         q = st.text_input("Buscar en el catálogo", key=f"{key}_q",
                           placeholder="Escribe parte del nombre…")
         if q.strip():
-            res = search_catalogo(tabla, q,
+            _cap = 8
+            res = search_catalogo(tabla, q, limit=_cap,
                                   exclude_ids={o["registro_id"] for o in ops})
             if res:
-                fmt = ((lambda r: f"{r['nombre']} ({r.get('cientifico') or 'sin científico'})")
-                       if es_especie else (lambda r: r["nombre"]))
-                pick = st.selectbox("Coincidencias en el catálogo", res,
-                                    format_func=fmt, key=f"{key}_pick")
-                if st.button("➕ Añadir a la lista", key=f"{key}_add"):
-                    try:
-                        add_opcion(formato_id, lista, tabla, pick["id"])
-                        st.session_state[f"{key}_pin"] = lista
-                        st.rerun(scope="fragment")
-                    except Exception as e:  # noqa: BLE001
-                        st.error(friendly_error(e))
+                st.caption("Coincidencias en el catálogo — haz clic para añadir:")
+                fmt = ((lambda r: f"➕ {r['nombre']} · {r.get('cientifico') or 'sin científico'}")
+                       if es_especie else (lambda r: f"➕ {r['nombre']}"))
+                for r in res:
+                    if st.button(fmt(r), key=f"{key}_add_{r['id']}", width="stretch"):
+                        try:
+                            add_opcion(formato_id, lista, tabla, r["id"])
+                            st.session_state[f"{key}_pin"] = lista
+                            st.rerun(scope="fragment")
+                        except Exception as e:  # noqa: BLE001
+                            st.error(friendly_error(e))
+                if len(res) == _cap:
+                    st.caption("Sigue escribiendo para afinar la búsqueda…")
             else:
                 st.caption("Sin coincidencias en el catálogo.")
             if tabla not in SIN_APROBACION:

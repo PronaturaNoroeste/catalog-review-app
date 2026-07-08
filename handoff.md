@@ -31,7 +31,8 @@ console. `usuario`-scoped saved queries need `auth_uid` (captured at login in `c
 
 **Roadmap remaining:** R4 per-user form assignment · R5 Excel bulk import (own deep plan) · R6
 automated + on-demand backups. (R3 lists in the Form Builder shipped 2026-07-07: view/edit/attach
-curated lists from the field dialog — `lista_editor.py`; CSV bulk stays in 📑 Listas.)
+curated lists from the field dialog — `lista_editor.py`; CSV bulk stays in 📑 Listas. Add-to-list
+search shows the matches as clickable buttons — one click adds; verified in a live dev browser.)
 
 ## The three repos (all on GitHub, `main`)
 - `catalog-review-app` — Streamlit **admin console** → `PronaturaNoroeste/catalog-review-app`
