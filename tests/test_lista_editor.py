@@ -99,6 +99,22 @@ try:
     row = _q("SELECT apta_carnada, nombre_cientifico FROM cat_especie WHERE id=%s", (rid3,))[0]
     assert row["apta_carnada"] is True and row["nombre_cientifico"] == "Pendiente"
 
+    # 10. build_campo: lista set / dropped / preserved
+    from form_builder import build_campo
+    base_v = {"key": "especie", "label": "Especie", "tipo": "catalogo",
+              "bind_tipo": "core", "bind_columna": "captura.especie_id",
+              "catalogo": "cat_especie"}
+    c0 = {"key": "especie", "tipo": "catalogo", "lista": "especies"}
+    # managed + new name → set
+    out = build_campo(c0, {**base_v, "lista_managed": True, "lista": "otra"}, {})
+    assert out["lista"] == "otra"
+    # managed + empty → dropped (detach)
+    out = build_campo(c0, {**base_v, "lista_managed": True, "lista": ""}, {})
+    assert "lista" not in out
+    # not managed → preserved untouched (old callers can't drop it)
+    out = build_campo(c0, base_v, {})
+    assert out["lista"] == "especies"
+
     print("TODOS LOS CHECKS PASAN")
 finally:
     cleanup()

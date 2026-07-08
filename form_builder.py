@@ -706,6 +706,8 @@ def build_campo(c: dict, v: dict, bindable: dict) -> dict:
     if v.get("flags_managed"):
         _set_or_pop(out, "permite_proponer", bool(v.get("permite_proponer")))
         _set_or_pop(out, "permite_otro_texto", bool(v.get("permite_otro_texto")))
+    if v.get("lista_managed"):
+        _set_or_pop(out, "lista", (v.get("lista") or "").strip())
     if v.get("opciones_simple") is not None:
         _set_or_pop(out, "opciones", v["opciones_simple"])
     # structured editors pass already-parsed values (visible_si, validacion…)
@@ -1108,8 +1110,15 @@ def _campo_dialog(work: dict, sec: dict, idx: int | None, bindable: dict):
 
     flags_managed = tipo in ("catalogo", "seleccion_unica", "multiseleccion")
     prop = otro = None
+    lista_val, lista_managed = c.get("lista", ""), False
     if flags_managed:
-        if c.get("lista"):
+        field_cat = (bindable.get(col, {}).get("catalogo") if bt == "core" else cat_sel) or ""
+        if tipo == "catalogo" and field_cat:
+            from lista_editor import render_lista_editor
+            lista_val = render_lista_editor(work.get("formato_id"), field_cat,
+                                            lista_val, _slug(label), f"{k}_le")
+            lista_managed = True
+        elif c.get("lista"):
             st.info(f"📑 Este campo usa la lista curada **«{c['lista']}»**. Sus opciones se "
                     "administran en **📑 Listas del formulario**, no aquí.")
         fc = st.columns(2)
@@ -1219,6 +1228,7 @@ def _campo_dialog(work: dict, sec: dict, idx: int | None, bindable: dict):
                                   "bind_tipo": bt, "bind_columna": col, "catalogo": cat_sel,
                                   "flags_managed": flags_managed, "permite_proponer": prop,
                                   "permite_otro_texto": otro, "opciones_simple": opciones_simple,
+                                  "lista_managed": lista_managed, "lista": lista_val,
                                   "managed": managed, "adv": adv}, bindable)
             if idx is None:
                 sec["campos"].append(out)
