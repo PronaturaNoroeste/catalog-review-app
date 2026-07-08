@@ -87,6 +87,19 @@ def columns_of(table: str, numeric_only: bool = False) -> list[str]:
     return [r["column_name"] for r in _q(q + " ORDER BY ordinal_position", args)]
 
 
+@st.cache_data(ttl=300, show_spinner=False)
+def date_columns(table: str) -> list[str]:
+    """Date / timestamp columns of a table — the sortable 'by date' options."""
+    return [r["column_name"] for r in _q(
+        "SELECT column_name FROM information_schema.columns "
+        "WHERE table_schema='public' AND table_name=%s AND data_type IN "
+        "('date','timestamp with time zone','timestamp without time zone') "
+        "ORDER BY ordinal_position", (table,))]
+
+
+_SORT_DIR = {"Más recientes primero": "DESC", "Más antiguas primero": "ASC"}
+
+
 def _table_columns(table: str, alias: str, prefix: str, show_ids: bool, ai: int):
     """(select_exprs, join_clauses, next_alias_idx) for a table's columns, resolving its
     catalog FKs to names. prefix='' for the base (natural names); '{child}_' for a child."""
@@ -106,7 +119,8 @@ def _table_columns(table: str, alias: str, prefix: str, show_ids: bool, ai: int)
     return sel, joins, ai
 
 
-def build_query(base: str, children: list[dict], show_ids: bool, limit: int) -> str:
+def build_query(base: str, children: list[dict], show_ids: bool, limit: int,
+                sort_col: str | None = None, sort_dir: str | None = None) -> str:
     """Assemble the SQL. Catalog FK ids resolve to names by default (raw ids only when
     show_ids). All identifiers come from schema discovery (safe to quote)."""
     sel, bjoins, ai = _table_columns(base, "b", "", show_ids, 0)
@@ -136,6 +150,10 @@ def build_query(base: str, children: list[dict], show_ids: bool, limit: int) -> 
                 else:
                     sel.append(f'd."{col}" AS "{ch["label"]}_{col}"')
     sql = f'SELECT {", ".join(sel)} FROM ' + " ".join(frm)
+    d = _SORT_DIR.get(sort_dir)
+    if sort_col and d:
+        # sort_col comes from date_columns() (schema discovery) — safe to quote
+        sql += f' ORDER BY b."{sort_col}" {d} NULLS LAST'
     if limit and limit > 0:
         sql += f" LIMIT {int(limit)}"
     return sql
@@ -180,6 +198,19 @@ def render_builder(render_results):
     limit = st.number_input("Límite de filas (0 = sin límite — cuidado con tablas grandes)",
                             min_value=0, value=5000, step=1000, key="jb_limit")
 
+    dcols = date_columns(base)
+    sort_col = sort_dir = None
+    if dcols:
+        sc = st.columns([3, 4])
+        pick = sc[0].selectbox("Ordenar por fecha", ["— sin ordenar —"] + dcols,
+                               key=f"jb_sort_{base}",
+                               help="Ordena las filas (vista previa y archivo) por una columna de "
+                                    "fecha de la tabla principal.")
+        if pick != "— sin ordenar —":
+            sort_col = pick
+            sort_dir = sc[1].radio("Orden", list(_SORT_DIR), horizontal=True,
+                                   key=f"jb_sortdir_{base}")
+
     n_det = sum(1 for c in chosen_children if c["mode"] == "detalle")
     if n_det > 1:
         st.error("Solo puedes usar **Detalle** en una tabla hija a la vez (evita multiplicar "
@@ -188,10 +219,11 @@ def render_builder(render_results):
     # record the current query spec (used by 'Consultas guardadas')
     st.session_state["exp_current"] = {"mode": "builder", "base": base,
                                        "children": chosen_children, "show_ids": show_ids,
-                                       "limit": int(limit)}
+                                       "limit": int(limit),
+                                       "sort_col": sort_col, "sort_dir": sort_dir}
 
     if st.button("🔍 Generar vista previa", key="jb_run", type="primary", disabled=n_det > 1):
-        sql = build_query(base, chosen_children, show_ids, int(limit))
+        sql = build_query(base, chosen_children, show_ids, int(limit), sort_col, sort_dir)
         try:
             cur = get_conn().cursor()
             cur.execute(sql)

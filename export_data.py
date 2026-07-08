@@ -356,6 +356,9 @@ def _apply_config(config: dict):
         ss["jb_base"] = base
         ss["jb_showids"] = bool(config.get("show_ids", False))
         ss["jb_limit"] = int(config.get("limit", 5000))
+        if config.get("sort_col"):
+            ss[f"jb_sort_{base}"] = config["sort_col"]
+            ss[f"jb_sortdir_{base}"] = config.get("sort_dir") or "Más recientes primero"
         for ch in config.get("children", []):
             t = ch["table"]
             ss[f"jb_c_{base}_{t}"] = True
