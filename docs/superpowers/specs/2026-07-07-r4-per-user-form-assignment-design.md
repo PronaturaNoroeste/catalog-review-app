@@ -91,18 +91,20 @@ Three coordinated changes, each independently safe to ship (see Rollout ordering
 - **`App.tsx` bootstrap** — replace the hardcoded formato resolution:
   - Remove the `cat_formato_origen … .eq('codigo', FORMATO_PILOTO)` lookup.
   - Resolve `formatoId` as follows:
-    1. If `usuario?.formato_origen_id` is present → use it (it's already the UUID); persist it via
-       `kvStorage.set('formato_origen_id', id)`.
+    1. If `usuario?.formato_origen_id` is present → use it (it's already the UUID). No dedicated
+       persistence step is needed: `loadUsuario` already caches the whole profile under
+       `USUARIO_KEY`, so `formato_origen_id` rides along with it for free.
     2. Else if online read returned a profile with **null** formato → **blocked screen**:
        *"No tienes un formulario asignado — contacta a un administrador."* Do not call `cacheForm`.
-    3. Else (offline / profile read failed) → fall back to `kvStorage.get('formato_origen_id')`;
-       if present, load from `getCachedForm`; if absent, show the offline/first-run message
+    3. Else (offline / profile read failed) → fall back to the cached `usuario` profile
+       (`kvStorage.get(USUARIO_KEY)`) and read its `formato_origen_id`; if present, load from
+       `getCachedForm`; if absent, show the offline/first-run message
        (*"Conéctate a internet para descargar tu formulario."*).
   - `cacheForm` / `syncListas` / `getCachedForm` continue to key on this `formatoId`.
 - **`config.ts`** — `FORMATO_PILOTO` is removed from the bootstrap path (kept only if another module
   still references it; `CATALOGOS_PILOTO`, the catalog-sync list, is untouched).
-- **Offline store:** reuse the existing SQLite `kv` table via `kvStorage` (already used for the auth
-  session) — no new dependency.
+- **Offline store:** reuse the existing `USUARIO_KEY` profile cache in the SQLite `kv` table via
+  `kvStorage` (already used for the auth session and profile) — no new key, no new dependency.
 
 ## 4 — Testing
 
@@ -114,8 +116,9 @@ Three coordinated changes, each independently safe to ship (see Rollout ordering
 - **Migration** — apply to dev; assert the column exists and the backfill set every active TECNICO
   to the Boca del Álamo formato; then prod.
 - **Capture app (manual device check)** — an assigned técnico loads their form; an unassigned
-  técnico sees the block screen; airplane-mode cold-start loads the cached form via the persisted
-  `formato_origen_id`. (The capture app has little automated coverage; this stays manual.)
+  técnico sees the block screen; airplane-mode cold-start loads the cached form via the
+  `formato_origen_id` in the cached `usuario` profile. (The capture app has little automated
+  coverage; this stays manual.)
 
 ## 5 — Rollout ordering
 

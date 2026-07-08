@@ -243,8 +243,11 @@ def _manage_account(u, tmap, friendly_error, flash):
     if newrol == "TECNICO":
         newtec, newtec_name = _tec_picker(tmap, key=f"roltec_{uid}", current=u.get("tecnico_id"))
         fmap = {f["id"]: f["nombre"] for f in _formatos()}
-        fopts = [None] + list(fmap)
         cur = u.get("formato_origen_id")
+        if cur and cur not in fmap:
+            # keep an inactive current assignment selectable so Guardar doesn't silently wipe it
+            fmap[cur] = u.get("formato") or "(formato inactivo)"
+        fopts = [None] + list(fmap)
         newfmt = st.selectbox(
             "Formulario asignado (tableta)", fopts,
             index=fopts.index(cur) if cur in fopts else 0,
