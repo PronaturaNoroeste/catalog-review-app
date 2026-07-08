@@ -35,9 +35,9 @@ curated lists from the field dialog — `lista_editor.py`; CSV bulk stays in �
 search shows the matches as clickable buttons — one click adds; verified in a live dev browser.)
 (R4 per-user form assignment shipped 2026-07-07: `usuario.formato_origen_id` + console assign UI in
 👤 Usuarios; the tablet loads the técnico's assigned form and blocks if unassigned — `lista_editor`
-untouched, changes in `users_admin.py` + capture-app `App.tsx`/`supabaseClient.ts`. **Migration
-`0015_usuario_formato` is applied to DEV only — it must be applied to PROD via `apply.py` before the
-console is pointed at prod (the Usuarios page selects the new column) and before the new APK ships.**)
+untouched, changes in `users_admin.py` + capture-app `App.tsx`/`supabaseClient.ts`. ✅ Migration
+`0015_usuario_formato` **is applied to PROD** — verified 2026-07-08: `_migrations`=15, column +
+`idx_usuario_formato` present, all 3 técnicos backfilled to `BOCA_ALAMO_V2`.)
 
 ## The three repos (all on GitHub, `main`)
 - `catalog-review-app` — Streamlit **admin console** → `PronaturaNoroeste/catalog-review-app`
