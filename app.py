@@ -1209,6 +1209,10 @@ def main():
         from export_data import render_export
         render_export()
         return
+    if mode == "mantenimiento":
+        from maintenance import render_maintenance
+        render_maintenance()
+        return
 
     # mode == "catalogos" — catalog dedup review (the original app). One entry
     # point: the catalog is picked here in the main area, not in the sidebar.

@@ -23,6 +23,7 @@ NAV = [
     ("listas",       "📑 Listas del formulario", "CONFIGURAR"),
     ("usuarios",     "👤 Usuarios",              "CONFIGURAR"),
     ("exportar",     "📤 Descargar datos",       "DATOS"),
+    ("mantenimiento", "🧹 Datos de prueba",      "DATOS"),
 ]
 ANALISTA_MODES = {"inicio", "exportar"}
 
