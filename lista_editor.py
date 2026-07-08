@@ -53,12 +53,13 @@ def get_opciones(formato_id: str, lista: str, tabla: str) -> list[dict]:
 
 def search_catalogo(tabla: str, q: str, exclude_ids: set[str] | None = None,
                     limit: int = 20) -> list[dict]:
-    """Approved rows whose name (or científico) contains `q`, accent- and
+    """Rows whose name (or científico) contains `q`, accent- and
     case-insensitive. Filters in Python with _norm — the exact normalization
     the import tool and the tablet use; catalogs are small enough to scan
-    (lista_import builds full in-memory maps the same way). Only
+    (lista_import builds full in-memory maps the same way). Restricted to
     estado='aprobado' rows: the tablet mirrors approved rows only, so an
-    unapproved option would silently vanish from the picker."""
+    unapproved option would silently vanish from the picker. Closed-vocabulary
+    catalogs (SIN_APROBACION) have no estado column, so all their rows qualify."""
     if not (q or "").strip():
         return []
     nc = _name_col(tabla)
