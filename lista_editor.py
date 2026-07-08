@@ -20,6 +20,13 @@ import streamlit as st
 from form_builder import _q, _exec, _log
 from lista_import import _norm, _name_col
 
+# Tablas de vocabulario cerrado, sin flujo de aprobación (mismo conjunto que
+# SIN_APROBACION en la app de captura, catalogMirror.ts) — no tienen columna estado.
+SIN_APROBACION = {
+    "cat_tipo_gasto", "cat_tipo_interaccion_etp",
+    "cat_tipo_viento", "cat_tipo_luna", "cat_tipo_marea", "cat_region", "cat_formato_origen",
+}
+
 
 # =====================================================================
 # Data layer
@@ -56,8 +63,9 @@ def search_catalogo(tabla: str, q: str, exclude_ids: set[str] | None = None,
         return []
     nc = _name_col(tabla)
     sci = ", nombre_cientifico AS cientifico" if tabla == "cat_especie" else ""
-    rows = _q(f'SELECT id::text AS id, {nc} AS nombre{sci} FROM public."{tabla}" '
-              f"WHERE estado='aprobado'")
+    where = "" if tabla in SIN_APROBACION else " WHERE estado='aprobado'"
+    rows = _q(f'SELECT id::text AS id, {nc} AS nombre{sci} FROM public."{tabla}"'
+              f"{where}")
     nq = _norm(q)
     out = [r for r in rows
            if r["id"] not in (exclude_ids or set())
@@ -127,6 +135,8 @@ def render_lista_editor(formato_id: str | None, tabla: str | None,
                    "poder usar listas curadas.")
         return lista_actual
 
+    lista_actual = st.session_state.get(f"{key}_pin", "") or lista_actual
+
     existentes = sorted(l for l, t in form_listas(formato_id).items() if t == tabla)
     if lista_actual and lista_actual not in existentes:
         existentes.append(lista_actual)         # just-attached, still-empty list
@@ -141,6 +151,8 @@ def render_lista_editor(formato_id: str | None, tabla: str | None,
         from form_builder import _slug
         lista = _slug(st.text_input("Nombre de la lista nueva", default_name,
                                     key=f"{key}_nm"))
+        if lista in existentes:
+            st.info(f"«{lista}» ya existe para este formato — el campo compartirá esa lista.")
     else:
         lista = "" if sel == _SIN else sel
     st.caption("Adjuntar o quitar la lista es parte del formulario: llega a la "
@@ -182,10 +194,14 @@ def render_lista_editor(formato_id: str | None, tabla: str | None,
                     for rid, row in edited.iterrows():
                         if row["quitar"]:
                             remove_opcion(formato_id, lista, rid)
-                        elif int(row["importancia"]) != orig[rid]["importancia"]:
-                            set_importancia(formato_id, lista, rid,
-                                            int(row["importancia"]))
-                    st.rerun()
+                        else:
+                            imp = row["importancia"]
+                            imp = (orig[rid]["importancia"] if pd.isna(imp)
+                                   else int(imp))
+                            if imp != orig[rid]["importancia"]:
+                                set_importancia(formato_id, lista, rid, imp)
+                    st.session_state[f"{key}_pin"] = lista
+                    st.rerun(scope="fragment")
                 except Exception as e:  # noqa: BLE001
                     st.error(friendly_error(e))
 
@@ -203,19 +219,22 @@ def render_lista_editor(formato_id: str | None, tabla: str | None,
                 if st.button("➕ Añadir a la lista", key=f"{key}_add"):
                     try:
                         add_opcion(formato_id, lista, tabla, pick["id"])
-                        st.rerun()
+                        st.session_state[f"{key}_pin"] = lista
+                        st.rerun(scope="fragment")
                     except Exception as e:  # noqa: BLE001
                         st.error(friendly_error(e))
             else:
                 st.caption("Sin coincidencias en el catálogo.")
-            sci_in = (st.text_input("Nombre científico (opcional, para crear)",
-                                    key=f"{key}_sci") if es_especie else None)
-            if st.button(f"🆕 Crear «{q.strip()}» y añadir", key=f"{key}_new",
-                         help="Crea un registro nuevo aprobado en el catálogo — "
-                              "nunca fusiona con los existentes."):
-                try:
-                    create_and_add(formato_id, lista, tabla, q.strip(), sci_in)
-                    st.rerun()
-                except Exception as e:  # noqa: BLE001
-                    st.error(friendly_error(e))
+            if tabla not in SIN_APROBACION:
+                sci_in = (st.text_input("Nombre científico (opcional, para crear)",
+                                        key=f"{key}_sci") if es_especie else None)
+                if st.button(f"🆕 Crear «{q.strip()}» y añadir", key=f"{key}_new",
+                             help="Crea un registro nuevo aprobado en el catálogo — "
+                                  "nunca fusiona con los existentes."):
+                    try:
+                        create_and_add(formato_id, lista, tabla, q.strip(), sci_in)
+                        st.session_state[f"{key}_pin"] = lista
+                        st.rerun(scope="fragment")
+                    except Exception as e:  # noqa: BLE001
+                        st.error(friendly_error(e))
     return lista

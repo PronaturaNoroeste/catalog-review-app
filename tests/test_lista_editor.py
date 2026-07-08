@@ -115,6 +115,12 @@ try:
     out = build_campo(c0, base_v, {})
     assert out["lista"] == "especies"
 
+    # 11. controlled catalogs (sin columna estado) are searchable without crashing
+    tipos = _q("SELECT id::text AS id, nombre FROM cat_tipo_gasto LIMIT 1")
+    if tipos:
+        hits = le.search_catalogo("cat_tipo_gasto", tipos[0]["nombre"])
+        assert any(h["id"] == tipos[0]["id"] for h in hits)
+
     print("TODOS LOS CHECKS PASAN")
 finally:
     cleanup()
