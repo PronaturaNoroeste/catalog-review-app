@@ -72,18 +72,25 @@ def create_tecnico(nombre: str) -> str:
     return tid
 
 
-def create_usuario(uid, nombre, email, rol, tecnico_id, region_id, created_by=None):
-    _exec("""INSERT INTO usuario (id, nombre, email, rol, tecnico_id, region_id, activo, created_by)
-             VALUES (%s,%s,%s,%s,%s,%s,true,%s)
+def create_usuario(uid, nombre, email, rol, tecnico_id, region_id,
+                   formato_origen_id=None, created_by=None):
+    _exec("""INSERT INTO usuario (id, nombre, email, rol, tecnico_id, region_id,
+                                  formato_origen_id, activo, created_by)
+             VALUES (%s,%s,%s,%s,%s,%s,%s,true,%s)
              ON CONFLICT (id) DO UPDATE SET nombre=excluded.nombre, email=excluded.email,
-               rol=excluded.rol, tecnico_id=excluded.tecnico_id, region_id=excluded.region_id, activo=true""",
-          (uid, nombre, email, rol, tecnico_id, region_id, created_by))
+               rol=excluded.rol, tecnico_id=excluded.tecnico_id, region_id=excluded.region_id,
+               formato_origen_id=excluded.formato_origen_id, activo=true""",
+          (uid, nombre, email, rol, tecnico_id, region_id,
+           formato_origen_id if rol == "TECNICO" else None, created_by))
 
 
 def list_usuarios():
     return _q("""SELECT u.id::text AS id, u.nombre, u.email, u.rol::text AS rol, u.activo,
-                        u.tecnico_id::text AS tecnico_id, t.nombre AS tecnico
-                 FROM usuario u LEFT JOIN cat_tecnico t ON t.id = u.tecnico_id
+                        u.tecnico_id::text AS tecnico_id, t.nombre AS tecnico,
+                        u.formato_origen_id::text AS formato_origen_id, f.nombre AS formato
+                 FROM usuario u
+                 LEFT JOIN cat_tecnico t        ON t.id = u.tecnico_id
+                 LEFT JOIN cat_formato_origen f ON f.id = u.formato_origen_id
                  ORDER BY u.activo DESC, u.rol, u.nombre""")
 
 
@@ -92,10 +99,11 @@ def set_activo(uid: str, activo: bool):
     _log("usuario", uid, "activar" if activo else "desactivar", {})
 
 
-def set_rol(uid: str, rol: str, tecnico_id):
-    """Change a user's role. tecnico_id is kept only for TECNICO (NULL otherwise)."""
-    _exec("UPDATE usuario SET rol=%s, tecnico_id=%s WHERE id=%s",
-          (rol, tecnico_id if rol == "TECNICO" else None, uid))
+def set_rol(uid: str, rol: str, tecnico_id, formato_origen_id=None):
+    """Change a user's role. tecnico_id/formato_origen_id are kept only for TECNICO."""
+    _exec("UPDATE usuario SET rol=%s, tecnico_id=%s, formato_origen_id=%s WHERE id=%s",
+          (rol, tecnico_id if rol == "TECNICO" else None,
+           formato_origen_id if rol == "TECNICO" else None, uid))
     _log("usuario", uid, "cambiar_rol", {"rol": rol})
 
 
@@ -107,6 +115,11 @@ def _tecnicos():
 @st.cache_data(ttl=300, show_spinner=False)
 def _regiones():
     return _q("SELECT id::text AS id, nombre FROM cat_region ORDER BY nombre")
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def _formatos():
+    return _q("SELECT id::text AS id, nombre FROM cat_formato_origen WHERE activo ORDER BY nombre")
 
 
 def _tec_picker(tmap: dict, key: str, current=None, allow_new: bool = True):
