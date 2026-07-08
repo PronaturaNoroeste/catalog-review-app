@@ -29,8 +29,9 @@ points at **prod**, so tests override `DATABASE_URL`/`SUPABASE_*` to dev + use t
 unique(usuario_id,nombre) + 2 RLS policies, `_migrations`=14). Saved queries now work on the live
 console. `usuario`-scoped saved queries need `auth_uid` (captured at login in `console_auth.py`).
 
-**Roadmap remaining:** R3 lists in the Form Builder (drop CSV) · R4 per-user form assignment · R5
-Excel bulk import (own deep plan) · R6 automated + on-demand backups.
+**Roadmap remaining:** R4 per-user form assignment · R5 Excel bulk import (own deep plan) · R6
+automated + on-demand backups. (R3 lists in the Form Builder shipped 2026-07-07: view/edit/attach
+curated lists from the field dialog — `lista_editor.py`; CSV bulk stays in 📑 Listas.)
 
 ## The three repos (all on GitHub, `main`)
 - `catalog-review-app` — Streamlit **admin console** → `PronaturaNoroeste/catalog-review-app`
