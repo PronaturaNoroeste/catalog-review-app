@@ -181,7 +181,11 @@ def recompute_suspect_flags() -> int:
     return n
 
 
-def _build(dataset: str, f: dict) -> tuple[str, list]:
+# Base-table alias per dataset (for the "all fields" raw dump).
+_BASE_ALIAS = {"mediciones": "m", "capturas": "c", "faenas": "f", "etp": "i"}
+
+
+def _build(dataset: str, f: dict, all_fields: bool = False) -> tuple[str, list]:
     cfg = DATASETS[dataset]
     where, params = [], []
     cols = cfg["filters"]
@@ -206,7 +210,8 @@ def _build(dataset: str, f: dict) -> tuple[str, list]:
         where.append("m.faena_id IS NOT NULL")   # orphans only exist for mediciones (alias m)
     if cfg["lengths"] and f.get("excluir_sospechosas") and _has_suspect_flag():
         where.append("(m.longitud_sospechosa IS NOT TRUE)")
-    sql = f"SELECT {cfg['select']} {cfg['from']}"
+    select = f"{_BASE_ALIAS[dataset]}.*" if all_fields else cfg["select"]
+    sql = f"SELECT {select} {cfg['from']}"
     if where:
         sql += " WHERE " + " AND ".join(where)
     return sql, params
@@ -289,8 +294,14 @@ def render_export():
                 if st.button("♻️ Recalcular tallas sospechosas", key="exp_recompute"):
                     st.success(f"Recalculado: {recompute_suspect_flags():,} mediciones marcadas.")
 
+    all_fields = st.checkbox(
+        "Descargar todos los campos (columnas crudas de la tabla base)", value=False,
+        key="exp_allf",
+        help="Incluye todas las columnas de la tabla principal (con sus ids), en vez de solo la "
+             "selección curada con nombres. Útil para análisis avanzado.")
+
     if st.button("🔍 Generar vista previa", key="exp_run", type="primary"):
-        sql, params = _build(ds, f)
+        sql, params = _build(ds, f, all_fields)
         try:
             # straight from the DBAPI cursor: pd.read_sql wants SQLAlchemy and
             # warns on raw psycopg2 connections
