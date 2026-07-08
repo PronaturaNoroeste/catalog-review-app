@@ -29,10 +29,15 @@ points at **prod**, so tests override `DATABASE_URL`/`SUPABASE_*` to dev + use t
 unique(usuario_id,nombre) + 2 RLS policies, `_migrations`=14). Saved queries now work on the live
 console. `usuario`-scoped saved queries need `auth_uid` (captured at login in `console_auth.py`).
 
-**Roadmap remaining:** R4 per-user form assignment · R5 Excel bulk import (own deep plan) · R6
+**Roadmap remaining:** R5 Excel bulk import (own deep plan) · R6
 automated + on-demand backups. (R3 lists in the Form Builder shipped 2026-07-07: view/edit/attach
 curated lists from the field dialog — `lista_editor.py`; CSV bulk stays in 📑 Listas. Add-to-list
 search shows the matches as clickable buttons — one click adds; verified in a live dev browser.)
+(R4 per-user form assignment shipped 2026-07-07: `usuario.formato_origen_id` + console assign UI in
+👤 Usuarios; the tablet loads the técnico's assigned form and blocks if unassigned — `lista_editor`
+untouched, changes in `users_admin.py` + capture-app `App.tsx`/`supabaseClient.ts`. **Migration
+`0015_usuario_formato` is applied to DEV only — it must be applied to PROD via `apply.py` before the
+console is pointed at prod (the Usuarios page selects the new column) and before the new APK ships.**)
 
 ## The three repos (all on GitHub, `main`)
 - `catalog-review-app` — Streamlit **admin console** → `PronaturaNoroeste/catalog-review-app`
