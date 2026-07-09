@@ -187,9 +187,16 @@ Requested improvements; decisions already made with the user. Full design in the
 Suggested order: R-A, R-B (quick) → R-C, R-D, R-E → R-F (own deep plan). Each ships with an AppTest
 smoke / dev-DSN round-trip test; tablet items need `tsc` + a device check and a new APK.
 
-**Status (2026-07-08): R-A…R-E shipped + pushed; R-F pending (own deep plan).** Two follow-ups for
-R-E: (1) enable the code token `{{ .Token }}` in the Supabase "Reset Password" email template — until
-then the reset email has no usable code; (2) the tablet half ships in the next APK.
+**Status (2026-07-08): R-A…R-F implemented + pushed.** Admin set-password tool removed (self-service
+replaces it). Open follow-ups:
+- **R-E:** enable the code token `{{ .Token }}` in the Supabase "Reset Password" email template
+  (done on prod; template saved at `docs/reset-password-email-template.html`).
+- **R-F (gated):** migration `0016_version_decimal` is applied to **DEV only**. Apply it to **PROD**
+  (`apply.py`, prod DSN) **before** using the decimal-version console against prod — otherwise a new
+  version rounds into the old INT column. On prod it renumbers 2 formulario rows (v8→0.8, v9→0.9);
+  faenas are all NULL. Verify: `formulario`/`faena.formulario_version` are NUMERIC, versions /10.
+- **Tablet APK v1.0.2 / versionCode 3** (offline-login + password reset + decimal version) is built
+  when you say go.
 
 - **R-A · Clearer login messages** (`console_auth.py`) — split branches so a user knows their password
   was right: valid-but-not-a-console-role → "correo y contraseña correctos, pero esta cuenta (rol X)
