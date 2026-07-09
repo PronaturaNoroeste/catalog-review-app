@@ -87,10 +87,12 @@ def create_usuario(uid, nombre, email, rol, tecnico_id, region_id,
 def list_usuarios():
     return _q("""SELECT u.id::text AS id, u.nombre, u.email, u.rol::text AS rol, u.activo,
                         u.tecnico_id::text AS tecnico_id, t.nombre AS tecnico,
-                        u.formato_origen_id::text AS formato_origen_id, f.nombre AS formato
+                        u.formato_origen_id::text AS formato_origen_id, f.nombre AS formato,
+                        u.region_id::text AS region_id, cr.nombre AS region
                  FROM usuario u
                  LEFT JOIN cat_tecnico t        ON t.id = u.tecnico_id
                  LEFT JOIN cat_formato_origen f ON f.id = u.formato_origen_id
+                 LEFT JOIN cat_region cr        ON cr.id = u.region_id
                  ORDER BY u.activo DESC, u.rol, u.nombre""")
 
 
@@ -100,11 +102,18 @@ def set_activo(uid: str, activo: bool):
 
 
 def set_rol(uid: str, rol: str, tecnico_id, formato_origen_id=None):
-    """Change a user's role. tecnico_id/formato_origen_id are kept only for TECNICO."""
+    """Change a user's role. tecnico_id/formato_origen_id are kept only for TECNICO.
+    region_id is left untouched (edit it separately with set_region)."""
     _exec("UPDATE usuario SET rol=%s, tecnico_id=%s, formato_origen_id=%s WHERE id=%s",
           (rol, tecnico_id if rol == "TECNICO" else None,
            formato_origen_id if rol == "TECNICO" else None, uid))
     _log("usuario", uid, "cambiar_rol", {"rol": rol})
+
+
+def set_region(uid: str, region_id):
+    """Set a user's region (ANALISTA download scope / RLS). NULL = todas."""
+    _exec("UPDATE usuario SET region_id=%s WHERE id=%s", (region_id, uid))
+    _log("usuario", uid, "cambiar_region", {"region_id": region_id})
 
 
 @st.cache_data(ttl=120, show_spinner=False)
@@ -222,7 +231,8 @@ def render_users_admin():
             c[0].markdown(f"**{u['nombre']}**{estado}  \n`{u['email'] or '—'}`")
             c[1].markdown(u["rol"])
             _form = f"  \nform: {u['formato']}" if u["rol"] == "TECNICO" and u.get("formato") else ""
-            c[2].markdown(f"téc: {u['tecnico'] or '—'}{_form}")
+            _reg = f"  \nregión: {u['region']}" if u["rol"] == "ANALISTA" and u.get("region") else ""
+            c[2].markdown(f"téc: {u['tecnico'] or '—'}{_form}{_reg}")
             with c[3]:
                 with st.popover("⚙️ Gestionar", width="stretch"):
                     _manage_account(u, tmap, friendly_error, flash)
@@ -272,6 +282,22 @@ def _manage_account(u, tmap, friendly_error, flash):
                 flash(f"Rol de {u['nombre']} cambiado a {newrol}."); st.rerun()
         except Exception as e:  # noqa: BLE001
             st.error(friendly_error(e))
+
+    # --- region (ANALISTA download scope / RLS) ---
+    st.divider()
+    st.caption("Región (alcance de descarga del ANALISTA)")
+    rmap = {r["id"]: r["nombre"] for r in _regiones()}
+    curr = u.get("region_id")
+    if curr and curr not in rmap:
+        rmap[curr] = u.get("region") or "(región)"
+    ropts = [None] + list(rmap)
+    newreg = st.selectbox("Región", ropts, index=ropts.index(curr) if curr in ropts else 0,
+                          format_func=lambda i: "Todas" if i is None else rmap.get(i, i),
+                          key=f"reg_{uid}", label_visibility="collapsed")
+    if u["rol"] == "ANALISTA" and not newreg:
+        st.caption("Un analista sin región no podrá descargar datos.")
+    if st.button("Guardar región", key=f"chreg_{uid}", width="stretch"):
+        set_region(uid, newreg); flash(f"Región de {u['nombre']} actualizada."); st.rerun()
 
     # --- reset password ---
     st.divider()

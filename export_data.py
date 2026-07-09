@@ -241,12 +241,24 @@ def render_export():
 
     _consultas_guardadas_ui()
 
-    modo = st.radio("Modo", ["Conjuntos rápidos", "🔧 Constructor (combinar tablas)"],
-                    horizontal=True, key="exp_modo", label_visibility="collapsed")
-    if modo.startswith("🔧"):
-        from export_builder import render_builder
-        render_builder(render_results)
+    # Analistas are scoped to their assigned region and get only the curated datasets (R-C).
+    is_analista = st.session_state.get("auth_rol") == "ANALISTA"
+    region_lock = st.session_state.get("auth_region") if is_analista else None
+    region_lock_nombre = st.session_state.get("auth_region_nombre")
+    if is_analista and not region_lock:
+        st.warning("Tu cuenta de analista no tiene una región asignada. Pídele a un administrador "
+                   "que te asigne una para poder descargar datos.")
         return
+
+    if is_analista:
+        modo = "Conjuntos rápidos"                 # analistas: sin Constructor
+    else:
+        modo = st.radio("Modo", ["Conjuntos rápidos", "🔧 Constructor (combinar tablas)"],
+                        horizontal=True, key="exp_modo", label_visibility="collapsed")
+        if modo.startswith("🔧"):
+            from export_builder import render_builder
+            render_builder(render_results)
+            return
 
     try:
         esp, reg, fmt, sexos, proc = _opts()
@@ -267,8 +279,12 @@ def render_export():
         emap = {e["id"]: e["nombre_comun"] for e in esp}
         f["especie"] = c1.multiselect("Especie", list(emap), format_func=lambda i: emap[i], key="exp_esp")
     if "region" in cols:
-        rmap = {r["id"]: r["nombre"] for r in reg}
-        f["region"] = c2.multiselect("Región", list(rmap), format_func=lambda i: rmap[i], key="exp_reg")
+        if region_lock:
+            f["region"] = [region_lock]
+            c2.caption(f"Región: **{region_lock_nombre or '—'}** (fijada para tu cuenta)")
+        else:
+            rmap = {r["id"]: r["nombre"] for r in reg}
+            f["region"] = c2.multiselect("Región", list(rmap), format_func=lambda i: rmap[i], key="exp_reg")
     if "formato" in cols:
         fmap = {x["id"]: x["codigo"] for x in fmt}
         f["formato"] = c1.multiselect("Formato origen", list(fmap), format_func=lambda i: fmap[i], key="exp_fmt")

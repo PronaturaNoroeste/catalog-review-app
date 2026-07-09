@@ -29,12 +29,16 @@ def _password_grant(email: str, password: str) -> dict:
 
 
 def _profile_of(uid: str):
-    """(rol, nombre, activo) for the auth user — NO activo filter, so a deactivated
-    account is distinguishable from one that simply lacks a console role.
-    (None, None, None) when there's no usuario row for this auth user."""
-    rows = _q("SELECT rol::text AS rol, nombre, activo FROM usuario WHERE id=%s", (uid,))
+    """(rol, nombre, activo, region_id, region_nombre) for the auth user — NO activo
+    filter, so a deactivated account is distinguishable from one that simply lacks a
+    console role. All-None when there's no usuario row for this auth user."""
+    rows = _q("""SELECT u.rol::text AS rol, u.nombre, u.activo,
+                        u.region_id::text AS region_id, r.nombre AS region_nombre
+                 FROM usuario u LEFT JOIN cat_region r ON r.id = u.region_id
+                 WHERE u.id=%s""", (uid,))
     r = rows[0] if rows else None
-    return (r["rol"], r["nombre"], r["activo"]) if r else (None, None, None)
+    return ((r["rol"], r["nombre"], r["activo"], r["region_id"], r["region_nombre"])
+            if r else (None, None, None, None, None))
 
 
 def _admins_exist() -> bool:
@@ -66,7 +70,7 @@ def require_login() -> tuple[str, str]:
     if st.button("Entrar", type="primary", disabled=not (email and pw), key="login_btn"):
         try:
             data = _password_grant(email.strip(), pw)
-            rol, nombre, activo = _profile_of(data["user"]["id"])
+            rol, nombre, activo, region_id, region_nombre = _profile_of(data["user"]["id"])
         except RuntimeError:
             st.error("Correo o contraseña incorrectos.")
         except Exception as e:  # noqa: BLE001  (DB/network hiccup, not a credentials problem)
@@ -86,6 +90,8 @@ def require_login() -> tuple[str, str]:
                 st.session_state["auth_rol"] = rol
                 st.session_state["auth_nombre"] = nombre
                 st.session_state["auth_uid"] = data["user"]["id"]   # scope per-user saved queries
+                st.session_state["auth_region"] = region_id          # ANALISTA region scope (R-C)
+                st.session_state["auth_region_nombre"] = region_nombre
                 st.rerun()
     st.stop()
 
@@ -94,6 +100,6 @@ def logout_button():
     # Plain button, no confirm: a stray click only costs a re-login, and the
     # popover confirm rendered unreadably on the Tide sidebar.
     if st.sidebar.button("🚪 Salir", key="console_logout", width="stretch"):
-        for k in ("auth_rol", "auth_nombre", "auth_uid"):
+        for k in ("auth_rol", "auth_nombre", "auth_uid", "auth_region", "auth_region_nombre"):
             st.session_state.pop(k, None)
         st.rerun()
