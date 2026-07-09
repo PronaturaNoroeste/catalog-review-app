@@ -375,6 +375,8 @@ def _apply_config(config: dict):
         if config.get("sort_col"):
             ss[f"jb_sort_{base}"] = config["sort_col"]
             ss[f"jb_sortdir_{base}"] = config.get("sort_dir") or "Más recientes primero"
+        for fk_col, ids in (config.get("filtros") or {}).items():
+            ss[f"jb_f_{base}_{fk_col}"] = ids
         for ch in config.get("children", []):
             t = ch["table"]
             ss[f"jb_c_{base}_{t}"] = True

@@ -97,6 +97,13 @@ def date_columns(table: str) -> list[str]:
         "ORDER BY ordinal_position", (table,))]
 
 
+@st.cache_data(ttl=300, show_spinner=False)
+def catalog_rows(ref: str, namecol: str) -> list[dict]:
+    """Rows of a catalog table for a filter multiselect (id + display name). ref/namecol
+    come from catalog_parents() — schema-discovered, safe to quote."""
+    return _q(f'SELECT id::text AS id, "{namecol}" AS nombre FROM public."{ref}" ORDER BY 2')
+
+
 _SORT_DIR = {"Más recientes primero": "DESC", "Más antiguas primero": "ASC"}
 
 
@@ -120,9 +127,11 @@ def _table_columns(table: str, alias: str, prefix: str, show_ids: bool, ai: int)
 
 
 def build_query(base: str, children: list[dict], show_ids: bool, limit: int,
-                sort_col: str | None = None, sort_dir: str | None = None) -> str:
-    """Assemble the SQL. Catalog FK ids resolve to names by default (raw ids only when
-    show_ids). All identifiers come from schema discovery (safe to quote)."""
+                sort_col: str | None = None, sort_dir: str | None = None,
+                filtros: dict | None = None) -> tuple[str, list]:
+    """Assemble the SQL + params. Catalog FK ids resolve to names by default (raw ids
+    only when show_ids). All identifiers come from schema discovery (safe to quote);
+    filter values are parameterized."""
     sel, bjoins, ai = _table_columns(base, "b", "", show_ids, 0)
     frm = [f'public."{base}" b'] + bjoins
     si = 0
@@ -150,13 +159,21 @@ def build_query(base: str, children: list[dict], show_ids: bool, limit: int,
                 else:
                     sel.append(f'd."{col}" AS "{ch["label"]}_{col}"')
     sql = f'SELECT {", ".join(sel)} FROM ' + " ".join(frm)
+    params: list = []
+    wh = []
+    for fk_col, ids in (filtros or {}).items():
+        if ids:
+            # fk_col from catalog_parents() (schema discovery); values parameterized
+            wh.append(f'b."{fk_col}" = ANY(%s::uuid[])'); params.append(list(ids))
+    if wh:
+        sql += " WHERE " + " AND ".join(wh)
     d = _SORT_DIR.get(sort_dir)
     if sort_col and d:
         # sort_col comes from date_columns() (schema discovery) — safe to quote
         sql += f' ORDER BY b."{sort_col}" {d} NULLS LAST'
     if limit and limit > 0:
         sql += f" LIMIT {int(limit)}"
-    return sql
+    return sql, params
 
 
 def render_builder(render_results):
@@ -211,6 +228,21 @@ def render_builder(render_results):
             sort_dir = sc[1].radio("Orden", list(_SORT_DIR), horizontal=True,
                                    key=f"jb_sortdir_{base}")
 
+    # optional value filters on the base's catalog columns (R-D) — e.g. una comunidad
+    filtros: dict[str, list] = {}
+    parents = catalog_parents(base)
+    if parents:
+        with st.expander("🔎 Filtros (opcional)"):
+            st.caption("Filtra por los catálogos de la tabla principal (p. ej. una comunidad).")
+            fc = st.columns(2)
+            for i, p in enumerate(parents):
+                m = {r["id"]: r["nombre"] for r in catalog_rows(p["ref"], p["namecol"])}
+                sel = fc[i % 2].multiselect(p["label"], list(m),
+                                            format_func=lambda x, m=m: m.get(x, x),
+                                            key=f"jb_f_{base}_{p['fk_col']}")
+                if sel:
+                    filtros[p["fk_col"]] = sel
+
     n_det = sum(1 for c in chosen_children if c["mode"] == "detalle")
     if n_det > 1:
         st.error("Solo puedes usar **Detalle** en una tabla hija a la vez (evita multiplicar "
@@ -220,13 +252,15 @@ def render_builder(render_results):
     st.session_state["exp_current"] = {"mode": "builder", "base": base,
                                        "children": chosen_children, "show_ids": show_ids,
                                        "limit": int(limit),
-                                       "sort_col": sort_col, "sort_dir": sort_dir}
+                                       "sort_col": sort_col, "sort_dir": sort_dir,
+                                       "filtros": filtros}
 
     if st.button("🔍 Generar vista previa", key="jb_run", type="primary", disabled=n_det > 1):
-        sql = build_query(base, chosen_children, show_ids, int(limit), sort_col, sort_dir)
+        sql, params = build_query(base, chosen_children, show_ids, int(limit),
+                                  sort_col, sort_dir, filtros)
         try:
             cur = get_conn().cursor()
-            cur.execute(sql)
+            cur.execute(sql, params or None)
             df = pd.DataFrame(cur.fetchall(), columns=[c[0] for c in cur.description])
             cur.close()
             st.session_state["jb_df"] = df
