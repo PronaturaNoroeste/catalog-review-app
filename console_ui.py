@@ -58,7 +58,10 @@ def show_flash():
     """Render the queued toast (called once at the top of every run, in main())."""
     f = st.session_state.pop("_flash", None)
     if f:
-        st.toast(f[0], icon=f[1])
+        try:
+            st.toast(f[0], icon=f[1])
+        except Exception:  # noqa: BLE001 — a bad/invalid icon must never brick the whole app
+            st.toast(f[0])
 
 
 def empty_state(msg: str, icon: str = "✅"):

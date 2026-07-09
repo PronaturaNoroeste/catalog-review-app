@@ -938,7 +938,7 @@ def _paso_secciones(work: dict, published: bool, bindable: dict):
                            help="Duplicar esta sección con sus campos", width="stretch"):
                 from console_ui import flash
                 _dup_seccion(work, i)
-                flash("Sección duplicada (los datos del sistema quedan sin vincular).", "⧉")
+                flash("Sección duplicada (los datos del sistema quedan sin vincular).", "📋")
                 st.rerun()
             if c[2].button("↑", key=f"fbs_up_{i}", disabled=published or i == 0,
                            width="stretch"):
@@ -1325,9 +1325,9 @@ def _paso_campos(work: dict, published: bool, bindable: dict):
                             help="Duplicar este campo", width="stretch"):
                 if _dup_campo(work, campos, i):
                     flash("Copia creada como dato personalizado (un dato del sistema no se "
-                          "puede repetir).", "⧉")
+                          "puede repetir).", "📋")
                 else:
-                    flash("Campo duplicado.", "⧉")
+                    flash("Campo duplicado.", "📋")
                 st.rerun()
             if cc[2].button("↑", key=f"fbc_{pick}_up_{i}", disabled=published or i == 0,
                             width="stretch"):
