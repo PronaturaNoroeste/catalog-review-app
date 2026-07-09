@@ -28,9 +28,13 @@ def _password_grant(email: str, password: str) -> dict:
     return r.json()
 
 
-def _rol_of(uid: str):
-    rows = _q("SELECT rol::text AS rol, nombre FROM usuario WHERE id=%s AND activo", (uid,))
-    return (rows[0]["rol"], rows[0]["nombre"]) if rows else (None, None)
+def _profile_of(uid: str):
+    """(rol, nombre, activo) for the auth user — NO activo filter, so a deactivated
+    account is distinguishable from one that simply lacks a console role.
+    (None, None, None) when there's no usuario row for this auth user."""
+    rows = _q("SELECT rol::text AS rol, nombre, activo FROM usuario WHERE id=%s", (uid,))
+    r = rows[0] if rows else None
+    return (r["rol"], r["nombre"], r["activo"]) if r else (None, None, None)
 
 
 def _admins_exist() -> bool:
@@ -62,16 +66,27 @@ def require_login() -> tuple[str, str]:
     if st.button("Entrar", type="primary", disabled=not (email and pw), key="login_btn"):
         try:
             data = _password_grant(email.strip(), pw)
-            rol, nombre = _rol_of(data["user"]["id"])
-            if rol not in CONSOLE_ROLES:
-                st.error("Esta cuenta no tiene acceso a la consola (se requiere ADMINISTRADOR o ANALISTA).")
+            rol, nombre, activo = _profile_of(data["user"]["id"])
+        except RuntimeError:
+            st.error("Correo o contraseña incorrectos.")
+        except Exception as e:  # noqa: BLE001  (DB/network hiccup, not a credentials problem)
+            st.error(f"No se pudo iniciar sesión: {e}")
+        else:
+            # Credentials were valid — be specific about why access is (or isn't) granted.
+            if rol is None:
+                st.error("Tu correo y contraseña son correctos, pero esta cuenta no tiene un perfil "
+                         "en la consola. Contacta a un administrador.")
+            elif not activo:
+                st.error("Tu correo y contraseña son correctos, pero tu cuenta está **desactivada**. "
+                         "Contacta a un administrador.")
+            elif rol not in CONSOLE_ROLES:
+                st.error(f"Tu correo y contraseña son correctos, pero esta cuenta (rol **{rol}**) no "
+                         "tiene acceso a la consola. Pídele acceso a un administrador.")
             else:
                 st.session_state["auth_rol"] = rol
                 st.session_state["auth_nombre"] = nombre
                 st.session_state["auth_uid"] = data["user"]["id"]   # scope per-user saved queries
                 st.rerun()
-        except Exception as e:  # noqa: BLE001
-            st.error(f"No se pudo iniciar sesión: {e}")
     st.stop()
 
 
