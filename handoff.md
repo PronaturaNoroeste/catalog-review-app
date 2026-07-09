@@ -187,6 +187,10 @@ Requested improvements; decisions already made with the user. Full design in the
 Suggested order: R-A, R-B (quick) → R-C, R-D, R-E → R-F (own deep plan). Each ships with an AppTest
 smoke / dev-DSN round-trip test; tablet items need `tsc` + a device check and a new APK.
 
+**Status (2026-07-08): R-A…R-E shipped + pushed; R-F pending (own deep plan).** Two follow-ups for
+R-E: (1) enable the code token `{{ .Token }}` in the Supabase "Reset Password" email template — until
+then the reset email has no usable code; (2) the tablet half ships in the next APK.
+
 - **R-A · Clearer login messages** (`console_auth.py`) — split branches so a user knows their password
   was right: valid-but-not-a-console-role → "correo y contraseña correctos, pero esta cuenta (rol X)
   no tiene acceso…"; deactivated → distinct message; bad creds → "correo o contraseña incorrectos".
