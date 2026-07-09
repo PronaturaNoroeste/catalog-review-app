@@ -43,19 +43,6 @@ def create_auth_user(email: str, password: str) -> str:
     return r.json()["id"]
 
 
-def reset_password(uid: str, new_password: str):
-    """Admin-set a new password for an existing auth user (GoTrue admin API)."""
-    r = requests.put(f"{SUPABASE_URL}/auth/v1/admin/users/{uid}", headers=_svc_headers(),
-                     json={"password": new_password}, timeout=20)
-    if r.status_code >= 300:
-        try:
-            msg = r.json().get("msg") or r.json().get("error_description") or r.text
-        except Exception:  # noqa: BLE001
-            msg = r.text
-        raise RuntimeError(f"{r.status_code}: {msg}")
-    _log("usuario", uid, "reset_password", {})
-
-
 def _exec(sql: str, args=()):
     cur = get_conn().cursor()
     cur.execute(sql, args)
@@ -163,7 +150,8 @@ def render_users_admin():
             "1. Llena nombre, correo y contraseña, y elige el **rol**.\n"
             "2. Un **técnico** se vincula a su nombre del catálogo para que el "
             "formulario de la tableta salga prellenado (puedes **crear el técnico aquí mismo**).\n"
-            "3. Con **⚙️ Gestionar** cambias el rol, restableces la contraseña o desactivas a alguien.\n\n"
+            "3. Con **⚙️ Gestionar** cambias el rol, la región o desactivas a alguien. La contraseña "
+            "la restablece cada persona desde «¿Olvidaste tu contraseña?» al iniciar sesión.\n\n"
             + ROLES_MD
         ),
     )
@@ -299,14 +287,5 @@ def _manage_account(u, tmap, friendly_error, flash):
     if st.button("Guardar región", key=f"chreg_{uid}", width="stretch"):
         set_region(uid, newreg); flash(f"Región de {u['nombre']} actualizada."); st.rerun()
 
-    # --- reset password ---
-    st.divider()
-    st.caption("Restablecer contraseña")
-    npw = st.text_input("Nueva contraseña", type="password", key=f"pw_{uid}",
-                        label_visibility="collapsed", placeholder="Nueva contraseña")
-    if st.button("Restablecer", key=f"rpw_{uid}", width="stretch", disabled=not npw):
-        try:
-            reset_password(uid, npw)
-            flash(f"Contraseña de {u['nombre']} restablecida.", "🔑"); st.rerun()
-        except Exception as e:  # noqa: BLE001
-            st.error(friendly_error(e))
+    # Password reset is self-service now (login → "¿Olvidaste tu contraseña?"); the
+    # admin-set-password tool was removed.
