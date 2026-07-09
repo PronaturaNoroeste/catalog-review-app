@@ -817,9 +817,6 @@ def _paso_datos(work: dict, published: bool, formatos: list[dict], bindable: dic
             "Formato / región", fmt_ids, index=fmt_ids.index(cur_fmt) if cur_fmt else 0,
             format_func=lambda i: fmt_label.get(i, i), key=f"fb_formato_{ld}",
             disabled=published or work["id"] is not None)
-    c2.checkbox("Mostrar formatos históricos", key="fb_hist",
-                help="Formatos de datos importados; solo si vas a crear un formulario nuevo "
-                     "para uno de ellos.")
     c3.metric("Versión", work["version"])
 
     st.session_state["fb_cons_err"] = None   # structured editor can't produce bad JSON
@@ -1400,8 +1397,8 @@ def render_form_builder():
 
     try:
         bindable = load_bindable_core()
-        # live formats by default; the toggle (rendered below) exposes historical ones
-        formatos = list_formatos() if st.session_state.get("fb_hist") else formatos_en_uso()
+        # only formats the app actually uses — historical imports stay hidden (R-B)
+        formatos = formatos_en_uso()
         formularios = list_formularios()
     except Exception as e:  # noqa: BLE001
         st.error(f"No se pudo conectar a la base de datos: {e}")

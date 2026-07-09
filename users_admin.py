@@ -119,7 +119,12 @@ def _regiones():
 
 @st.cache_data(ttl=300, show_spinner=False)
 def _formatos():
-    return _q("SELECT id::text AS id, nombre FROM cat_formato_origen WHERE activo ORDER BY nombre")
+    # only formatos that have a PUBLISHED form — assigning a técnico to a formato with
+    # no usable form would just block them on the tablet (R-B).
+    return _q("""SELECT fo.id::text AS id, fo.nombre FROM cat_formato_origen fo
+                 WHERE EXISTS (SELECT 1 FROM formulario f
+                               WHERE f.formato_origen_id = fo.id AND f.estado='publicado')
+                 ORDER BY fo.nombre""")
 
 
 def _tec_picker(tmap: dict, key: str, current=None, allow_new: bool = True):
