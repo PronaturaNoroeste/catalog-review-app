@@ -1423,6 +1423,11 @@ def render_form_builder():
         chip = {"borrador": "📝", "publicado": "✅", "archivado": "🗄️"}.get(f["estado"], "")
         return f"{chip} [{f['formato']}] {f['nombre']} · v{f['version']} ({f['estado']})"
 
+    # apply a pending selection (from "Nueva versión" / save) BEFORE the widget exists —
+    # writing a widget key after its widget is instantiated is a Streamlit error.
+    if "fb_sel_pending" in st.session_state:
+        st.session_state["fb_sel"] = st.session_state.pop("fb_sel_pending")
+        st.session_state["fb_loaded"] = None
     sel = st.selectbox("Formulario", opts, format_func=_label, key="fb_sel")
 
     # a new form can start blank or be seeded from an existing one (plantilla)
@@ -1462,8 +1467,7 @@ def render_form_builder():
         if w2.button("🌱 Nueva versión", key="fb_newver", width="stretch"):
             try:
                 nid = new_version_from(work["id"])
-                st.session_state["fb_loaded"] = None
-                st.session_state["fb_sel"] = nid
+                st.session_state["fb_sel_pending"] = nid   # applied before the selectbox next run
                 flash("Nueva versión creada como borrador.", "🌱")
                 st.rerun()
             except Exception as e:  # noqa: BLE001
@@ -1498,9 +1502,9 @@ def render_form_builder():
                                 work["version"], {"secciones": work["secciones"]},
                                 work["constantes"])
             work["id"] = fid
-            # land on the saved form (so a new/plantilla draft doesn't reset to blank)
-            st.session_state["fb_sel"] = fid
-            st.session_state["fb_loaded"] = None  # force reload list/state next run
+            # land on the saved form (so a new/plantilla draft doesn't reset to blank);
+            # pending key is applied before the selectbox next run (can't write fb_sel here)
+            st.session_state["fb_sel_pending"] = fid
             flash("Borrador guardado.", "💾")
             st.rerun()
         except Exception as e:  # noqa: BLE001
