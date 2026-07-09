@@ -365,6 +365,13 @@ def new_version_from(fid: str) -> str:
                          f["definicion"], f["constantes"] or {})
 
 
+def delete_formulario(fid: str) -> None:
+    """Delete a borrador. Guarded to estado='borrador' so a published/archived version
+    can never be removed (those are immutable and may be referenced by faenas)."""
+    _exec("DELETE FROM formulario WHERE id=%s AND estado='borrador'", (fid,))
+    _log("formulario", fid, "eliminar", {"origen": "constructor"})
+
+
 # =====================================================================
 # Pure validation (no Streamlit / DB — unit-testable)
 # =====================================================================
@@ -1385,7 +1392,7 @@ def _paso_revisar(work: dict, published: bool, bindable: dict):
 
 
 def render_form_builder():
-    from console_ui import page_header, friendly_error, flash
+    from console_ui import page_header, friendly_error, flash, confirm_button
     page_header(
         "🛠️ Formularios",
         "Edita y publica las versiones del formulario que llena el técnico en la tableta.",
@@ -1472,6 +1479,18 @@ def render_form_builder():
                 st.rerun()
             except Exception as e:  # noqa: BLE001
                 st.error(f"No se pudo crear la versión: {friendly_error(e)}")
+    elif work["id"]:
+        # existing borrador → allow deleting it (drafts only)
+        with st.expander("🗑️ Eliminar este borrador"):
+            st.caption("Borra definitivamente este borrador. No afecta versiones publicadas.")
+            if confirm_button("🗑️ Eliminar borrador", key="fb_del"):
+                try:
+                    delete_formulario(work["id"])
+                    st.session_state["fb_sel_pending"] = "__new__"
+                    flash("Borrador eliminado.", "🗑️")
+                    st.rerun()
+                except Exception as e:  # noqa: BLE001
+                    st.error(f"No se pudo eliminar: {friendly_error(e)}")
 
     # ---- wizard -----------------------------------------------------
     paso = st.segmented_control("Paso", PASOS, key="fb_step", default=PASOS[0],
