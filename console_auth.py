@@ -28,6 +28,34 @@ def _password_grant(email: str, password: str) -> dict:
     return r.json()
 
 
+def _recover(email: str):
+    """Ask Supabase to email a password-recovery code (OTP). Requires the "Reset
+    Password" email template to include the code token {{ .Token }}."""
+    r = requests.post(f"{SUPABASE_URL}/auth/v1/recover",
+                      headers={"apikey": SUPABASE_ANON_KEY, "Content-Type": "application/json"},
+                      json={"email": email}, timeout=20)
+    if r.status_code >= 300:
+        raise RuntimeError("No se pudo enviar el código. Verifica el correo e inténtalo de nuevo.")
+
+
+def _reset_with_code(email: str, token: str, new_password: str):
+    """Verify the emailed recovery code, then set the new password."""
+    r = requests.post(f"{SUPABASE_URL}/auth/v1/verify",
+                      headers={"apikey": SUPABASE_ANON_KEY, "Content-Type": "application/json"},
+                      json={"type": "recovery", "email": email, "token": token}, timeout=20)
+    if r.status_code >= 300:
+        raise RuntimeError("Código inválido o expirado.")
+    access = r.json().get("access_token")
+    if not access:
+        raise RuntimeError("No se pudo verificar el código.")
+    r2 = requests.put(f"{SUPABASE_URL}/auth/v1/user",
+                      headers={"apikey": SUPABASE_ANON_KEY, "Authorization": f"Bearer {access}",
+                               "Content-Type": "application/json"},
+                      json={"password": new_password}, timeout=20)
+    if r2.status_code >= 300:
+        raise RuntimeError("No se pudo actualizar la contraseña.")
+
+
 def _profile_of(uid: str):
     """(rol, nombre, activo, region_id, region_nombre) for the auth user — NO activo
     filter, so a deactivated account is distinguishable from one that simply lacks a
@@ -93,6 +121,28 @@ def require_login() -> tuple[str, str]:
                 st.session_state["auth_region"] = region_id          # ANALISTA region scope (R-C)
                 st.session_state["auth_region_nombre"] = region_nombre
                 st.rerun()
+
+    with st.expander("¿Olvidaste tu contraseña?"):
+        st.caption("Te enviamos un código a tu correo para restablecerla.")
+        rmail = st.text_input("Correo", key="rec_email")
+        if st.button("Enviar código", key="rec_send", disabled=not rmail.strip()):
+            try:
+                _recover(rmail.strip())
+                st.session_state["rec_sent"] = rmail.strip()
+                st.success("Si el correo existe, te enviamos un código. Revisa tu bandeja (y spam).")
+            except Exception as e:  # noqa: BLE001
+                st.error(str(e))
+        if st.session_state.get("rec_sent"):
+            code = st.text_input("Código del correo", key="rec_code")
+            npw = st.text_input("Nueva contraseña", type="password", key="rec_npw")
+            if st.button("Cambiar contraseña", key="rec_apply",
+                         disabled=not (code.strip() and npw)):
+                try:
+                    _reset_with_code(st.session_state["rec_sent"], code.strip(), npw)
+                    st.session_state.pop("rec_sent", None)
+                    st.success("Contraseña actualizada. Inicia sesión con la nueva.")
+                except Exception as e:  # noqa: BLE001
+                    st.error(str(e))
     st.stop()
 
 
