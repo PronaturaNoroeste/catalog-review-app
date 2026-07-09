@@ -10,9 +10,10 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Runtime modules (the full Supabase-backed console, not the old CSV-only tool).
-COPY app.py home.py console_ui.py console_theme.py console_config.py console_auth.py \
-     form_builder.py catalog_admin.py proposals_review.py lista_import.py lista_editor.py \
-     users_admin.py export_data.py export_builder.py export_saved.py maintenance.py ./
+# Wildcard on purpose: new modules must not need a Dockerfile edit to ship
+# (see 2ac0ad6, f13ab3b for the ModuleNotFoundError bugs this caused).
+# .dockerignore already excludes test_*.py / tests/.
+COPY *.py ./
 COPY .streamlit/ ./.streamlit/
 # Static CSV snapshots the Duplicados (dedup) screen reads.
 COPY catalogos_export/ ./catalogos_export/
