@@ -317,7 +317,7 @@ def load_formulario(fid: str) -> dict | None:
     return rows[0] if rows else None
 
 
-def save_borrador(fid: str | None, nombre: str, formato_id: str, version: int,
+def save_borrador(fid: str | None, nombre: str, formato_id: str, version: float,
                   definicion: dict, constantes: dict) -> str:
     """Upsert a borrador. Refuses to touch a published row (immutability)."""
     defn_j = json.dumps(definicion, ensure_ascii=False)
@@ -347,10 +347,12 @@ def publish(fid: str) -> None:
     cur.close()
 
 
-def next_version(formato_id: str) -> int:
-    rows = _q("SELECT COALESCE(MAX(version),0)+1 AS v FROM formulario WHERE formato_origen_id=%s",
+def next_version(formato_id: str) -> float:
+    """Suggested next version — decimal, +0.1 over the latest (0.1, 0.2, … 0.9, 1.0).
+    The admin can override it in the wizard."""
+    rows = _q("SELECT COALESCE(MAX(version),0) AS v FROM formulario WHERE formato_origen_id=%s",
               (formato_id,))
-    return rows[0]["v"]
+    return round(float(rows[0]["v"]) + 0.1, 1)
 
 
 def new_version_from(fid: str) -> str:
@@ -537,7 +539,7 @@ def _pj(s):
 # UI
 # =====================================================================
 def _blank_work() -> dict:
-    return {"id": None, "nombre": "", "formato_id": None, "version": 1, "estado": "borrador",
+    return {"id": None, "nombre": "", "formato_id": None, "version": 0.1, "estado": "borrador",
             "secciones": [{"key": "generales", "titulo": "Datos del viaje",
                            "entidad": "faena", "campos": []}],
             "constantes": {}}
@@ -817,7 +819,10 @@ def _paso_datos(work: dict, published: bool, formatos: list[dict], bindable: dic
             "Formato / región", fmt_ids, index=fmt_ids.index(cur_fmt) if cur_fmt else 0,
             format_func=lambda i: fmt_label.get(i, i), key=f"fb_formato_{ld}",
             disabled=published or work["id"] is not None)
-    c3.metric("Versión", work["version"])
+    work["version"] = c3.number_input(
+        "Versión", min_value=0.1, max_value=99.9, step=0.1, value=float(work["version"]),
+        format="%.1f", key=f"fb_version_{ld}", disabled=published or work["id"] is not None,
+        help="Número de versión (decimal). El técnico lo verá; debe ser único por formato.")
 
     st.session_state["fb_cons_err"] = None   # structured editor can't produce bad JSON
     with st.expander("📌 Valores fijos (la tableta los llena sola)",
