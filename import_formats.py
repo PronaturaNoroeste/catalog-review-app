@@ -164,3 +164,100 @@ _BITACORA = FormatSpec(
     children=_CHILDREN)
 
 FORMATS = {"MASIVOS_LEGACY": _MASIVOS, "BITACORA_LEGACY": _BITACORA}
+
+
+from dataclasses import dataclass as _dc
+
+@_dc
+class FaenaDraft:
+    key: tuple | None
+    faena_raw: dict
+    catches: list
+    children_raw: dict
+    errors: list
+
+
+def _faena_fields(row, spec):
+    """Map trip-level raw row → {faena_column: raw_or_parsed_value} (pre-catalog)."""
+    out, errors = {}, []
+    for header, t in spec.faena_cols.items():
+        v = row.get(header)
+        if t.kind == "num":
+            out[t.column] = parse_num(v)
+        elif t.kind == "hora":
+            out[t.column] = parse_hora(v)
+        elif t.kind == "catalog":
+            out[t.column] = ("catalog", t.catalog, v)      # resolved later
+        else:
+            out[t.column] = None if is_na(v) else normalize(v)
+    # fecha
+    out["fecha"] = parse_date(row.get("Dia"), row.get("Mes"), row.get("Año"))
+    # required hours default
+    if not out.get("tiempo_efectivo_pesca_h"):
+        out["tiempo_efectivo_pesca_h"] = 0
+        errors.append("tiempo de pesca desconocido → 0 (revisar)")
+    out["tipo_registro"] = spec.tipo_registro
+    return out, errors
+
+
+def _catch(row, spec):
+    kg = parse_num(row.get("Captura (kg)"))
+    if kg is None:
+        return None
+    return {"comun": row.get(spec.especie_comun), "cientifico": row.get(spec.especie_cientifico),
+            "captura_kg": kg,
+            "categoria_tamano": None if is_na(row.get("Categoria por tamaño"))
+            else normalize(row.get("Categoria por tamaño")),
+            "precio_kg": parse_num(row.get("Precio"))}
+
+
+def _key(row, spec):
+    return tuple(normalize(row.get(h)) for h in spec.key_headers)
+
+
+def group_faenas(rows, spec):
+    order, buckets = [], {}
+    for row in rows:
+        k = _key(row, spec)
+        if k not in buckets:
+            buckets[k] = []; order.append(k)
+        buckets[k].append(row)
+    drafts = []
+    for k in order:
+        group = buckets[k]
+        faena_raw, errors = _faena_fields(group[0], spec)
+        valid_key = k if faena_raw.get("fecha") else None
+        if faena_raw.get("fecha") is None:
+            errors.append("fecha inválida (Día/Mes/Año) — faena omitida")
+        catches = []
+        for row in group:
+            c = _catch(row, spec)
+            if c is None:
+                errors.append(f"captura sin kg omitida: {normalize(row.get(spec.especie_comun))}")
+            else:
+                catches.append(c)
+        children_raw = _children(group[0], spec)      # trip-level children from first row
+        drafts.append(FaenaDraft(valid_key, faena_raw, catches, children_raw, errors))
+    return drafts
+
+
+def _children(row, spec):
+    ch = spec.children
+    out = {"arte": {}, "carnada": {}, "etp": [], "gasto": []}
+    if any(not is_na(row.get(header)) for header, _cat in ch["arte"].values()):
+        for col, (header, cat) in ch["arte"].items():
+            v = row.get(header)
+            out["arte"][col] = ("catalog", cat, v) if cat else (None if is_na(v) else normalize(v))
+    if not is_na(row.get(ch["carnada"]["comun"][0])) or not is_na(row.get(ch["carnada"]["origen"][0])):
+        for col, (header, cat) in ch["carnada"].items():
+            v = row.get(header)
+            out["carnada"][col] = ("catalog", cat, v) if cat else (None if is_na(v) else normalize(v))
+    for esp_h, int_h in ch["etp"]:
+        if not is_na(row.get(esp_h)):
+            out["etp"].append({"comun": row.get(esp_h), "interaccion": row.get(int_h)})
+    for tipo, (cant_h, monto_h) in ch["gasto"].items():
+        monto = parse_num(row.get(monto_h))
+        if monto is not None:
+            out["gasto"].append({"tipo": tipo, "cantidad": parse_num(row.get(cant_h)),
+                                 "monto_total": monto})
+    return out
