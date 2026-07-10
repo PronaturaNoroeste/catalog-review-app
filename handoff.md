@@ -30,7 +30,25 @@ unique(usuario_id,nombre) + 2 RLS policies, `_migrations`=14). Saved queries now
 console. `usuario`-scoped saved queries need `auth_uid` (captured at login in `console_auth.py`).
 
 **Roadmap remaining:** post-pilot backlog (R-A…R-F, details at the end of this file) · R5 Excel bulk
-import (own deep plan) · R6 automated + on-demand backups. (R3 lists in the Form Builder shipped 2026-07-07: view/edit/attach
+import — **design approved 2026-07-10**, spec at `docs/superpowers/specs/2026-07-10-r5-excel-import-design.md`
+(next: writing-plans → implement) · R6 automated + on-demand backups.
+
+**Data-row editor shipped 2026-07-10** (commit `7e0d6cb`, not yet pushed): new ✏️ **Registros (datos)**
+console mode (`data_admin.py`) — ADMINISTRADOR-only edit/delete of faena + child rows (11 single-`id`-PK
+data tables; `tecnico_comunidad` composite PK excluded). Filter-based row picker (id / FK / date range;
+no `count(*)` on big tables), FK-nameless fallback to raw UUID, dependents-guarded delete. `_log` now
+attributes every change (catalog **and** data) to the admin (`usuario_id` + `"por"`); no FK on
+`cambio_catalogo.usuario_id`. Dev round-trip test: `tests/test_data_admin.py`.
+
+**R5 Excel import — key design decisions** (Masivos+Bitácoras first, pluggable for the rest): repeatable
+4-step wizard (`importar` mode); fuzzy-match+confirm catalog resolution (`difflib`, auto-create unknowns
+`es_aprobado=false`, NA→*Desconocido* placeholder); rows group into a faena by trip-level natural key,
+each species row → captura; dedup by `faena.legacy_id` = natural-key hash (detect & skip on re-import);
+target formats already seeded (`MASIVOS_LEGACY`/`BITACORA_LEGACY`/`CM07`); sample file
+`Planning/DBScheme/Anexo2.xlsx`. New modules planned: `excel_import.py`, `import_formats.py`,
+`catalog_resolver.py`.
+
+(R3 lists in the Form Builder shipped 2026-07-07: view/edit/attach
 curated lists from the field dialog — `lista_editor.py`; CSV bulk stays in 📑 Listas. Add-to-list
 search shows the matches as clickable buttons — one click adds; verified in a live dev browser.)
 (R4 per-user form assignment shipped 2026-07-07: `usuario.formato_origen_id` + console assign UI in
