@@ -351,6 +351,7 @@ def render_export():
             cur.close()
             st.session_state["exp_df"] = df
             st.session_state["exp_meta"] = {"ds": ds, "when": _dt.datetime.now()}
+            st.session_state.pop("exp_dl", None)   # invalidate any prepared download
         except Exception as e:  # noqa: BLE001
             st.session_state.pop("exp_df", None)
             st.error(f"Error en la consulta: {e}")
@@ -532,20 +533,37 @@ def render_results(df, base_name: str, cfg: dict | None = None):
     export_df = _column_editor(df)
 
     # ---- download ----
+    # Serialize on demand: encoding a large frame to CSV/Parquet on every rerun made
+    # toggling columns lag. Prepare once (cleared when a new preview is generated), then
+    # the buttons hand over the ready bytes. Re-preparing is only needed after a change.
     st.divider()
     st.caption(f"Descargarás **{export_df.shape[1]} de {df.shape[1]}** columnas.")
-    d1, d2 = st.columns(2)
-    d1.download_button("⬇️ CSV (Excel / R)", export_df.to_csv(index=False).encode("utf-8"),
-                       file_name=f"{base_name}.csv", mime="text/csv", width="stretch")
-    if HAS_PARQUET:
-        buf = io.BytesIO(); export_df.to_parquet(buf, index=False)
-        d2.download_button("⬇️ Parquet (R / Python)", buf.getvalue(),
-                           file_name=f"{base_name}.parquet", mime="application/octet-stream",
-                           width="stretch")
+    sig = (base_name, tuple(export_df.columns), int(len(export_df)))
+    prep = st.session_state.get("exp_dl")
+    if not prep or prep.get("sig") != sig:
+        if st.button("📦 Preparar archivo para descargar", key="exp_prep", type="primary"):
+            with st.spinner("Preparando el archivo…"):
+                pq = None
+                if HAS_PARQUET:
+                    buf = io.BytesIO(); export_df.to_parquet(buf, index=False); pq = buf.getvalue()
+                st.session_state["exp_dl"] = {
+                    "sig": sig, "name": base_name,
+                    "csv": export_df.to_csv(index=False).encode("utf-8"), "parquet": pq}
+            st.rerun()
+        st.caption("Ajusta las columnas y pulsa **Preparar** para generar el archivo (así el "
+                   "editor de columnas no se traba con tablas grandes).")
     else:
-        d2.button("⬇️ Parquet", disabled=True, width="stretch")
-        d2.caption("Parquet no disponible: falta el paquete `pyarrow` en el servidor "
-                   "(`pip install pyarrow`). El CSV funciona igual.")
+        d1, d2 = st.columns(2)
+        d1.download_button("⬇️ CSV (Excel / R)", prep["csv"], file_name=f"{prep['name']}.csv",
+                           mime="text/csv", width="stretch")
+        if HAS_PARQUET and prep.get("parquet") is not None:
+            d2.download_button("⬇️ Parquet (R / Python)", prep["parquet"],
+                               file_name=f"{prep['name']}.parquet",
+                               mime="application/octet-stream", width="stretch")
+        else:
+            d2.button("⬇️ Parquet", disabled=True, width="stretch")
+            d2.caption("Parquet no disponible: falta el paquete `pyarrow` en el servidor "
+                       "(`pip install pyarrow`). El CSV funciona igual.")
 
     with st.expander("💻 Cómo cargar el archivo en R o Python"):
         st.code(f'datos <- read.csv("{base_name}.csv", fileEncoding = "UTF-8")\n'

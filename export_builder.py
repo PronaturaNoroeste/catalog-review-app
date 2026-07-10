@@ -265,6 +265,7 @@ def render_builder(render_results):
             cur.close()
             st.session_state["jb_df"] = df
             st.session_state["jb_name"] = f"{base}_combinado_{_dt.date.today().isoformat()}"
+            st.session_state.pop("exp_dl", None)   # invalidate any prepared download
         except Exception as e:  # noqa: BLE001
             st.session_state.pop("jb_df", None)
             st.error(f"Error en la consulta: {e}")
