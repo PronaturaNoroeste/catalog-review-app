@@ -87,9 +87,19 @@ def fuzzy_suggest(catalog: str, value: str) -> list[tuple[str, str, float]]:
     return [(idx[n], n, sc) for n, sc in best_matches(names, value)]
 
 
+# parent FK required NOT NULL by the schema, with no value available from the source
+# columns we ever map — auto-attach the parent's own Desconocido placeholder.
+_REQUIRED_PARENT = {"cat_area_pesca": ("zona_pesca_id", "cat_zona_pesca")}
+
+
 def _insert(catalog: str, cols: dict) -> str:
     if catalog in _approvable_catalogs():
         cols = {**cols, "es_aprobado": False}
+    parent = _REQUIRED_PARENT.get(catalog)
+    if parent:
+        fk_col, parent_catalog = parent
+        if not cols.get(fk_col):
+            cols = {**cols, fk_col: desconocido_id(parent_catalog)}
     keys = ", ".join(f'"{k}"' for k in cols)
     ph = ", ".join(["%s"] * len(cols))
     rid = _q(f'INSERT INTO public."{catalog}" ({keys}) VALUES ({ph}) RETURNING id::text AS id',
@@ -118,8 +128,10 @@ def _especie_index() -> dict[tuple[str, str], str]:
 
 
 def _lookup_especie(comun, cientifico) -> str | None:
-    """Exact especie-pair lookup, bypassing is_na — see _lookup."""
-    c = "" if is_na(cientifico) else _key(normalize(cientifico))
+    """Exact especie-pair lookup, bypassing is_na — see _lookup. Unknown científico is
+    keyed as "Pendiente" (the schema's NOT NULL default for nombre_cientifico), matching
+    how existing rows with an unknown científico were actually stored."""
+    c = _key("Pendiente") if is_na(cientifico) else _key(normalize(cientifico))
     return _especie_index().get((_key(normalize(comun)), c))
 
 
@@ -148,9 +160,10 @@ def resolve_or_create_especie(comun, cientifico) -> str:
     hit = resolve_especie(comun, cientifico)
     if hit:
         return hit
-    cols = {"nombre_comun": normalize(comun) or "Desconocido",
-            "nombre_cientifico": None if is_na(cientifico) else normalize(cientifico),
-            "es_aprobado": False}
+    cols = {"nombre_comun": normalize(comun) or "Desconocido", "es_aprobado": False}
+    if not is_na(cientifico):
+        cols["nombre_cientifico"] = normalize(cientifico)
+    # else: omit — nombre_cientifico is NOT NULL with a schema default ('Pendiente')
     return _insert_especie(cols)
 
 
@@ -165,5 +178,4 @@ def _insert_especie(cols: dict) -> str:
 
 def desconocido_especie_id() -> str:
     hit = _lookup_especie("Desconocido", "NA")
-    return hit if hit else _insert_especie(
-        {"nombre_comun": "Desconocido", "nombre_cientifico": None, "es_aprobado": False})
+    return hit if hit else _insert_especie({"nombre_comun": "Desconocido", "es_aprobado": False})
