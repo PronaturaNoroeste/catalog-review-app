@@ -139,9 +139,71 @@ def _step2_map():
         st.session_state["imp_step"] = 2; st.rerun()
 
 
+import import_writer as IW
+
+
+def apply_mapping(spec, drafts, mapping):
+    """Rewrite each draft's ('catalog', cat, raw) cells using the admin mapping, then resolve
+    the rest (create/Desconocido/especie) via import_writer.resolve_draft."""
+    def rewrite(v):
+        if isinstance(v, tuple) and len(v) == 3 and v[0] == "catalog":
+            _, cat, raw = v
+            choice = mapping.get((cat, R.normalize(raw)))
+            if isinstance(choice, str):                      # a chosen existing id
+                return choice
+            if isinstance(choice, tuple) and choice[0] == "__DESC__":
+                return R.desconocido_id(cat)
+            return R.resolve_or_create(cat, raw)             # __NEW__ or unmapped → create/exact
+        return v
+    resolved = []
+    for d in drafts:
+        d.faena_raw = {k: rewrite(v) for k, v in d.faena_raw.items()}
+        d.children_raw["arte"] = {k: rewrite(v) for k, v in d.children_raw["arte"].items()}
+        resolved.append(IW.resolve_draft(spec, d))
+    return resolved
+
+
 def _step3_preview():
-    st.info("Paso 3 en construcción.")          # replaced in Task 8
+    spec = IF.FORMATS[st.session_state["imp_format"]]
+    drafts = IF.group_faenas(st.session_state["imp_rows"], spec)
+    resolved = apply_mapping(spec, drafts, st.session_state.get("imp_map", {}))
+    hashes = [r["faena"]["legacy_id"] for r in resolved if r["key"]]
+    dup = IW.existing_legacy_ids(hashes)
+    nuevas = sum(1 for r in resolved if r["key"] and r["faena"]["legacy_id"] not in dup)
+    ya = sum(1 for r in resolved if r["key"] and r["faena"]["legacy_id"] in dup)
+    err = sum(1 for r in resolved if r["key"] is None)
+    caps = sum(len(r["catches"]) for r in resolved if r["key"] and r["faena"]["legacy_id"] not in dup)
+    st.session_state["imp_resolved"] = resolved
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Faenas nuevas", nuevas); c2.metric("Ya existen", ya)
+    c3.metric("Capturas", caps); c4.metric("Con error", err)
+    warnings = [e for r in resolved for e in r["errors"]]
+    if warnings:
+        with st.expander(f"⚠️ {len(warnings)} avisos"):
+            for w in warnings[:200]:
+                st.caption("• " + w)
+    force = st.checkbox("Forzar inclusión de faenas que ya existen", key="imp_force")
+    c1, c2 = st.columns(2)
+    if c1.button("← Volver"):
+        st.session_state["imp_step"] = 1; st.rerun()
+    if c2.button(f"Guardar {nuevas} faena(s) →", type="primary", disabled=nuevas == 0 and not force):
+        st.session_state["imp_step"] = 3; st.rerun()
 
 
 def _step4_commit():
-    st.info("Paso 4 en construcción.")          # replaced in Task 8
+    from console_ui import friendly_error
+    spec = IF.FORMATS[st.session_state["imp_format"]]
+    resolved = st.session_state["imp_resolved"]
+    try:
+        rep = IW.commit_batch(spec, resolved, force=st.session_state.get("imp_force", False))
+    except Exception as e:                                    # noqa: BLE001
+        st.error(friendly_error(e)); return
+    st.success(f"✅ {rep['faenas_nuevas']} faenas · {rep['capturas']} capturas guardadas. "
+               f"{rep['ya_existen']} ya existían. {rep['faenas_error']} con error.")
+    if rep["errores"]:
+        with st.expander("Errores"):
+            for e in rep["errores"][:200]:
+                st.caption("• " + e)
+    st.info("Los catálogos nuevos quedaron **sin aprobar** — revísalos en 🔎 Duplicados / 📥 Propuestas.")
+    if st.button("Importar otro archivo", type="primary"):
+        _reset(); st.rerun()
