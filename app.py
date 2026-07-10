@@ -1201,6 +1201,10 @@ def main():
         from data_admin import render_data_admin
         render_data_admin()
         return
+    if mode == "importar":
+        from excel_import import render_excel_import
+        render_excel_import()
+        return
     if mode == "listas":
         from lista_import import render_lista_import
         render_lista_import()

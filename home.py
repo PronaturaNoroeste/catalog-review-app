@@ -20,6 +20,7 @@ NAV = [
     ("propuestas",   "📥 Propuestas de campo",   "REVISAR"),
     ("editar",       "✏️ Catálogos",             "CONFIGURAR"),
     ("registros",    "✏️ Registros (datos)",     "CONFIGURAR"),
+    ("importar",     "📥 Importar Excel",        "CONFIGURAR"),
     ("formularios",  "🛠️ Formularios",           "CONFIGURAR"),
     ("listas",       "📑 Listas del formulario", "CONFIGURAR"),
     ("usuarios",     "👤 Usuarios",              "CONFIGURAR"),
