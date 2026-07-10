@@ -18,6 +18,8 @@ scope. Every change writes a cambio_catalogo audit row attributed to the admin.
 """
 from __future__ import annotations
 
+import datetime
+
 import streamlit as st
 
 from form_builder import _q
@@ -117,6 +119,11 @@ def _display_df(rows: list[dict], meta: list[dict]) -> "pd.DataFrame":
                     v = str(v)[:8] if v is not None else ""
             elif m["kind"] == "bool":
                 v = "✓" if v else ""
+            elif isinstance(v, (datetime.date, datetime.datetime)):
+                # raw date/timestamp objects in an object-dtype column crash pyarrow's
+                # Arrow conversion (st.dataframe) — render as text like every other
+                # non-fk/bool column instead.
+                v = str(v)
             # else: leave numeric/text as-is (None stays None so a nullable numeric
             # column keeps a single type — mixing "" with ints breaks Arrow).
             d[_col_label(n)] = v
