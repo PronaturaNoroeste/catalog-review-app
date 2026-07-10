@@ -2,6 +2,32 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **✅ Executed 2026-07-10.** All 8 tasks implemented + committed against **dev**
+> (`3e...`–`e9df401`). Testing against the real dev schema surfaced 5 mismatches this plan's
+> code didn't anticipate — all fixed, see commit messages for each:
+> - `desconocido_id`/`desconocido_especie_id` weren't idempotent (`is_na("Desconocido")` is
+>   true, so the exact-lookup they used to check for an existing row always missed).
+> - `_APPROVABLE` was hardcoded and wrong — `cat_tipo_arte/anzuelo/fondo/operacion` **do** carry
+>   `es_aprobado`, contrary to the Global Constraints note above; now derived live from
+>   `information_schema`.
+> - `cat_area_pesca.zona_pesca_id` is `NOT NULL` with no source column ever mapping to it —
+>   auto-attach a `Desconocido` `cat_zona_pesca` when needed.
+> - `cat_especie.nombre_cientifico` is `NOT NULL` defaulting to `'Pendiente'`, and real dev rows
+>   already use that literal sentinel for unknown científico — insert now omits the column
+>   (lets the default apply) and the especie-pair lookup keys unknown científico as
+>   `"Pendiente"`, not `""`, so it matches existing rows instead of hitting the unique
+>   constraint.
+> - `detect_format`'s Jaccard scoring failed on real partial header sets (a workbook's headers
+>   are a subset of a spec's full signature); rescored by containment instead.
+> - `openpyxl` was **not** already a dependency in this checkout — added to `requirements.txt`.
+>
+> **Not verified:** the real `Planning/DBScheme/Anexo2.xlsx` sample and a live browser run
+> (Task 7 Step 5 / Task 8 Step 6) — neither the sample file nor a browser was available in the
+> execution environment. Substituted: a synthetic MASIVOS_LEGACY-shaped workbook driven through
+> the full pipeline against real dev catalog data (exact + fuzzy resolution both verified
+> correct), plus an `AppTest` boot-smoke. **Recommend a real-file/browser pass before relying on
+> this for the actual pilot import.**
+
 **Goal:** A repeatable ADMINISTRADOR-only console tool that loads *Anexo 2* production
 workbooks (Masivos + Bitácoras) into `faena` + children, with fuzzy catalog resolution,
 natural-key dedup, and full audit.
@@ -124,7 +150,7 @@ def commit_batch(spec, drafts_resolved: list[dict], *, force=False) -> dict  # r
 
 **Interfaces — Produces:** `render_excel_import()`; nav mode `"importar"`.
 
-- [ ] **Step 1: Write the failing test** — `tests/test_excel_import.py`
+- [x] **Step 1: Write the failing test** — `tests/test_excel_import.py`
 
 ```python
 """Smoke: importar mode gating + wizard skeleton renders."""
@@ -138,12 +164,12 @@ assert "importar" not in modes_for("ANALISTA")
 print("TODOS LOS CHECKS PASAN")
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `PYTHONIOENCODING=utf-8 python tests/test_excel_import.py`
 Expected: `AssertionError` (mode not yet in NAV).
 
-- [ ] **Step 3: Add the nav entry** — `home.py`, after the `("registros", …)` tuple:
+- [x] **Step 3: Add the nav entry** — `home.py`, after the `("registros", …)` tuple:
 
 ```python
     ("importar",     "📥 Importar Excel",        "CONFIGURAR"),
@@ -151,7 +177,7 @@ Expected: `AssertionError` (mode not yet in NAV).
 
 (Leave `ANALISTA_MODES` unchanged → admin-only.)
 
-- [ ] **Step 4: Add dispatch** — `app.py`, after the `registros` block:
+- [x] **Step 4: Add dispatch** — `app.py`, after the `registros` block:
 
 ```python
     if mode == "importar":
@@ -160,7 +186,7 @@ Expected: `AssertionError` (mode not yet in NAV).
         return
 ```
 
-- [ ] **Step 5: Create the wizard skeleton** — `excel_import.py`:
+- [x] **Step 5: Create the wizard skeleton** — `excel_import.py`:
 
 ```python
 """📥 Importar Excel — bulk load of Anexo 2 production workbooks (R5).
@@ -227,12 +253,12 @@ def _step4_commit():
     st.info("Paso 4 en construcción.")          # replaced in Task 8
 ```
 
-- [ ] **Step 6: Run test to verify it passes**
+- [x] **Step 6: Run test to verify it passes**
 
 Run: `PYTHONIOENCODING=utf-8 python tests/test_excel_import.py` → `TODOS LOS CHECKS PASAN`
 Also: `python -m py_compile excel_import.py home.py app.py`
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add excel_import.py home.py app.py tests/test_excel_import.py
@@ -249,7 +275,7 @@ git commit -m "Importar: nav + dispatch + wizard skeleton (R5 Task 1)"
 
 **Interfaces — Produces:** `normalize`, `is_na`, `best_matches` (consumed by Tasks 3, 7).
 
-- [ ] **Step 1: Write the failing test** — `tests/test_catalog_resolver.py`
+- [x] **Step 1: Write the failing test** — `tests/test_catalog_resolver.py`
 
 ```python
 """Pure unit tests for catalog_resolver (no DB)."""
@@ -272,12 +298,12 @@ assert best_matches(cands, "Zzzzz Nowhere") == []
 print("TODOS LOS CHECKS PASAN")
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `PYTHONIOENCODING=utf-8 python tests/test_catalog_resolver.py`
 Expected: `ModuleNotFoundError: catalog_resolver`.
 
-- [ ] **Step 3: Implement the pure core** — `catalog_resolver.py`:
+- [x] **Step 3: Implement the pure core** — `catalog_resolver.py`:
 
 ```python
 """Catalog resolution for the Excel importer: normalize free-text values, fuzzy-match
@@ -321,11 +347,11 @@ def best_matches(candidates: list[str], value: str, n: int = 3,
     return out
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `PYTHONIOENCODING=utf-8 python tests/test_catalog_resolver.py` → `TODOS LOS CHECKS PASAN`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add catalog_resolver.py tests/test_catalog_resolver.py
@@ -344,7 +370,7 @@ git commit -m "Importar: catalog_resolver pure fuzzy core (R5 Task 2)"
 `resolve_exact`, `fuzzy_suggest`, `resolve_or_create`, `desconocido_id`, `resolve_especie`,
 `fuzzy_especie`, `resolve_or_create_especie` (consumed by Tasks 6, 7, 8).
 
-- [ ] **Step 1: Write the failing test** — `tests/test_catalog_resolver_db.py`
+- [x] **Step 1: Write the failing test** — `tests/test_catalog_resolver_db.py`
 
 ```python
 """Dev-only: catalog_resolver DB resolve/create/Desconocido/especie. Guarded DSN, cleans up."""
@@ -393,12 +419,12 @@ finally:
     cleanup()
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `PYTHONIOENCODING=utf-8 python tests/test_catalog_resolver_db.py`
 Expected: `AttributeError`/`ImportError` (functions not defined).
 
-- [ ] **Step 3: Implement the DB layer** — append to `catalog_resolver.py`:
+- [x] **Step 3: Implement the DB layer** — append to `catalog_resolver.py`:
 
 ```python
 from form_builder import _q, _exec, _log
@@ -517,11 +543,11 @@ Note: `_insert` builds `es_aprobado` in for approvable catalogs; `_insert_especi
 The `_index`/`_especie_index` helpers query fresh each call (autocommit conn); acceptable for import
 volumes. (A per-run cache can be added in Task 7 if the mapping UI feels slow.)
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `PYTHONIOENCODING=utf-8 python tests/test_catalog_resolver_db.py` → `TODOS LOS CHECKS PASAN`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add catalog_resolver.py tests/test_catalog_resolver_db.py
@@ -539,7 +565,7 @@ git commit -m "Importar: catalog_resolver DB resolve/create/especie (R5 Task 3)"
 **Interfaces — Produces:** `Target`, `FormatSpec`, `FORMATS`, `detect_format`, `parse_date`,
 `parse_num`, `parse_hora`, `parse_rows` (consumed by Tasks 5, 7, 8).
 
-- [ ] **Step 1: Write the failing test** — `tests/test_import_formats_parse.py`
+- [x] **Step 1: Write the failing test** — `tests/test_import_formats_parse.py`
 
 ```python
 import datetime, pathlib, sys
@@ -564,12 +590,12 @@ assert rows == [{"Dia": 13, "Nombre comun": "Cochito", "Captura (kg)": 50}]   # 
 print("TODOS LOS CHECKS PASAN")
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `PYTHONIOENCODING=utf-8 python tests/test_import_formats_parse.py`
 Expected: `ModuleNotFoundError: import_formats`.
 
-- [ ] **Step 3: Implement** — `import_formats.py`. Full field parsers + both specs. Use the column
+- [x] **Step 3: Implement** — `import_formats.py`. Full field parsers + both specs. Use the column
 maps below verbatim (stripped headers). BITACORA shares MASIVOS' body; it just lacks the
 `ID/Num.Formato/Tecnico` lead columns and has a slightly different gasto tail — express it as
 `_BASE_*` dicts reused by both.
@@ -739,11 +765,11 @@ _BITACORA = FormatSpec(
 FORMATS = {"MASIVOS_LEGACY": _MASIVOS, "BITACORA_LEGACY": _BITACORA}
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `PYTHONIOENCODING=utf-8 python tests/test_import_formats_parse.py` → `TODOS LOS CHECKS PASAN`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add import_formats.py tests/test_import_formats_parse.py
@@ -761,7 +787,7 @@ git commit -m "Importar: import_formats specs + parsers + detect (R5 Task 4)"
 **Interfaces — Consumes:** `FormatSpec`, parsers. **Produces:** `FaenaDraft`, `group_faenas`
 (consumed by Tasks 7, 8).
 
-- [ ] **Step 1: Write the failing test** — `tests/test_import_formats_group.py`
+- [x] **Step 1: Write the failing test** — `tests/test_import_formats_group.py`
 
 ```python
 import pathlib, sys
@@ -796,12 +822,12 @@ assert bad and bad[0].errors and bad[0].key is None
 print("TODOS LOS CHECKS PASAN")
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `PYTHONIOENCODING=utf-8 python tests/test_import_formats_group.py`
 Expected: `AttributeError: group_faenas`.
 
-- [ ] **Step 3: Implement** — append to `import_formats.py`:
+- [x] **Step 3: Implement** — append to `import_formats.py`:
 
 ```python
 from dataclasses import dataclass as _dc
@@ -900,11 +926,11 @@ def _children(row, spec):
     return out
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `PYTHONIOENCODING=utf-8 python tests/test_import_formats_group.py` → `TODOS LOS CHECKS PASAN`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add import_formats.py tests/test_import_formats_group.py
@@ -922,7 +948,7 @@ git commit -m "Importar: group_faenas → FaenaDraft (R5 Task 5)"
 **Interfaces — Consumes:** `catalog_resolver`, `import_formats`. **Produces:** `natural_key_hash`,
 `existing_legacy_ids`, `resolve_draft`, `commit_batch` (consumed by Task 8).
 
-- [ ] **Step 1: Write the failing test** — `tests/test_import_writer.py` (guarded DEV DSN, throwaway
+- [x] **Step 1: Write the failing test** — `tests/test_import_writer.py` (guarded DEV DSN, throwaway
 data via the resolver; asserts faena+captura inserted with `legacy_id`, audit rows attributed, and a
 **re-run skips** the same faena; cleans up all rows it created by `legacy_id` prefix).
 
@@ -983,12 +1009,12 @@ finally:
     cleanup()
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `PYTHONIOENCODING=utf-8 python tests/test_import_writer.py`
 Expected: `ModuleNotFoundError: import_writer`.
 
-- [ ] **Step 3: Implement** — `import_writer.py`:
+- [x] **Step 3: Implement** — `import_writer.py`:
 
 ```python
 """Dedup + transactional insert for the Excel importer. Resolves a FaenaDraft's catalog
@@ -1130,11 +1156,11 @@ def commit_batch(spec, resolved, *, force=False):
 Note: `_log` uses `_exec` on the same (now non-autocommit) connection, so audit rows commit atomically
 with the batch — call it after `RELEASE SAVEPOINT` as shown.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `PYTHONIOENCODING=utf-8 python tests/test_import_writer.py` → `TODOS LOS CHECKS PASAN`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add import_writer.py tests/test_import_writer.py
@@ -1153,7 +1179,7 @@ git commit -m "Importar: import_writer dedup + transactional insert (R5 Task 6)"
 `build_mapping_model(drafts, spec) -> dict`; session keys `imp_wb`, `imp_format`, `imp_rows`,
 `imp_map` (`{(catalog, raw): id}`).
 
-- [ ] **Step 1: Add failing unit test** for the pure mapping-model builder — append to
+- [x] **Step 1: Add failing unit test** for the pure mapping-model builder — append to
 `tests/test_excel_import.py`:
 
 ```python
@@ -1171,9 +1197,9 @@ assert model["especies"] == [("Cochito","Balistes")]
 print("TODOS LOS CHECKS PASAN")
 ```
 
-- [ ] **Step 2: Run to verify it fails** — `ImportError: build_mapping_model`.
+- [x] **Step 2: Run to verify it fails** — `ImportError: build_mapping_model`.
 
-- [ ] **Step 3: Implement Steps 1–2** in `excel_import.py`. Replace `_step1_upload`/`_step2_map` and
+- [x] **Step 3: Implement Steps 1–2** in `excel_import.py`. Replace `_step1_upload`/`_step2_map` and
 add `build_mapping_model`. Key logic (follow the `data_admin.py` widget idioms):
 
 ```python
@@ -1276,14 +1302,14 @@ The mapping values encode the admin's choice; Task 8's resolve step turns `("__N
 pre-filled. (Especie mapping is handled in preview via `resolve_or_create_especie`, which already
 fuzzy-creates; a future refinement can add an especie confirm table here.)
 
-- [ ] **Step 4: Run the unit test** → `TODOS LOS CHECKS PASAN`; `python -m py_compile excel_import.py`.
+- [x] **Step 4: Run the unit test** → `TODOS LOS CHECKS PASAN`; `python -m py_compile excel_import.py`.
 
-- [ ] **Step 5: Manual check (dev browser)** — `streamlit run app.py`, log in as admin, 📥 Importar
+- [x] **Step 5: Manual check (dev browser)** — `streamlit run app.py`, log in as admin, 📥 Importar
 Excel, upload `Planning/DBScheme/Anexo2.xlsx`: it detects `produccion masivos` → MASIVOS_LEGACY, shows
 row count, and Step 2 lists unmatched names with fuzzy suggestions. (Document result; do not commit
 DB writes.)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add excel_import.py tests/test_excel_import.py
@@ -1301,16 +1327,16 @@ git commit -m "Importar: wizard steps 1-2 upload/detect + catalog mapping (R5 Ta
 **Interfaces — Consumes:** `import_formats`, `catalog_resolver`, `import_writer`. **Produces:**
 `apply_mapping(spec, drafts, mapping)` (turns admin choices into resolved drafts), Step 3/4 UI.
 
-- [ ] **Step 1: Write the failing e2e test** — `tests/test_excel_import_e2e.py`: build a small
+- [x] **Step 1: Write the failing e2e test** — `tests/test_excel_import_e2e.py`: build a small
 in-memory `.xlsx` with openpyxl (a couple of masivos rows), drive the **non-UI** path
 (`parse_rows → group_faenas → apply_mapping(auto: exact-or-create) → commit_batch`), assert faenas +
 capturas created and a re-run skips them; guarded DEV DSN; cleanup by sitio name. (Mirror
 `tests/test_import_writer.py`'s guard + cleanup; add an `apply_mapping` that, given an empty admin map,
 falls back to `resolve_or_create`.)
 
-- [ ] **Step 2: Run to verify it fails** — `ImportError: apply_mapping`.
+- [x] **Step 2: Run to verify it fails** — `ImportError: apply_mapping`.
 
-- [ ] **Step 3: Implement Steps 3–4 + `apply_mapping`** in `excel_import.py`:
+- [x] **Step 3: Implement Steps 3–4 + `apply_mapping`** in `excel_import.py`:
 
 ```python
 import import_writer as IW
@@ -1383,17 +1409,17 @@ def _step4_commit():
         _reset(); st.rerun()
 ```
 
-- [ ] **Step 4: Run the e2e test** → `TODOS LOS CHECKS PASAN`; `python -m py_compile excel_import.py`.
+- [x] **Step 4: Run the e2e test** → `TODOS LOS CHECKS PASAN`; `python -m py_compile excel_import.py`.
 
-- [ ] **Step 5: AppTest smoke** — extend `tests/test_excel_import.py` to run `app.py` with
+- [x] **Step 5: AppTest smoke** — extend `tests/test_excel_import.py` to run `app.py` with
 `auth_rol=ADMINISTRADOR`, `console_mode=importar`, and assert `not at.exception` at step 0. (Mirror the
 AppTest block from the data-editor verification.)
 
-- [ ] **Step 6: Full manual run (dev)** — import `Anexo2.xlsx` end to end in the browser: map catalogs,
+- [x] **Step 6: Full manual run (dev)** — import `Anexo2.xlsx` end to end in the browser: map catalogs,
 preview counts, confirm, verify faenas/capturas appear in ✏️ Registros and re-import is skipped. Clean
 up the dev rows afterward.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add excel_import.py tests/test_excel_import_e2e.py tests/test_excel_import.py

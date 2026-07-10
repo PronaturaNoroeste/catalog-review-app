@@ -29,12 +29,35 @@ points at **prod**, so tests override `DATABASE_URL`/`SUPABASE_*` to dev + use t
 unique(usuario_id,nombre) + 2 RLS policies, `_migrations`=14). Saved queries now work on the live
 console. `usuario`-scoped saved queries need `auth_uid` (captured at login in `console_auth.py`).
 
-**Roadmap remaining:** post-pilot backlog (R-A…R-F, details at the end of this file) · R5 Excel bulk
-import — **design + implementation plan ready 2026-07-10**; spec
-`docs/superpowers/specs/2026-07-10-r5-excel-import-design.md`, plan
-`docs/superpowers/plans/2026-07-10-r5-excel-import.md`. **NEXT SESSION: execute the plan** (8 TDD
-tasks; recommend subagent-driven-development or executing-plans, start at Task 1). · R6 automated +
+**Roadmap remaining:** post-pilot backlog (R-A…R-F, details at the end of this file) · R6 automated +
 on-demand backups.
+
+**R5 Excel bulk import — implemented 2026-07-10** (all 8 plan tasks, committed on `main`, tested
+against **dev**): new ✏️ **📥 Importar Excel** console mode (`excel_import.py`), admin-only, 4-step
+wizard (subir → mapear catálogos → previsualizar → confirmar). New modules `import_formats.py`
+(declarative Masivos/Bitácoras specs, parsing, grouping into `FaenaDraft`), `catalog_resolver.py`
+(normalize + fuzzy-match via `difflib` + resolve-or-create + especie pair-keyed), `import_writer.py`
+(natural-key `legacy_id` dedup + transactional insert with per-faena savepoint + `cambio_catalogo`
+audit). `openpyxl` added to `requirements.txt` (wasn't actually already a dep). Full test suite green
+(`test_catalog_resolver[_db]`, `test_import_formats_parse/group`, `test_import_writer`,
+`test_excel_import[_e2e]`) plus an AppTest boot-smoke.
+
+Executing against the real dev schema surfaced **5 mismatches the plan's design doc got wrong**
+(now fixed — see `docs/superpowers/plans/2026-07-10-r5-excel-import.md` top banner for detail):
+`desconocido_id` wasn't idempotent (an `is_na()` false-positive on the literal string
+"Desconocido"); the `es_aprobado`-bearing catalog set was hardcoded and wrong (`cat_tipo_arte/
+anzuelo/fondo/operacion` **do** have it); `cat_area_pesca.zona_pesca_id` is `NOT NULL` with no
+mapped source column (now auto-chains to a `Desconocido` `cat_zona_pesca`);
+`cat_especie.nombre_cientifico` is `NOT NULL` defaulting to the literal `'Pendiente'`, which real
+rows already use as the unknown-científico sentinel (lookup/insert now match that instead of
+NULL/empty); `detect_format`'s Jaccard scoring failed on real partial header sets (fixed to score
+by containment).
+
+**Not verified — do before relying on this for the actual pilot import:** a run against the real
+`Planning/DBScheme/Anexo2.xlsx` sample in a live browser. Neither the sample file nor a browser was
+available in the execution session; verification instead used a synthetic MASIVOS_LEGACY-shaped
+workbook driven through the full pipeline against real dev catalog data (both exact and fuzzy
+catalog resolution confirmed correct on real dev rows).
 
 **Data-row editor shipped 2026-07-10** (commit `7e0d6cb`, not yet pushed): new ✏️ **Registros (datos)**
 console mode (`data_admin.py`) — ADMINISTRADOR-only edit/delete of faena + child rows (11 single-`id`-PK
