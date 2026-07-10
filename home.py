@@ -19,6 +19,7 @@ NAV = [
     ("catalogos",    "🔎 Duplicados",            "REVISAR"),
     ("propuestas",   "📥 Propuestas de campo",   "REVISAR"),
     ("editar",       "✏️ Catálogos",             "CONFIGURAR"),
+    ("registros",    "✏️ Registros (datos)",     "CONFIGURAR"),
     ("formularios",  "🛠️ Formularios",           "CONFIGURAR"),
     ("listas",       "📑 Listas del formulario", "CONFIGURAR"),
     ("usuarios",     "👤 Usuarios",              "CONFIGURAR"),
@@ -147,6 +148,7 @@ def render_home(rol: str):
         "- **🔎 Duplicados** — limpiar el catálogo: decidir si dos nombres parecidos son lo mismo.\n"
         "- **📥 Propuestas de campo** — aprobar, rechazar o fusionar los nombres que proponen los técnicos.\n"
         "- **✏️ Catálogos** — corregir o dar de alta entradas de los catálogos (especies, pescadores…).\n"
+        "- **✏️ Registros (datos)** — corregir o eliminar registros capturados (faenas y sus datos).\n"
         "- **🛠️ Formularios** — editar y publicar las versiones del formulario de la tableta.\n"
         "- **📑 Listas del formulario** — subir las listas limpias de opciones que ve el técnico.\n"
         "- **👤 Usuarios** — crear cuentas y administrar quién entra a la consola y a la tableta.\n"

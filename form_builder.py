@@ -186,10 +186,19 @@ def _exec(sql: str, args=()):
 
 
 def _log(tabla: str, rid: str, accion: str, detalle: dict):
-    """cambio_catalogo audit row — every console write action records one."""
+    """cambio_catalogo audit row — every console write action records one.
+    Attributes the change to the logged-in admin (usuario_id + a «por» tag) when a
+    Streamlit session is present; falls back to NULL for non-UI callers (e.g. tests)."""
+    por = uid = None
+    try:
+        por = st.session_state.get("auth_nombre")
+        uid = st.session_state.get("auth_uid")
+    except Exception:  # noqa: BLE001 — called outside a Streamlit run (scripts/tests)
+        por = uid = None
+    d = {**detalle, "por": por} if por else detalle
     _exec("""INSERT INTO cambio_catalogo (tabla, registro_id, accion, detalle, usuario_id)
-             VALUES (%s,%s,%s,%s::jsonb,NULL)""",
-          (tabla, rid, accion, json.dumps(detalle, ensure_ascii=False, default=str)))
+             VALUES (%s,%s,%s,%s::jsonb,%s)""",
+          (tabla, rid, accion, json.dumps(d, ensure_ascii=False, default=str), uid))
 
 
 @st.cache_data(ttl=300, show_spinner=False)

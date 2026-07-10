@@ -1197,6 +1197,10 @@ def main():
         from catalog_admin import render_catalog_admin
         render_catalog_admin()
         return
+    if mode == "registros":
+        from data_admin import render_data_admin
+        render_data_admin()
+        return
     if mode == "listas":
         from lista_import import render_lista_import
         render_lista_import()
