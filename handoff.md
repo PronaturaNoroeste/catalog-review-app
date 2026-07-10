@@ -30,8 +30,11 @@ unique(usuario_id,nombre) + 2 RLS policies, `_migrations`=14). Saved queries now
 console. `usuario`-scoped saved queries need `auth_uid` (captured at login in `console_auth.py`).
 
 **Roadmap remaining:** post-pilot backlog (R-A…R-F, details at the end of this file) · R5 Excel bulk
-import — **design approved 2026-07-10**, spec at `docs/superpowers/specs/2026-07-10-r5-excel-import-design.md`
-(next: writing-plans → implement) · R6 automated + on-demand backups.
+import — **design + implementation plan ready 2026-07-10**; spec
+`docs/superpowers/specs/2026-07-10-r5-excel-import-design.md`, plan
+`docs/superpowers/plans/2026-07-10-r5-excel-import.md`. **NEXT SESSION: execute the plan** (8 TDD
+tasks; recommend subagent-driven-development or executing-plans, start at Task 1). · R6 automated +
+on-demand backups.
 
 **Data-row editor shipped 2026-07-10** (commit `7e0d6cb`, not yet pushed): new ✏️ **Registros (datos)**
 console mode (`data_admin.py`) — ADMINISTRADOR-only edit/delete of faena + child rows (11 single-`id`-PK
