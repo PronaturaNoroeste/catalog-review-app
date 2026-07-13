@@ -459,27 +459,31 @@ def _consultas_guardadas_ui():
 def _column_editor(df):
     """Let the user pick which columns to download and rename their headers. Returns the
     export DataFrame (trimmed + renamed). Config persists in session (exp_colcfg) so
-    'Consultas guardadas' can save/restore it; a saved-query load sets exp_colcfg_load."""
+    'Consultas guardadas' can save/restore it; a saved-query load sets exp_colcfg_load.
+
+    The editor's `data` baseline (exp_coled_base) is built ONCE per dataset and reused
+    unchanged across reruns. Rebuilding it from the edited output each run fought the
+    widget's own edit-delta: the second toggle reverted and the grid remounted (scroll
+    jumped to top). We read edits from the return value instead and never feed them back."""
     sig = str(list(df.columns))
     if st.session_state.get("exp_col_sig") != sig:
         load = st.session_state.pop("exp_colcfg_load", None) or {}
-        st.session_state["exp_colcfg"] = {
-            c: {"incluir": bool(load.get(c, {}).get("incluir", True)),
-                "nombre": str(load.get(c, {}).get("nombre", c))} for c in df.columns}
+        st.session_state["exp_coled_base"] = pd.DataFrame(
+            [{"incluir": bool(load.get(c, {}).get("incluir", True)),
+              "columna": c, "nombre": str(load.get(c, {}).get("nombre", c))} for c in df.columns])
         st.session_state["exp_col_sig"] = sig
         st.session_state["exp_col_nonce"] = st.session_state.get("exp_col_nonce", 0) + 1
 
-    cfg = st.session_state["exp_colcfg"]
+    base = st.session_state["exp_coled_base"]
     with st.expander("🎚️ Elegir y renombrar columnas"):
         st.caption("Desmarca las columnas que no quieras y edita el nombre con el que se "
                    "descargarán.")
-        edf = pd.DataFrame([{"incluir": cfg[c]["incluir"], "columna": c, "nombre": cfg[c]["nombre"]}
-                            for c in df.columns])
         edited = st.data_editor(
-            edf, key=f"exp_coled_{st.session_state['exp_col_nonce']}", hide_index=True,
+            base, key=f"exp_coled_{st.session_state['exp_col_nonce']}", hide_index=True,
             width="stretch", disabled=["columna"],
             column_config={"incluir": st.column_config.CheckboxColumn("Incluir"),
                            "columna": "Columna", "nombre": "Nombre para descargar"})
+    # Persist the current selection for 'Consultas guardadas' — but NOT back into `base`.
     st.session_state["exp_colcfg"] = {
         r["columna"]: {"incluir": bool(r["incluir"]), "nombre": str(r["nombre"] or r["columna"])}
         for _, r in edited.iterrows()}
