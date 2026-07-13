@@ -1,6 +1,6 @@
 # Handoff — Go-live deployment (Boca del Álamo pilot)
 
-_Last updated: 2026-07-12._ Taking both apps live on the real (historical) Supabase DB and shipping
+_Last updated: 2026-07-13._ Taking both apps live on the real (historical) Supabase DB and shipping
 them. Full plan: `C:\Users\victus\.claude\plans\reactive-swinging-trinket.md`. Runbooks:
 `../Planning/supabase/PROD_ROLLOUT.md`, `catalog-review-app/DEPLOY.md`, `capture-app/BUILD.md`.
 
@@ -8,7 +8,7 @@ them. Full plan: `C:\Users\victus\.claude\plans\reactive-swinging-trinket.md`. R
 | Phase | State |
 |---|---|
 | **1 — Prod DB migration** | ✅ **DONE & verified** (2026-07-07) |
-| **2 — Console on a VPS (Docker)** | ⏳ Not started — needs a VPS + a DNS A-record |
+| **2 — Console on a VPS (Docker)** | ✅ **Running** (console-only, no Caddy/TLS yet — see the 2026-07-13 VPS notes below) |
 | **3 — Capture-app APK (EAS)** | 🔶 In progress — `eas-cli` installed, app pointed at prod; **next step is `eas login` (yours)** |
 
 ## Console enhancement rounds (post-go-live, shipped since 2026-07-07)
@@ -73,6 +73,47 @@ Along the way: unknown fishing-hours now → **NULL** (was `0`, which violates `
 column nullable → **migration `0017_faena_tiempo_nullable`** (`Planning/supabase/migrations`, applied
 to **DEV**; **PROD already in this state** — ~55k biological faenas hold NULL there). ⚠️ `Planning/`
 is not a git repo, so `0017` is a loose file — apply/track it wherever prod migrations are managed.
+
+**2026-07-13 — Tembabiche incident, formato-per-form flow, list copying, published read-only view,
+pyarrow pin (worked directly on the VPS checkout `/home/pnoserver/monitoreo/catalog-review-app`):**
+
+- **PROD data fix (SQL, no migration).** The "Tembabiche" formulario had been created under the
+  `BOCA_ALAMO_V2` formato (the Constructor offered no way to create a formato), so: (a) it could
+  never appear in the 👤 Usuarios técnico-assignment picker (which lists *formatos*), and (b)
+  `BOCA_ALAMO_V2` had **two published forms** — the tablet loads the newest per formato, so the 3
+  Boca técnicos would have gotten the Tembabiche form. Fixed on PROD: new `cat_formato_origen`
+  **`TEMBABICHE`**, formulario `5e6b2a1d…` re-pointed to it (0 faenas referenced it), and the 6
+  curated lists its fields use copied over (178 `lista_opcion` rows).
+- **Constructor: new formulario ⇒ new formato.** Paso ① now defaults to **"➕ Nuevo formato (se crea
+  al guardar)"** for brand-new forms (blank *and* "Basar en" copies) — `create_formato()` derives
+  `codigo` from the name (slug, `_2`-suffixed on collision). Existing formatos stay selectable
+  (first form of a legacy formato); 🌱 Nueva versión keeps its formato as before. Reusing an
+  existing formato for a *different* form is exactly what caused the Tembabiche mixup.
+- **Curated-list reuse.** Lists stay per-formato (a copy is independent; edits never propagate):
+  (a) saving a "Basar en" copy auto-copies the lists its fields reference to the new formato
+  (`lista_editor.copy_lista`, idempotent via `UNIQUE(formato,lista,registro)` — re-copy merges,
+  never duplicates); (b) the field dialog's list picker gained **"📋 Copiar de otro formulario…"**
+  (any formato's list over the same catalog, renameable).
+- **Published forms: read-only field view.** ③ Campos shows **👁️ Ver** instead of a disabled ✏️ —
+  `_campo_view` dialog: full field config + the curated list's current options (read-only) + a
+  **🌱 Crear nueva versión y editar** button. ⚠️ Caveat: list options are per *formato* and live on
+  tablet sync, so additions made in the new draft also reach the published version — the prompt is
+  workflow guardrail, not isolation (staging lists per version would need a schema change).
+- **Ops incident — pyarrow 25.0.0 segfault.** Unpinned `requirements.txt` let the 2026-07-10 image
+  rebuild pull pyarrow 25.0.0; every real browser session then segfaulted `libarrow.so.2500`
+  (exit 139, kernel log) → container restart → session wiped → *looked like* "login bounces back
+  to the login page". `requirements.txt` is now **pinned exact** (streamlit 1.58.0, pandas 3.0.3,
+  numpy 2.4.6, pyarrow 24.0.0). ⚠️ AppTest/imports do NOT reproduce it — only the live websocket
+  path does; verify dependency bumps with a real browser login, one package at a time.
+- **VPS deploy notes.** This server runs only the `console` compose service (no Caddy/TLS; port
+  8501 exposed via a deliberate **uncommitted** `docker-compose.yml` edit — kept local so
+  Caddy-fronted deploys don't inherit it). Compose commands need `CONSOLE_DOMAIN=unused.local` to
+  satisfy interpolation. `scripts/auto-deploy.sh` exists but its cron is **disabled** since
+  2026-07-10 — rebuild manually (`docker compose build console && … up -d console`). Host has no
+  Python tooling; run one-offs inside the container (its `DATABASE_URL` is **PROD**).
+- **Known-stale test:** `tests/test_users_formato.py` fails at collection — its step 3 predates R-B
+  (expects formatos *without* a published form in `users_admin._formatos()`); needs a
+  published-form fixture.
 
 **Descargar-datos page — lag + column-editor fixes (2026-07-12, commits `7481e5c` `48761c7` `1fa9a89`):**
 toggling a column in "🎚️ Elegir y renombrar columnas" felt laggy and behaved wrongly. Three causes,
