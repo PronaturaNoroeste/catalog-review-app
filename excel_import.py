@@ -79,19 +79,25 @@ def _step1_upload():
     if not up:
         return
     wb = openpyxl.load_workbook(up, read_only=True, data_only=True)
-    # choose the data sheet: the one whose header row best matches a known format
-    best = None
+    # Read every sheet's header row and auto-detect its format. The workbook has several sheets
+    # with near-identical headers (Masivos/Bitácoras) plus non-data sheets, so the admin picks
+    # which sheet to import; detection only pre-selects the sensible default.
+    sheets = {}
     for ws in wb.worksheets:
         headers = [c for c in next(ws.iter_rows(values_only=True), [])]
-        code = IF.detect_format([h for h in headers if h])
-        if code:
-            best = (ws.title, code, headers); break
-    if not best:
-        st.error("No reconozco el formato de ninguna hoja (esperaba Masivos o Bitácoras)."); return
-    title, code, headers = best
-    code = st.selectbox("Formato detectado", list(IF.FORMATS),
-                        index=list(IF.FORMATS).index(code),
+        sheets[ws.title] = (headers, IF.detect_format([h for h in headers if h]))
+    names = list(sheets)
+    default_idx = next((i for i, n in enumerate(names) if sheets[n][1]), 0)
+    title = st.selectbox("Hoja del archivo", names, index=default_idx)
+    headers, code_guess = sheets[title]
+    if not any(h for h in headers):
+        st.error("Esa hoja no tiene encabezados en la primera fila."); return
+    fmt_names = list(IF.FORMATS)
+    code = st.selectbox("Formato", fmt_names,
+                        index=fmt_names.index(code_guess) if code_guess else 0,
                         format_func=lambda c: IF.FORMATS[c].codigo)
+    if code_guess is None:
+        st.warning("No detecté el formato de esta hoja automáticamente — confírmalo arriba.")
     ws = wb[title]
     data = list(ws.iter_rows(min_row=2, values_only=True))
     rows = IF.parse_rows(headers, data)
@@ -172,11 +178,15 @@ def _step3_preview():
     nuevas = sum(1 for r in resolved if r["key"] and r["faena"]["legacy_id"] not in dup)
     ya = sum(1 for r in resolved if r["key"] and r["faena"]["legacy_id"] in dup)
     err = sum(1 for r in resolved if r["key"] is None)
-    caps = sum(len(r["catches"]) for r in resolved if r["key"] and r["faena"]["legacy_id"] not in dup)
+    nueva = lambda r: r["key"] and r["faena"]["legacy_id"] not in dup
+    if spec.kind == "monitoreo":
+        hijos = sum(len(r.get("mediciones", [])) for r in resolved if nueva(r)); hijos_label = "Mediciones"
+    else:
+        hijos = sum(len(r["catches"]) for r in resolved if nueva(r)); hijos_label = "Capturas"
     st.session_state["imp_resolved"] = resolved
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Faenas nuevas", nuevas); c2.metric("Ya existen", ya)
-    c3.metric("Capturas", caps); c4.metric("Con error", err)
+    c3.metric(hijos_label, hijos); c4.metric("Con error", err)
     warnings = [e for r in resolved for e in r["errors"]]
     if warnings:
         with st.expander(f"⚠️ {len(warnings)} avisos"):
@@ -198,7 +208,9 @@ def _step4_commit():
         rep = IW.commit_batch(spec, resolved, force=st.session_state.get("imp_force", False))
     except Exception as e:                                    # noqa: BLE001
         st.error(friendly_error(e)); return
-    st.success(f"✅ {rep['faenas_nuevas']} faenas · {rep['capturas']} capturas guardadas. "
+    hijos = (f"{rep['mediciones']} mediciones" if spec.kind == "monitoreo"
+             else f"{rep['capturas']} capturas")
+    st.success(f"✅ {rep['faenas_nuevas']} faenas · {hijos} guardadas. "
                f"{rep['ya_existen']} ya existían. {rep['faenas_error']} con error.")
     if rep["errores"]:
         with st.expander("Errores"):

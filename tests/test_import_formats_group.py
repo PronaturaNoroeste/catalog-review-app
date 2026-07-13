@@ -16,7 +16,7 @@ assert len(drafts) == 1                              # one trip
 d = drafts[0]
 assert len(d.catches) == 2                           # kg-less catch dropped
 assert any("Captura (kg)" in e or "kg" in e for e in d.errors)   # and reported
-assert d.faena_raw["tiempo_efectivo_pesca_h"] in (0, 0.0)        # NA hours → 0 w/ warning
+assert d.faena_raw["tiempo_efectivo_pesca_h"] is None            # NA hours → NULL (CHECK > 0) w/ warning
 assert any("tiempo" in e.lower() for e in d.errors)
 
 # arte: no arte columns present in source rows -> no faena_arte data emitted

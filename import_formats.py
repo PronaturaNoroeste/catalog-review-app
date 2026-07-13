@@ -26,6 +26,7 @@ class FormatSpec:
     especie_cientifico: str
     key_headers: tuple
     children: dict = field(default_factory=dict)
+    kind: str = "produccion"          # "produccion" (catches) | "monitoreo" (mediciones)
 
 
 # ---- parsers ----
@@ -77,13 +78,26 @@ def parse_rows(headers, data_rows):
     return out
 
 
+# A single column that only ever appears in one format — checked before scoring, because the
+# two production sheets (Masivos/Bitácoras) share ~all faena columns and tie on containment.
+_DISTINCTIVE = (
+    ("MONITOREO_LEGACY", {"Longitud total (cm)", "Peso Entero(kg)"}),
+    ("BITACORA_LEGACY",  {"Cantidad de aceite", "Cantidad de baterías"}),
+    ("MASIVOS_LEGACY",   {"Num.Formato"}),
+)
+
+
 def detect_format(headers):
-    """Score by containment (matched / provided headers), not Jaccard: a real workbook's
-    header row is a subset of a spec's full column signature (many optional columns), so
-    penalizing for the signature's unused columns would suppress correct detection."""
+    """Distinctive columns first (the production sheets share nearly all headers and tie on
+    containment); else score by containment (matched / provided headers), not Jaccard: a real
+    workbook's header row is a subset of a spec's full column signature (many optional columns),
+    so penalizing for the signature's unused columns would suppress correct detection."""
     hs = {_strip(h) for h in headers if _strip(h)}
     if not hs:
         return None
+    for code, marks in _DISTINCTIVE:
+        if hs & {_strip(m) for m in marks}:
+            return code
     best, score = None, 0.0
     for code, spec in FORMATS.items():
         j = len(hs & spec.header_signature) / len(hs)
@@ -163,7 +177,35 @@ _BITACORA = FormatSpec(
                  "Pescador", "Embarcacion", "Datos capturados por"),
     children=_CHILDREN)
 
-FORMATS = {"MASIVOS_LEGACY": _MASIVOS, "BITACORA_LEGACY": _BITACORA}
+# ---- Monitoreo pesquero (biológico): one row = one individual measurement → medicion ----
+_MON_FAENA = {
+    "Lugar de arribo/ campo pesquero": Target("faena", "comunidad_id", "catalog", "cat_comunidad"),
+    "Sitio de Pesca":                  Target("faena", "sitio_pesca_id", "catalog", "cat_sitio_pesca"),
+    "Area de pesca":                   Target("faena", "area_pesca_id", "catalog", "cat_area_pesca"),
+    "Zona de pesca":                   Target("faena", "zona_pesca_id", "catalog", "cat_zona_pesca"),
+    "Pescador":                        Target("faena", "capitan_id", "catalog", "cat_pescador"),
+    "Embarcacion":                     Target("faena", "embarcacion_id", "catalog", "cat_embarcacion"),
+    "Cooperativa":                     Target("faena", "cooperativa_id", "catalog", "cat_cooperativa"),
+    "Técnico":                         Target("faena", "tecnico_id", "catalog", "cat_tecnico"),
+    "profundidad_min":                 Target("faena", "profundidad_min_brazas", "num"),
+    "profundidad_max":                 Target("faena", "profundidad_max_brazas", "num"),
+    "Observaciones":                   Target("faena", "observaciones", "text"),
+}
+_MON_CHILDREN = {"arte": {"tipo_arte_id": ("Arte de pesca", "cat_tipo_arte"),
+                         "tipo_anzuelo_id": ("Tipo de anzuelo", "cat_tipo_anzuelo")}}
+
+_MONITOREO = FormatSpec(
+    codigo="MONITOREO_LEGACY", tipo_registro="MASIVO",         # biológico compendio → MASIVO (cf. COCCBCS)
+    header_signature=frozenset({*_MON_FAENA, "Dia", "Mes", "Año", "Nombre comun", "Nombre cientifico",
+                                "Longitud total (cm)", "Peso Entero(kg)", "Peso Eviscerado",
+                                "Arte de pesca", "GlobalID"}),
+    faena_cols=_MON_FAENA, catch_cols={},
+    especie_comun="Nombre comun", especie_cientifico="Nombre cientifico",
+    key_headers=("Dia", "Mes", "Año", "Lugar de arribo/ campo pesquero", "Sitio de Pesca",
+                 "Pescador", "Embarcacion", "Técnico"),
+    children=_MON_CHILDREN, kind="monitoreo")
+
+FORMATS = {"MASIVOS_LEGACY": _MASIVOS, "BITACORA_LEGACY": _BITACORA, "MONITOREO_LEGACY": _MONITOREO}
 
 
 from dataclasses import dataclass as _dc
@@ -175,6 +217,7 @@ class FaenaDraft:
     catches: list
     children_raw: dict
     errors: list
+    mediciones: list = field(default_factory=list)
 
 
 def _faena_fields(row, spec):
@@ -192,10 +235,12 @@ def _faena_fields(row, spec):
             out[t.column] = None if is_na(v) else normalize(v)
     # fecha
     out["fecha"] = parse_date(row.get("Dia"), row.get("Mes"), row.get("Año"))
-    # required hours default
+    # tiempo_efectivo_pesca_h has a CHECK (> 0); leave unknowns NULL (0 would fail it). Monitoreo
+    # (biológico) never records fishing hours, so don't flag it — only warn for production formats.
     if not out.get("tiempo_efectivo_pesca_h"):
-        out["tiempo_efectivo_pesca_h"] = 0
-        errors.append("tiempo de pesca desconocido → 0 (revisar)")
+        out["tiempo_efectivo_pesca_h"] = None
+        if spec.kind != "monitoreo":
+            errors.append("tiempo de pesca desconocido (revisar)")
     out["tipo_registro"] = spec.tipo_registro
     return out, errors
 
@@ -229,6 +274,17 @@ def group_faenas(rows, spec):
         valid_key = k if faena_raw.get("fecha") else None
         if faena_raw.get("fecha") is None:
             errors.append("fecha inválida (Día/Mes/Año) — faena omitida")
+        if spec.kind == "monitoreo":
+            mediciones = []
+            for row in group:
+                m = _medicion(row, spec)
+                if m is None:
+                    errors.append(f"medición sin longitud omitida: {normalize(row.get(spec.especie_comun))}")
+                else:
+                    mediciones.append(m)
+            children_raw = _mon_children(group[0], spec)
+            drafts.append(FaenaDraft(valid_key, faena_raw, [], children_raw, errors, mediciones))
+            continue
         catches = []
         for row in group:
             c = _catch(row, spec)
@@ -239,6 +295,35 @@ def group_faenas(rows, spec):
         children_raw = _children(group[0], spec)      # trip-level children from first row
         drafts.append(FaenaDraft(valid_key, faena_raw, catches, children_raw, errors))
     return drafts
+
+
+def _medicion(row, spec):
+    """One monitoreo row → an individual biological measurement. longitud_total_cm is NOT NULL
+    and must be > 0, so a row without a valid length yields no medicion (skipped + warned)."""
+    longitud = parse_num(row.get("Longitud total (cm)"))
+    if longitud is None or longitud <= 0:
+        return None
+    entero = parse_num(row.get("Peso Entero(kg)"))
+    evis = parse_num(row.get("Peso Eviscerado"))
+    if entero and entero > 0:
+        peso_gr, procesado = entero * 1000, "ENTERO"        # source kg → medicion stores grams
+    elif evis and evis > 0:
+        peso_gr, procesado = evis * 1000, "EVISCERADO"
+    else:
+        peso_gr, procesado = None, "NA"
+    return {"comun": row.get(spec.especie_comun), "cientifico": row.get(spec.especie_cientifico),
+            "longitud_total_cm": longitud, "peso_gr": peso_gr, "procesado": procesado}
+
+
+def _mon_children(row, spec):
+    """Trip-level faena_arte for a monitoreo faena (arte + anzuelo only); empty other children."""
+    out = {"arte": {}, "carnada": {}, "etp": [], "gasto": []}
+    arte_map = spec.children.get("arte", {})
+    if any(not is_na(row.get(header)) for header, _cat in arte_map.values()):
+        for col, (header, cat) in arte_map.items():
+            v = row.get(header)
+            out["arte"][col] = ("catalog", cat, v) if cat else (None if is_na(v) else normalize(v))
+    return out
 
 
 def _children(row, spec):

@@ -38,8 +38,13 @@ def resolve_draft(spec, draft):
     gasto = [{"tipo_gasto_id": R.resolve_or_create("cat_tipo_gasto", g["tipo"]),
               "cantidad": g["cantidad"], "monto_total": g["monto_total"]}
              for g in draft.children_raw["gasto"]]
+    mediciones = [{"especie_id": R.resolve_or_create_especie(m["comun"], m["cientifico"]),
+                   "longitud_total_cm": m["longitud_total_cm"], "peso_gr": m.get("peso_gr"),
+                   "procesado": m.get("procesado", "NA")}
+                  for m in getattr(draft, "mediciones", [])]
     return {"key": draft.key, "faena": faena, "catches": catches, "arte": arte,
-            "carnada": carnada, "etp": etp, "gasto": gasto, "errors": list(draft.errors)}
+            "carnada": carnada, "etp": etp, "gasto": gasto, "mediciones": mediciones,
+            "errors": list(draft.errors)}
 
 
 def _origen(v):
@@ -76,8 +81,18 @@ _FAENA_COLS = ("legacy_id", "codigo_formato", "formato_origen_id", "tipo_registr
                "latitud_legacy", "longitud_legacy", "hora_salida", "hora_llegada", "observaciones")
 
 
+_FORMATO_NOMBRE = {"MASIVOS_LEGACY": "Masivos Legacy (Anexo 2)",
+                   "BITACORA_LEGACY": "Bitácoras Legacy (Anexo 2)",
+                   "MONITOREO_LEGACY": "Monitoreo Pesquero Legacy (Anexo 2)"}
+
+
 def _formato_id(codigo):
-    return _q("SELECT id::text AS id FROM cat_formato_origen WHERE codigo=%s", (codigo,))[0]["id"]
+    row = _q("SELECT id::text AS id FROM cat_formato_origen WHERE codigo=%s", (codigo,))
+    if row:
+        return row[0]["id"]
+    nombre = _FORMATO_NOMBRE.get(codigo, codigo)
+    return _q("INSERT INTO cat_formato_origen (codigo, nombre) VALUES (%s,%s) "
+              "RETURNING id::text AS id", (codigo, nombre))[0]["id"]
 
 
 def _ins(cur, table, cols: dict):
@@ -93,7 +108,8 @@ def commit_batch(spec, resolved, *, force=False):
     formato_id = _formato_id(spec.codigo)
     hashes = [r["faena"]["legacy_id"] for r in resolved if r["key"]]
     dup = set() if force else existing_legacy_ids(hashes)
-    rep = {"faenas_nuevas": 0, "ya_existen": 0, "capturas": 0, "faenas_error": 0, "errores": []}
+    rep = {"faenas_nuevas": 0, "ya_existen": 0, "capturas": 0, "mediciones": 0,
+           "faenas_error": 0, "errores": []}
     conn = get_conn()
     conn.autocommit = False
     try:
@@ -110,6 +126,10 @@ def commit_batch(spec, resolved, *, force=False):
                     fid = _ins(cur, "faena", f)
                     for c in r["catches"]:
                         _ins(cur, "captura", {"faena_id": fid, **c}); rep["capturas"] += 1
+                    for m in r.get("mediciones", []):
+                        _ins(cur, "medicion", {"faena_id": fid,
+                                               **{k: v for k, v in m.items() if v is not None}})
+                        rep["mediciones"] += 1
                     if any(v is not None for v in r["arte"].values()):
                         _ins(cur, "faena_arte", {"faena_id": fid, **{k: v for k, v in r["arte"].items() if v is not None}})
                     if r["carnada"]:
@@ -120,7 +140,9 @@ def commit_batch(spec, resolved, *, force=False):
                     for g in r["gasto"]:
                         _ins(cur, "gasto", {"faena_id": fid, **g})
                     cur.execute("RELEASE SAVEPOINT sp")
-                    _log("faena", fid, "importar", {"legacy_id": f["legacy_id"], "capturas": len(r["catches"])})
+                    _log("faena", fid, "importar", {"legacy_id": f["legacy_id"],
+                                                    "capturas": len(r["catches"]),
+                                                    "mediciones": len(r.get("mediciones", []))})
                     rep["faenas_nuevas"] += 1
                 except Exception as e:      # noqa: BLE001
                     cur.execute("ROLLBACK TO SAVEPOINT sp")
