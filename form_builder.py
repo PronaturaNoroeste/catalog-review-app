@@ -19,6 +19,7 @@ from __future__ import annotations
 import copy
 import json
 import os
+import re
 import unicodedata
 from pathlib import Path
 
@@ -326,6 +327,38 @@ def load_formulario(fid: str) -> dict | None:
     return rows[0] if rows else None
 
 
+# Sentinel in the Paso ① formato picker: "this form gets its own new formato".
+# A brand-new formulario belongs to a new formato by default — reusing an existing
+# one puts two published forms under the same formato and the tablet then loads
+# whichever is newest for every técnico assigned to it (the Tembabiche bug).
+_NEW_FMT = "__new_formato__"
+
+
+def _slug_codigo(nombre: str) -> str:
+    s = unicodedata.normalize("NFKD", nombre).encode("ascii", "ignore").decode()
+    s = re.sub(r"[^A-Za-z0-9]+", "_", s).strip("_").upper()
+    return s[:40] or "FORMATO"
+
+
+def create_formato(nombre: str) -> str:
+    """Insert a new cat_formato_origen and return its id. codigo derives from the
+    name; suffixed (_2, _3…) if taken so the unique constraint never bites."""
+    base = _slug_codigo(nombre)
+    taken = {r["codigo"] for r in
+             _q("SELECT codigo FROM cat_formato_origen WHERE codigo LIKE %s", (base + "%",))}
+    codigo, n = base, 2
+    while codigo in taken:
+        codigo, n = f"{base}_{n}", n + 1
+    rows = _q("INSERT INTO cat_formato_origen (codigo, nombre) VALUES (%s, %s) RETURNING id::text",
+              (codigo, nombre.strip()))
+    fid = rows[0]["id"]
+    _log("cat_formato_origen", fid, "crear", {"codigo": codigo, "nombre": nombre.strip(),
+                                              "origen": "constructor"})
+    list_formatos.clear()
+    formatos_en_uso.clear()
+    return fid
+
+
 def save_borrador(fid: str | None, nombre: str, formato_id: str, version: float,
                   definicion: dict, constantes: dict) -> str:
     """Upsert a borrador. Refuses to touch a published row (immutability)."""
@@ -572,15 +605,20 @@ def _load_into_work(f: dict) -> dict:
 
 def _template_work(src_id: str) -> dict:
     """A fresh borrador seeded with another form's structure (deep-copied), so the
-    source is never mutated. Version recomputed for the source's formato."""
+    source is never mutated. It's a NEW formulario (typically for another site), so
+    it defaults to its own new formato at v0.1 — a same-formato revision goes
+    through 🌱 Nueva versión instead."""
     f = load_formulario(src_id)
     defn = f.get("definicion") or {}
     if isinstance(defn, str):
         defn = json.loads(defn or "{}")
     return {"id": None, "nombre": f"{f['nombre']} (copia)",
-            "formato_id": f["formato_origen_id"], "version": next_version(f["formato_origen_id"]),
+            "formato_id": None, "version": 0.1,
             "estado": "borrador", "secciones": copy.deepcopy(defn.get("secciones", [])),
-            "constantes": copy.deepcopy(f.get("constantes") or {})}
+            "constantes": copy.deepcopy(f.get("constantes") or {}),
+            # source formato: its curated lists are copied over on the first save
+            # (the copied fields reference them by name, empty otherwise)
+            "plantilla_formato_id": f["formato_origen_id"]}
 
 
 # =====================================================================
@@ -829,12 +867,29 @@ def _paso_datos(work: dict, published: bool, formatos: list[dict], bindable: dic
                                    disabled=published)
     fmt_ids = [f["id"] for f in formatos]
     fmt_label = {f["id"]: f"{f['codigo']} — {f['nombre']}" for f in formatos}
-    cur_fmt = work["formato_id"] if work["formato_id"] in fmt_ids else (fmt_ids[0] if fmt_ids else None)
-    if fmt_ids:
+    if work["id"] is None and not published:
+        # New formulario → its own formato by default (created on save). Reusing an
+        # existing formato is still offered for the rare "first form of a legacy
+        # formato" case; a same-formato revision goes through 🌱 Nueva versión.
+        opts = [_NEW_FMT] + fmt_ids
+        fmt_label[_NEW_FMT] = "➕ Nuevo formato (se crea al guardar)"
+        cur_fmt = work["formato_id"] if work["formato_id"] in fmt_ids else _NEW_FMT
         work["formato_id"] = c2.selectbox(
-            "Formato / región", fmt_ids, index=fmt_ids.index(cur_fmt) if cur_fmt else 0,
-            format_func=lambda i: fmt_label.get(i, i), key=f"fb_formato_{ld}",
-            disabled=published or work["id"] is not None)
+            "Formato / región", opts, index=opts.index(cur_fmt),
+            format_func=lambda i: fmt_label.get(i, i), key=f"fb_formato_{ld}")
+        if work["formato_id"] == _NEW_FMT:
+            work["formato_nuevo_nombre"] = c2.text_input(
+                "Nombre del formato nuevo", work.get("formato_nuevo_nombre") or "",
+                key=f"fb_fmt_new_{ld}", placeholder="(igual al nombre del formulario)",
+                help="El sitio/programa al que pertenece este formulario, p. ej. «Tembabiche». "
+                     "Vacío = usa el nombre del formulario.")
+    else:
+        cur_fmt = work["formato_id"] if work["formato_id"] in fmt_ids else (fmt_ids[0] if fmt_ids else None)
+        if fmt_ids:
+            work["formato_id"] = c2.selectbox(
+                "Formato / región", fmt_ids, index=fmt_ids.index(cur_fmt) if cur_fmt else 0,
+                format_func=lambda i: fmt_label.get(i, i), key=f"fb_formato_{ld}",
+                disabled=True)
     work["version"] = c3.number_input(
         "Versión", min_value=0.1, max_value=99.9, step=0.1, value=float(work["version"]),
         format="%.1f", key=f"fb_version_{ld}", disabled=published or work["id"] is not None,
@@ -1133,7 +1188,10 @@ def _campo_dialog(work: dict, sec: dict, idx: int | None, bindable: dict):
         field_cat = (bindable.get(col, {}).get("catalogo") if bt == "core" else cat_sel) or ""
         if tipo == "catalogo" and field_cat:
             from lista_editor import render_lista_editor
-            lista_val = render_lista_editor(work.get("formato_id"), field_cat,
+            fmt_for_listas = work.get("formato_id")
+            if fmt_for_listas == _NEW_FMT:
+                fmt_for_listas = None   # the new formato only exists after 💾 Guardar
+            lista_val = render_lista_editor(fmt_for_listas, field_cat,
                                             lista_val, _slug(label), f"{k}_le")
             lista_managed = True
         elif c.get("lista"):
@@ -1261,6 +1319,74 @@ def _campo_dialog(work: dict, sec: dict, idx: int | None, bindable: dict):
             st.rerun()
 
 
+@st.dialog("Campo del formulario (solo lectura)", width="large")
+def _campo_view(work: dict, c: dict, bindable: dict):
+    """Read-only inspector for a field of a PUBLISHED version: the full config plus
+    the curated list's current options. Any change — editing the field or adding
+    options to its list — goes through 🌱 Nueva versión, offered at the bottom."""
+    from console_ui import flash, friendly_error
+    b = c.get("binding") or {}
+    col = b.get("columna", "")
+    tabla = (bindable.get(col, {}).get("catalogo") if b.get("tipo", "core") == "core"
+             else b.get("catalogo")) or ""
+
+    st.markdown(f"### {c.get('label') or c.get('key')}")
+    props = [("Tipo", TIPO_LABELS.get(c.get("tipo"), c.get("tipo"))),
+             ("Origen del dato", BIND_LABELS.get(b.get("tipo", "core"), b.get("tipo", "core")))]
+    if col:
+        props.append(("Dato del sistema", bindable.get(col, {}).get("friendly", col)))
+    if tabla:
+        props.append(("Catálogo", f"`{tabla}`"))
+    props.append(("Obligatorio", "sí" if c.get("requerido") else "no"))
+    if c.get("autocompletar"):
+        props.append(("Autocompletar", "sí"))
+    if c.get("ayuda"):
+        props.append(("Ayuda", c["ayuda"]))
+    if c.get("permite_proponer"):
+        props.append(("El técnico puede proponer nombres", "sí"))
+    if c.get("permite_otro_texto"):
+        props.append(("Permite «otro» (texto libre)", "sí"))
+    if c.get("opciones") and all(isinstance(o, str) for o in c["opciones"]):
+        props.append(("Opciones", ", ".join(c["opciones"])))
+    if c.get("visible_si"):
+        fbk = {c2.get("key"): c2 for s in work["secciones"] for c2 in s.get("campos", [])}
+        props.append(("Visible", _condition_text(c["visible_si"], fbk, bindable)))
+    for name, val in props:
+        st.markdown(f"- **{name}:** {val}")
+
+    lista = c.get("lista")
+    if lista and tabla:
+        from lista_editor import get_opciones
+        st.divider()
+        try:
+            ops = get_opciones(work["formato_id"], lista, tabla)
+        except Exception as e:  # noqa: BLE001
+            st.error(friendly_error(e))
+            ops = None
+        if ops is not None:
+            st.markdown(f"**📑 Lista curada «{lista}»** — {len(ops)} opciones "
+                        "(lo que ve el técnico hoy)")
+            if ops:
+                show = (["nombre", "cientifico"] if tabla == "cat_especie"
+                        else ["nombre"]) + ["importancia"]
+                st.dataframe(pd.DataFrame(ops)[show], hide_index=True, width="stretch")
+            else:
+                st.warning("La lista está vacía — el técnico no ve opciones en este campo.")
+
+    st.divider()
+    st.info("Esta versión está **publicada** (solo lectura). Para editar el campo o "
+            "añadir opciones a su lista, crea una nueva versión y trabájala como borrador.")
+    if st.button("🌱 Crear nueva versión y editar",
+                 key=f"fbv_{st.session_state.get('fb_dlg', 0)}_nv", type="primary"):
+        try:
+            nid = new_version_from(work["id"])
+            st.session_state["fb_sel_pending"] = nid
+            flash("Nueva versión creada como borrador.", "🌱")
+            st.rerun()
+        except Exception as e:  # noqa: BLE001
+            st.error(f"No se pudo crear la versión: {friendly_error(e)}")
+
+
 def _paso_campos(work: dict, published: bool, bindable: dict):
     from console_ui import flash
     secs = work["secciones"]
@@ -1346,10 +1472,13 @@ def _paso_campos(work: dict, published: bool, bindable: dict):
                             disabled=published or i == len(campos) - 1, width="stretch"):
                 campos[i + 1], campos[i] = campos[i], campos[i + 1]
                 st.rerun()
-            if cc[4].button("✏️ Editar", key=f"fbc_{pick}_ed_{i}", disabled=published,
-                            width="stretch"):
+            if cc[4].button("👁️ Ver" if published else "✏️ Editar",
+                            key=f"fbc_{pick}_ed_{i}", width="stretch"):
                 _dlg_nonce()
-                _campo_dialog(work, sec, i, bindable)
+                if published:
+                    _campo_view(work, c, bindable)
+                else:
+                    _campo_dialog(work, sec, i, bindable)
 
     # ---- vista previa en vivo de esta sección -----------------------
     st.divider()
@@ -1526,6 +1655,23 @@ def render_form_builder():
     if f2.button("💾 Guardar borrador", key="fb_save", disabled=save_disabled,
                  width="stretch"):
         try:
+            n_copiadas = 0
+            if work["id"] is None and work["formato_id"] in (None, _NEW_FMT):
+                # brand-new formulario → gets its own formato (named after itself
+                # unless the admin typed one in Paso ①)
+                fmt_nombre = (work.get("formato_nuevo_nombre") or "").strip() or work["nombre"].strip()
+                work["formato_id"] = create_formato(fmt_nombre)
+                src = work.get("plantilla_formato_id")
+                if src:
+                    # "Basar en" copy: bring over the curated lists its fields
+                    # reference, so the tablet dropdowns aren't empty. The copies
+                    # are independent — prune them per site without touching the
+                    # source form's lists.
+                    from lista_editor import copy_lista
+                    listas = sorted({c["lista"] for s in work["secciones"]
+                                     for c in s.get("campos", []) if c.get("lista")})
+                    n_copiadas = sum(copy_lista(src, l, work["formato_id"], l)
+                                     for l in listas)
             fid = save_borrador(work["id"], work["nombre"], work["formato_id"],
                                 work["version"], {"secciones": work["secciones"]},
                                 work["constantes"])
@@ -1533,7 +1679,9 @@ def render_form_builder():
             # land on the saved form (so a new/plantilla draft doesn't reset to blank);
             # pending key is applied before the selectbox next run (can't write fb_sel here)
             st.session_state["fb_sel_pending"] = fid
-            flash("Borrador guardado.", "💾")
+            flash("Borrador guardado." if not n_copiadas else
+                  f"Borrador guardado — se copiaron las listas curadas de la "
+                  f"plantilla ({n_copiadas} opciones).", "💾")
             st.rerun()
         except Exception as e:  # noqa: BLE001
             st.error(f"No se pudo guardar: {friendly_error(e)}")

@@ -99,6 +99,34 @@ def set_importancia(formato_id: str, lista: str, registro_id: str, imp: int):
           (int(imp), formato_id, lista, registro_id))
 
 
+def listas_fuente(tabla: str) -> list[dict]:
+    """Curated lists over `tabla` in every formato — source candidates for a copy."""
+    return _q("""SELECT fo.id::text AS formato_id, fo.codigo, lo.lista, count(*) AS n
+                 FROM lista_opcion lo JOIN cat_formato_origen fo ON fo.id = lo.formato_origen_id
+                 WHERE lo.tabla=%s
+                 GROUP BY fo.id, fo.codigo, lo.lista
+                 ORDER BY fo.codigo, lo.lista""", (tabla,))
+
+
+def copy_lista(src_formato: str, src_lista: str, dst_formato: str, dst_lista: str) -> int:
+    """Copy a list's options into (dst_formato, dst_lista) — the copy is independent:
+    editing it never touches the source. Idempotent: options already present keep
+    their importancia. Returns how many options were actually added."""
+    from form_builder import get_conn
+    cur = get_conn().cursor()
+    cur.execute("""INSERT INTO lista_opcion (formato_origen_id, lista, tabla, registro_id, importancia)
+                   SELECT %s, %s, tabla, registro_id, importancia FROM lista_opcion
+                   WHERE formato_origen_id=%s AND lista=%s
+                   ON CONFLICT (formato_origen_id, lista, registro_id) DO NOTHING""",
+                (dst_formato, dst_lista, src_formato, src_lista))
+    n = cur.rowcount
+    cur.close()
+    _log("lista_opcion", dst_formato, "copiar_lista",
+         {"de_formato": src_formato, "de_lista": src_lista,
+          "a_lista": dst_lista, "opciones": n, "origen": "constructor"})
+    return n
+
+
 def create_and_add(formato_id: str, lista: str, tabla: str, nombre: str,
                    sci: str | None = None, importancia: int = 0) -> str:
     """Create a new APPROVED catalog row — like lista_import's 'crear', it never
@@ -121,6 +149,7 @@ def create_and_add(formato_id: str, lista: str, tabla: str, nombre: str,
 # =====================================================================
 _SIN = "— sin lista —"
 _NUEVA = "➕ Nueva lista…"
+_COPIA = "📋 Copiar de otro formulario…"
 
 
 def render_lista_editor(formato_id: str | None, tabla: str | None,
@@ -132,8 +161,8 @@ def render_lista_editor(formato_id: str | None, tabla: str | None,
     if not tabla:
         return lista_actual                     # no catalog → nothing to curate
     if not formato_id:
-        st.caption("Elige primero el **formato** del formulario (Paso 1) para "
-                   "poder usar listas curadas.")
+        st.caption("Guarda primero el borrador (💾) — el formato nuevo se crea al "
+                   "guardar y entonces podrás usar listas curadas.")
         return lista_actual
 
     lista_actual = st.session_state.get(f"{key}_pin", "") or lista_actual
@@ -141,7 +170,7 @@ def render_lista_editor(formato_id: str | None, tabla: str | None,
     existentes = sorted(l for l, t in form_listas(formato_id).items() if t == tabla)
     if lista_actual and lista_actual not in existentes:
         existentes.append(lista_actual)         # just-attached, still-empty list
-    opts = [_SIN] + existentes + [_NUEVA]
+    opts = [_SIN] + existentes + [_NUEVA, _COPIA]
     cur = lista_actual if lista_actual in existentes else _SIN
     sel = st.selectbox(
         "Lista curada (las opciones que ve el técnico)", opts,
@@ -154,6 +183,32 @@ def render_lista_editor(formato_id: str | None, tabla: str | None,
                                     key=f"{key}_nm"))
         if lista in existentes:
             st.info(f"«{lista}» ya existe para este formato — el campo compartirá esa lista.")
+    elif sel == _COPIA:
+        # Seed a local list from any formato's list over the same catalog. The copy
+        # is independent: pruning/adding here never touches the source form's list.
+        fuentes = listas_fuente(tabla)
+        if not fuentes:
+            st.caption("Ningún formato tiene todavía una lista de este catálogo.")
+            return lista_actual
+        from form_builder import _slug
+        src = st.selectbox(
+            "Copiar desde", range(len(fuentes)), key=f"{key}_cp_src",
+            format_func=lambda i: f"[{fuentes[i]['codigo']}] {fuentes[i]['lista']} "
+                                  f"· {fuentes[i]['n']} opciones")
+        dst = _slug(st.text_input("Nombre de la lista en este formulario",
+                                  fuentes[src]["lista"], key=f"{key}_cp_nm"))
+        if dst in existentes:
+            st.info(f"«{dst}» ya existe aquí — se añadirán solo las opciones que falten.")
+        if st.button("📋 Copiar lista", key=f"{key}_cp_go", disabled=not dst):
+            try:
+                n = copy_lista(fuentes[src]["formato_id"], fuentes[src]["lista"],
+                               formato_id, dst)
+                st.session_state[f"{key}_pin"] = dst
+                st.session_state.pop(f"{key}_sel", None)   # land the picker on the copy
+                st.rerun(scope="fragment")
+            except Exception as e:  # noqa: BLE001
+                st.error(friendly_error(e))
+        return lista_actual   # field unchanged until the copy lands
     else:
         lista = "" if sel == _SIN else sel
     st.caption("Adjuntar o quitar la lista es parte del formulario: llega a la "
