@@ -1,6 +1,6 @@
 # Handoff — Go-live deployment (Boca del Álamo pilot)
 
-_Last updated: 2026-07-07._ Taking both apps live on the real (historical) Supabase DB and shipping
+_Last updated: 2026-07-12._ Taking both apps live on the real (historical) Supabase DB and shipping
 them. Full plan: `C:\Users\victus\.claude\plans\reactive-swinging-trinket.md`. Runbooks:
 `../Planning/supabase/PROD_ROLLOUT.md`, `catalog-review-app/DEPLOY.md`, `capture-app/BUILD.md`.
 
@@ -53,13 +53,42 @@ rows already use as the unknown-científico sentinel (lookup/insert now match th
 NULL/empty); `detect_format`'s Jaccard scoring failed on real partial header sets (fixed to score
 by containment).
 
-**Not verified — do before relying on this for the actual pilot import:** a run against the real
-`Planning/DBScheme/Anexo2.xlsx` sample in a live browser. Neither the sample file nor a browser was
-available in the execution session; verification instead used a synthetic MASIVOS_LEGACY-shaped
-workbook driven through the full pipeline against real dev catalog data (both exact and fuzzy
-catalog resolution confirmed correct on real dev rows).
+**✅ Verified against the real `Planning/DBScheme/Anexo2.xlsx` (2026-07-12)** — which surfaced two
+real defects, both now fixed (commit `20a4c17`):
+- **Bitácoras never imported.** The wizard auto-locked onto the first header-matching sheet
+  (`produccion masivos`) and only offered a *format* override, so `producción bitácoras` was
+  unreachable; the two production sheets also share ~all headers and tie on containment (0.38, below
+  threshold) so detection couldn't tell them apart. Fix: `_step1_upload` now shows an **explicit sheet
+  dropdown** (all sheets; auto-detected format pre-selected), and `detect_format` gained a
+  **distinctive-column tie-break** (`Cantidad de aceite`→Bitácora, `Longitud total`→Monitoreo,
+  `Num.Formato`→Masivos). All three data sheets now detect correctly.
+- **Monitoreo pesquero was unsupported.** New **`MONITOREO_LEGACY`** format (biological): one row =
+  one `medicion` (`longitud_total_cm` + `peso_gr`/`procesado` derived from Peso Entero/Eviscerado
+  ×1000); `FormatSpec.kind="monitoreo"`, `group_faenas` branches to build mediciones, `import_writer`
+  resolves/inserts them; `faena.tipo_registro=MASIVO` (matches the COCCBCS biological convention);
+  the `cat_formato_origen` row auto-creates on first import. New dev e2e `tests/test_monitoreo_import_e2e.py`.
 
-**Data-row editor shipped 2026-07-10** (commit `7e0d6cb`, not yet pushed): new ✏️ **Registros (datos)**
+Along the way: unknown fishing-hours now → **NULL** (was `0`, which violates `CHECK
+(tiempo_efectivo_pesca_h > 0)` — every hours-less faena would have failed to insert). That needs the
+column nullable → **migration `0017_faena_tiempo_nullable`** (`Planning/supabase/migrations`, applied
+to **DEV**; **PROD already in this state** — ~55k biological faenas hold NULL there). ⚠️ `Planning/`
+is not a git repo, so `0017` is a loose file — apply/track it wherever prod migrations are managed.
+
+**Descargar-datos page — lag + column-editor fixes (2026-07-12, commits `7481e5c` `48761c7` `1fa9a89`):**
+toggling a column in "🎚️ Elegir y renombrar columnas" felt laggy and behaved wrongly. Three causes,
+all in `export_data.py`:
+- **Full-page rerun on every toggle** — Streamlit re-ran all of `render_export` (a ~44 ms saved-queries
+  DB round-trip + full-frame summary recompute + a re-render of the 100-row preview) on each click.
+  Fix: the column picker + downloads now live in an **`@st.fragment`** (`_columns_and_download`), so a
+  toggle reruns only that block. (The preview SQL was already cached in `session_state`.)
+- **2nd toggle reverted + list scrolled to top** — `_column_editor` rebuilt the `st.data_editor` `data`
+  frame from its own edited output each rerun (unstable object → grid remount → scroll reset; output→input
+  feedback → dropped edit). Fix: build the baseline **once per dataset** (`exp_coled_base`, stable object),
+  read edits from the return value, never feed them back.
+- **KeyError on stale/hot-reloaded session** — baseline was built only on signature change; now built
+  whenever `exp_coled_base` is absent **or** the dataset signature changed.
+
+**Data-row editor shipped 2026-07-10** (commit `7e0d6cb`): new ✏️ **Registros (datos)**
 console mode (`data_admin.py`) — ADMINISTRADOR-only edit/delete of faena + child rows (11 single-`id`-PK
 data tables; `tecnico_comunidad` composite PK excluded). Filter-based row picker (id / FK / date range;
 no `count(*)` on big tables), FK-nameless fallback to raw UUID, dependents-guarded delete. `_log` now
