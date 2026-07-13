@@ -529,6 +529,15 @@ def render_results(df, base_name: str, cfg: dict | None = None):
             [{"columna": c, "significado": COL_DIC.get(c, "—")} for c in df.columns]),
             width="stretch", hide_index=True)
 
+    # Column picker + downloads live in a fragment: toggling a column reruns ONLY this block,
+    # not all of render_export. Without it every checkbox click re-ran the whole page — a
+    # ~44 ms saved-queries DB round-trip, the full-frame summary recompute, and a re-render of
+    # the 100-row preview — which is what made column toggles lag on big datasets.
+    _columns_and_download(df, base_name)
+
+
+@st.fragment
+def _columns_and_download(df, base_name: str):
     # ---- choose + rename columns (both modes) ----
     export_df = _column_editor(df)
 
@@ -549,7 +558,7 @@ def render_results(df, base_name: str, cfg: dict | None = None):
                 st.session_state["exp_dl"] = {
                     "sig": sig, "name": base_name,
                     "csv": export_df.to_csv(index=False).encode("utf-8"), "parquet": pq}
-            st.rerun()
+            st.rerun(scope="fragment")
         st.caption("Ajusta las columnas y pulsa **Preparar** para generar el archivo (así el "
                    "editor de columnas no se traba con tablas grandes).")
     else:
