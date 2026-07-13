@@ -309,7 +309,11 @@ replaces it). Open follow-ups:
   v8→0.8 (publicado) and v9→0.9 (borrador); both columns NUMERIC; faenas all NULL (untouched). The
   decimal-version console is now safe against prod.
 - **Tablet APK v1.0.2 / versionCode 3** (offline-login + password reset + decimal version) is built
-  when you say go.
+  when you say go. It should also pick up the **header overflow fix (2026-07-13)**: on narrow devices
+  the title `Boca del Álamo · v<version>` word-wrapped and the button row (`flexWrap: 'wrap'`) spilled
+  onto a second line, inflating the header. `App.tsx` now truncates the title/user lines
+  (`numberOfLines={1}` + tail ellipsis) and the buttons sit in a **horizontal `ScrollView`** instead of
+  wrapping. Typechecks; not yet seen on a device.
 
 - **R-A · Clearer login messages** (`console_auth.py`) — split branches so a user knows their password
   was right: valid-but-not-a-console-role → "correo y contraseña correctos, pero esta cuenta (rol X)
