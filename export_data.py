@@ -466,7 +466,7 @@ def _column_editor(df):
     widget's own edit-delta: the second toggle reverted and the grid remounted (scroll
     jumped to top). We read edits from the return value instead and never feed them back."""
     sig = str(list(df.columns))
-    if st.session_state.get("exp_col_sig") != sig:
+    if "exp_coled_base" not in st.session_state or st.session_state.get("exp_col_sig") != sig:
         load = st.session_state.pop("exp_colcfg_load", None) or {}
         st.session_state["exp_coled_base"] = pd.DataFrame(
             [{"incluir": bool(load.get(c, {}).get("incluir", True)),
