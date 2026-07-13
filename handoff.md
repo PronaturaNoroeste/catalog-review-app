@@ -320,6 +320,13 @@ replaces it). Open follow-ups:
   (`npx tsc --noEmit`) but never run on a device** — worth eyeballing on the Huawei: the truncation
   point, the drag feel of the button strip, and whether the ⓘ at `type.caption` is legible on the teal
   bar (bump to `type.body` if not).
+  The build should also pick up the **dynamic header title (2026-07-13, `capture-app` `0b1229e`)**:
+  the header + tap-Alert hardcoded "Boca del Álamo" with only the version dynamic, so a técnico
+  assigned to Tembabiche saw *"Boca del Álamo · v1"* (the right form **was** loading — only the label
+  lied). Now `cacheForm` selects `formulario.nombre`, `formulario_cache` gains a `nombre` column
+  (try/ignore `ALTER TABLE` patches existing installs — there's still no migration system), and
+  `App.tsx` renders `form.nombre` (fallback `'Formulario'` for a stale offline cache). The dead
+  `FORMATO_PILOTO` const (unused since R4) is gone. Typechecks; not yet run on a device.
 
 - **R-A · Clearer login messages** (`console_auth.py`) — split branches so a user knows their password
   was right: valid-but-not-a-console-role → "correo y contraseña correctos, pero esta cuenta (rol X)
