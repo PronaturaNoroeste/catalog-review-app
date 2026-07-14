@@ -83,9 +83,30 @@ def approved_candidates(tabla: str, q: str) -> list[dict]:
                   WHERE es_aprobado AND {nc} ILIKE %s ORDER BY {nc} LIMIT 25""", (like,))
 
 
-# Proposals that can join a curated form list on approval (doc 16 follow-up:
-# an approved-but-unlisted species vanishes from the strict tablet picker).
-LISTABLE = {"cat_especie": ["especies", "carnada"], "cat_pescador": ["pescadores"]}
+# ---- where a proposal came from ----
+# A curated list is a strict subset of its catalog, so an approved-but-unlisted name
+# vanishes from the tablet picker it was proposed on. Since migration 0019 the tablet
+# sends the list with the proposal and the RPC records it on the audit row, so we can
+# put the name back exactly where the técnico was looking.
+def proposal_origin(registro_id: str) -> dict:
+    """{'lista', 'formato_origen_id'} recorded when the proposal synced — {} if the
+    proposal predates 0019 (or came from a non-curated field), in which case the admin
+    picks the form + list by hand."""
+    rows = _q("""SELECT detalle FROM cambio_catalogo
+                  WHERE registro_id=%s AND accion='crear' AND detalle->>'origen'='app'
+                  ORDER BY created_at DESC LIMIT 1""", (registro_id,))
+    d = (rows[0]["detalle"] if rows else None) or {}
+    if not d.get("lista") or not d.get("formato_origen_id"):
+        return {}
+    return {"lista": d["lista"], "formato_origen_id": d["formato_origen_id"]}
+
+
+def listas_for(tabla: str, formato_id: str) -> list[str]:
+    """Curated lists over <tabla> that already exist on this form."""
+    return [r["lista"] for r in
+            _q("""SELECT DISTINCT lista FROM lista_opcion
+                   WHERE tabla=%s AND formato_origen_id=%s ORDER BY lista""",
+               (tabla, formato_id))]
 
 
 # ---- actions ----
@@ -152,7 +173,8 @@ def render_proposal_queue():
         return
 
     labels = {"cat_pescador": "Pescador/Capitán", "cat_embarcacion": "Embarcación",
-              "cat_sitio_pesca": "Sitio de pesca", "cat_especie": "Especie"}
+              "cat_sitio_pesca": "Sitio de pesca", "cat_especie": "Especie",
+              "cat_tipo_arte": "Arte de pesca"}
 
     for p in props:
         rid, tabla, nombre = p["id"], p["tabla"], p["nombre"]
@@ -167,25 +189,41 @@ def render_proposal_queue():
 
             # optional: put the approved entry straight on the form's curated list —
             # a strict picker only shows listed entries, so an approved-but-unlisted
-            # name would vanish from the tablet.
+            # name would vanish from the tablet. Since 0019 the proposal remembers the
+            # list it came from, so that form + list are pre-selected.
             add_l = False
             fsel = lsel = None
-            if tabla in LISTABLE:
-                from form_builder import formatos_en_uso
-                formatos = formatos_en_uso()
-                if formatos:
-                    lc1, lc2, lc3 = st.columns([3, 2, 2])
-                    add_l = lc1.checkbox(
-                        "Al aprobar, añadir a la lista del formulario", value=True,
-                        key=f"addl_{rid}",
-                        help="Si no está en la lista curada, el técnico no la verá en la "
-                             "tableta aunque esté aprobada.")
-                    fmap = {f["id"]: f["codigo"] for f in formatos}
-                    fsel = lc2.selectbox("Formulario", list(fmap), format_func=lambda i: fmap[i],
-                                         key=f"addlf_{rid}", disabled=not add_l)
-                    listas = LISTABLE[tabla]
-                    lsel = lc3.selectbox("Lista", listas, key=f"addll_{rid}",
+            from form_builder import formatos_en_uso
+            formatos = formatos_en_uso()
+            origin = proposal_origin(rid)
+            if formatos:
+                lc1, lc2, lc3 = st.columns([3, 2, 2])
+                add_l = lc1.checkbox(
+                    "Al aprobar, añadir a la lista del formulario", value=bool(origin),
+                    key=f"addl_{rid}",
+                    help="Si no está en la lista curada, el técnico no la verá en la "
+                         "tableta aunque esté aprobada.")
+                fids = [f["id"] for f in formatos]
+                fmap = {f["id"]: f["codigo"] for f in formatos}
+                fidx = fids.index(origin["formato_origen_id"]) \
+                    if origin.get("formato_origen_id") in fids else 0
+                fsel = lc2.selectbox("Formulario", fids, index=fidx,
+                                     format_func=lambda i: fmap[i],
+                                     key=f"addlf_{rid}", disabled=not add_l)
+                # lists this form already curates over this catalog, plus the one the
+                # proposal came from (it may be the form's first list for this catalog)
+                listas = listas_for(tabla, fsel) if fsel else []
+                if origin.get("lista") and origin["lista"] not in listas:
+                    listas = [origin["lista"]] + listas
+                if listas:
+                    lidx = listas.index(origin["lista"]) if origin.get("lista") in listas else 0
+                    lsel = lc3.selectbox("Lista", listas, index=lidx, key=f"addll_{rid}",
                                          disabled=not add_l or len(listas) == 1)
+                else:
+                    lc3.caption("Este formulario no tiene listas para este catálogo.")
+                    add_l = False
+                if origin:
+                    lc1.caption(f"📑 Propuesta hecha en la lista «{origin['lista']}».")
 
             a, r = st.columns(2)
             if a.button("✅ Aprobar", key=f"ap_{rid}", width="stretch"):
