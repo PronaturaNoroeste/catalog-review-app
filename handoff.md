@@ -115,6 +115,47 @@ pyarrow pin (worked directly on the VPS checkout `/home/pnoserver/monitoreo/cata
   (expects formatos *without* a published form in `users_admin._formatos()`); needs a
   published-form fixture.
 
+**2026-07-13 — Catalog proposals on curated-list fields (migrations `0018` + `0019`, both applied to
+DEV **and PROD**; prod `_migrations`=19).** Started from "the tablet doesn't show *proponer* on
+curated lists" — which turned out to be a non-bug (the "+ Proponer" row only renders after 2+ typed
+characters, and on a short curated list nobody types), but tracing it surfaced two real defects and
+one design gap:
+
+- **🔥 A Tembabiche proposal would have blocked sync.** `arte_carnada` (tipo=catalogo →
+  `cat_tipo_arte`) has `permite_proponer`, but `cat_tipo_arte` was never in
+  `catalogo_config.permite_propuestas`; `crear_faena_completa` **RAISEs** on a proposal into a
+  non-whitelisted catalog, so the whole faena would have failed to sync and stuck in the outbox.
+  Nobody hit it only because nobody had proposed there yet. **`0018`** whitelists it. (`metodo` and
+  `destino_pap` also carry the flag but are `seleccion_unica` → no picker → unreachable, just sloppy.)
+- **Proposing a name that already exists in the catalog but not in the list.** A curated list is a
+  strict *subset*, and the picker only ever saw the list → it offered "+ Proponer" and minted a
+  duplicate row. Most catalogs swallow it (their UNIQUE is scoped by an FK the RPC leaves NULL, and
+  NULL≠NULL — that's where prod's 48 duplicate pescadores / 95 duplicate sitios come from), but
+  `cat_tipo_arte` is **UNIQUE (nombre)** with no NULL escape → `unique_violation` → faena fails to
+  sync. Fix (tablet, `cb3a717`): `catalogOutsiders()` surfaces an **exact** catalog match as
+  "ya existe · fuera de esta lista"; picking it selects the real row and sends no proposal, and it
+  counts as an exact match so "+ Proponer" hides. Exact-only on purpose (a partial match would leak
+  the whole catalog into a curated picker). **Deliberately not auto-selected** — common names are
+  homonyms (two fish, two fishermen), so the técnico decides, not the code.
+- **An approved name vanished from the field it was proposed on.** The strict picker shows listed
+  rows + *this device's pending* proposals; approval flips the row to `aprobado` (dropping it from
+  that union) and nothing ever added it to the `lista_opcion` list → gone, despite being approved.
+  **`0019`**: the tablet now sends `lista` with each proposal and the RPC records it (+ the faena's
+  `formato_origen_id`) on the `cambio_catalogo` audit row; the console queue reads it back
+  (`proposal_origin`) and **pre-selects that form + list** on approval (`3ed4722`). The old
+  hardcoded `LISTABLE` map is gone (it covered only cat_especie/cat_pescador with Boca's list names,
+  so Tembabiche's lists and cat_tipo_arte had **no** add-to-list option at all); `listas_for()` now
+  reads the lists the form actually curates. Pre-`0019` proposals degrade to the manual choice.
+
+`0019` is **backward compatible**: a proposal without `lista` (every APK in the field today) takes a
+no-op `CASE` branch. ⚠️ **The tablet half needs a new APK**, and none of it has been seen on a device.
+Verified: 34/34 tablet tests (`npm test`, 6 new) + `tsc`; dev e2e of the RPC (real
+`crear_faena_completa` with a `cat_tipo_arte` proposal carrying `lista` → audit row holds lista +
+formato); console dev round-trip `tests/test_proposals_review.py`. Also fixed a test that was **already
+red on `main`** — `getDb opens the database exactly once` (the `formulario_cache.nombre` ALTER made
+boot run 2 execs; the assertion was stale, not the code). Migration `0017` was also committed — it had
+been a loose untracked file.
+
 **Descargar-datos page — lag + column-editor fixes (2026-07-12, commits `7481e5c` `48761c7` `1fa9a89`):**
 toggling a column in "🎚️ Elegir y renombrar columnas" felt laggy and behaved wrongly. Three causes,
 all in `export_data.py`:
