@@ -9,7 +9,7 @@ them. Full plan: `C:\Users\victus\.claude\plans\reactive-swinging-trinket.md`. R
 |---|---|
 | **1 — Prod DB migration** | ✅ **DONE & verified** (2026-07-07) |
 | **2 — Console on a VPS (Docker)** | ✅ **Running** (console-only, no Caddy/TLS yet — see the 2026-07-13 VPS notes below) |
-| **3 — Capture-app APK (EAS)** | 🔶 In progress — `eas-cli` installed, app pointed at prod; **next step is `eas login` (yours)** |
+| **3 — Capture-app APK (EAS)** | ✅ **Built** 2026-07-13 — **v1.0.4 / versionCode 5**, from `main` @ `cb3a717` (includes everything below). Device smoke still pending. |
 
 ## Console enhancement rounds (post-go-live, shipped since 2026-07-07)
 A parallel workstream on the console (all on `main`, tested against **dev** — the console `.env`
@@ -147,8 +147,10 @@ one design gap:
   so Tembabiche's lists and cat_tipo_arte had **no** add-to-list option at all); `listas_for()` now
   reads the lists the form actually curates. Pre-`0019` proposals degrade to the manual choice.
 
-`0019` is **backward compatible**: a proposal without `lista` (every APK in the field today) takes a
-no-op `CASE` branch. ⚠️ **The tablet half needs a new APK**, and none of it has been seen on a device.
+`0019` is **backward compatible**: a proposal without `lista` takes a no-op `CASE` branch, so older
+APKs keep working unchanged. ✅ **The tablet half shipped in v1.0.4 / versionCode 5** (built 2026-07-13
+from `cb3a717`), so the whole chain is live end-to-end — but ⚠️ **none of it has been exercised on a
+device yet** (see the Phase 3 device smoke).
 Verified: 34/34 tablet tests (`npm test`, 6 new) + `tsc`; dev e2e of the RPC (real
 `crear_faena_completa` with a `cat_tipo_arte` proposal carrying `lista` → audit row holds lista +
 formato); console dev round-trip `tests/test_proposals_review.py`. Also fixed a test that was **already
@@ -269,27 +271,28 @@ has admins, so it won't be open. Optional extra hardening: Caddy `basic_auth` (c
 
 ---
 
-## Phase 3 — Capture-app APK (EAS) 🔶 IN PROGRESS
-`capture-app/eas.json` (preview + production APK profiles), `app.json` (v1.0.0, versionCode 1), and
-`BUILD.md` are committed; the dev "Descartar" button is gated behind `__DEV__`. `capture-app/.env` now
-points at prod. `eas-cli 20.5.1` is installed.
+## Phase 3 — Capture-app APK (EAS) ✅ BUILT — device smoke pending
+**A production APK was built on 2026-07-13: `v1.0.4` / `versionCode 5`, cut from `main` @ `cb3a717`.**
+It therefore carries everything shipped that day: the one-line header (truncate + horizontal-scroll
+buttons + tap-to-reveal + ⓘ), the **dynamic form name** in the header (a Tembabiche técnico no longer
+sees "Boca del Álamo"), and the curated-list proposal work (outsider guard + proposals carrying their
+`lista`, the client half of migrations `0018`/`0019`).
 
-**You need:** a (free) Expo account.
+`capture-app/eas.json` (preview + production APK profiles) and `BUILD.md` are committed; the dev
+"Descartar" button is gated behind `__DEV__`; `capture-app/.env` points at prod; `eas-cli 20.5.1`.
+Rebuild = bump `version` + `versionCode` in `app.json`, then
+`eas build --platform android --profile production`.
 
-**Steps (from `BUILD.md`):**
-1. **`eas login`** ← next action, must be interactive in a real terminal.
-2. `eas init` (creates/links the Expo project, writes `projectId` into `app.json`) — can be run after login.
-3. Set prod build env vars:
-   ```
-   eas env:create --environment production --name EXPO_PUBLIC_SUPABASE_URL  --value https://boeysdpistpvdvcwzddm.supabase.co
-   eas env:create --environment production --name EXPO_PUBLIC_SUPABASE_ANON_KEY --value <prod anon key from catalog-review-app/.env>
-   ```
-4. `cd capture-app && eas build --platform android --profile production` (prompts once to auto-generate
-   an Android keystore → interactive). Produces a sideloadable **APK** URL (~10–20 min, GMS-free — no
-   Play Store).
-5. **Day-0 device smoke** (Huawei tablet, per `DEVICE_TESTING.md`): log in as `Test_07072026`, load the v8
-   form, capture a faena **offline**, GPS/map, then **Sincronizar** → the faena appears in the console/DB;
-   verify kg→gr routing.
+**⚠️ Still owed — the day-0 device smoke** (Huawei tablet, per `DEVICE_TESTING.md`). Nothing in this
+APK has been seen running on hardware. Log in as **`Test_07072026`** (the PRUEBAS técnico — never a
+real one), load the form, capture a faena **offline**, GPS/map, then **Sincronizar** → it appears in
+the console/DB; verify kg→gr routing. Plus the two things this build changed and no test can cover:
+- **Header**: does the title truncate cleanly, do the buttons drag, is the ⓘ legible at `type.caption`
+  on the teal bar (bump to `type.body` if not)?
+- **Proposals on a curated list**: type a name that exists in the catalog but not the list → expect
+  **"ya existe · fuera de esta lista"**, not "+ Proponer". Then propose a genuinely new one, approve it
+  in the console (📥 Propuestas — the form + list should be **pre-selected**), and confirm it stays
+  visible in the field instead of vanishing.
 
 **Dev testing before the APK:** `cd capture-app && npx expo start -c` — the `-c` is required because
 `EXPO_PUBLIC_*` are inlined at bundle time (a plain reload keeps stale values). This is what fixed the
@@ -349,25 +352,26 @@ replaces it). Open follow-ups:
 - **R-F:** migration `0016_version_decimal` applied to **DEV + PROD** (2026-07-08). Prod renumbered
   v8→0.8 (publicado) and v9→0.9 (borrador); both columns NUMERIC; faenas all NULL (untouched). The
   decimal-version console is now safe against prod.
-- **Tablet APK v1.0.2 / versionCode 3** (offline-login + password reset + decimal version) is built
-  when you say go. It should also pick up the **header overflow fix (2026-07-13, `capture-app`
+- **Tablet APK — ✅ shipped as v1.0.4 / versionCode 5** (built 2026-07-13 from `cb3a717`; supersedes the
+  never-built v1.0.2/vc3 plan). It carries R-E offline-login + password reset + the decimal version,
+  and the two 2026-07-13 header changes below. Device smoke still pending — see Phase 3.
+  It includes the **header overflow fix (2026-07-13, `capture-app`
   `a9df431`/`3ffee61`/`838c017`)**: on narrow devices the title `Boca del Álamo · v<version>`
   word-wrapped **and** the button row (`flexWrap: 'wrap'`) spilled onto a second line, inflating the
   header — two causes, not one. In `App.tsx`: the title/user lines now truncate (`numberOfLines={1}` +
   tail ellipsis) and the buttons sit in a **horizontal `ScrollView`** instead of wrapping. Because the
   title can now be cut, tapping the header info block opens an **`Alert`** with the full title + user +
   version, and an **ⓘ glyph** marks it as tappable — the glyph is a *sibling* of the title `Text`
-  (`barTitleRow`), not part of its string, so the ellipsis can't eat it. ⚠️ **Typechecks
-  (`npx tsc --noEmit`) but never run on a device** — worth eyeballing on the Huawei: the truncation
-  point, the drag feel of the button strip, and whether the ⓘ at `type.caption` is legible on the teal
-  bar (bump to `type.body` if not).
-  The build should also pick up the **dynamic header title (2026-07-13, `capture-app` `0b1229e`)**:
+  (`barTitleRow`), not part of its string, so the ellipsis can't eat it. ⚠️ Typechecks, and it is
+  **in the v1.0.4 APK, but has never been seen on a device** — eyeball it on the Huawei (truncation
+  point, drag feel of the button strip, ⓘ legibility at `type.caption` on the teal bar).
+  It also carries the **dynamic header title (2026-07-13, `capture-app` `0b1229e`)**:
   the header + tap-Alert hardcoded "Boca del Álamo" with only the version dynamic, so a técnico
   assigned to Tembabiche saw *"Boca del Álamo · v1"* (the right form **was** loading — only the label
   lied). Now `cacheForm` selects `formulario.nombre`, `formulario_cache` gains a `nombre` column
   (try/ignore `ALTER TABLE` patches existing installs — there's still no migration system), and
   `App.tsx` renders `form.nombre` (fallback `'Formulario'` for a stale offline cache). The dead
-  `FORMATO_PILOTO` const (unused since R4) is gone. Typechecks; not yet run on a device.
+  `FORMATO_PILOTO` const (unused since R4) is gone. Typechecks; in v1.0.4; not yet run on a device.
 
 - **R-A · Clearer login messages** (`console_auth.py`) — split branches so a user knows their password
   was right: valid-but-not-a-console-role → "correo y contraseña correctos, pero esta cuenta (rol X)
